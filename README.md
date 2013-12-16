@@ -14,9 +14,10 @@ It does this by:
 * Using an low-friction functional testing library, tests are written in the Gherkin language and executed using Behat.
 * Allowing replaying of SAML requests / responses from the logging.
 * Offering 'mock' services that allow overriding of the following Engineblock services:
-** ServiceRegistry, federation metadata
-** Date and time
-** ID generation
+    * Identity Provider / Service Provider   
+    * ServiceRegistry, federation metadata
+    * Date and time
+    * ID Generation
 
 It requires that EngineBlock has been configured for the special 'functional-testing' environment.
 See **Installation**.
