@@ -1,4 +1,8 @@
 {
-    "engineblock-url": "https://engine-test.demo.openconext.org",
-    "engine-test-stand-url": "https://engine-test-stand.demo.openconext.org"
+    "engineblock-url"       : "https://engine-test.demo.openconext.org",
+    "engine-test-stand-url" : "https://engine-test-stand.demo.openconext.org",
+
+    "serviceregistry-fixture-file"  : "/fixtures/db/serviceregistry.state.php.serialized",
+    "idp-fixture-file"              : "/fixtures/db/idp.states.php.serialized",
+    "sp-fixture-file"               : "/fixtures/db/sp.states.php.serialized"
 }

@@ -12,6 +12,14 @@ class AuthnRequestFactory
         return $authnRequest;
     }
 
+    /**
+     * @todo UNUSED
+     *
+     * @param $spName
+     * @param \SAML2_XML_md_EntityDescriptor $descriptor
+     * @return mixed
+     * @throws \RuntimeException
+     */
     protected function getSpRoleFromEntityDescriptor($spName, \SAML2_XML_md_EntityDescriptor $descriptor)
     {
         $spRoles = array_filter(

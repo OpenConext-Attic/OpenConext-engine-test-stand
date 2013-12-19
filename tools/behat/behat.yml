@@ -21,3 +21,7 @@ replay:
             goutte:
                 guzzle_parameters:
                     ssl.certificate_authority: false
+                    request.options.connect_timeout: 0
+                    curl.options:
+                      13: 0 #CURLOPT_TIMEOUT
+                      78: 0 #CURLOPT_CONNECTTIMEOUT

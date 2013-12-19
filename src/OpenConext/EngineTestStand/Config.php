@@ -8,6 +8,9 @@ class Config
 
     public static function create($file)
     {
+        if (!file_exists($file)) {
+            return new static(array());
+        }
         return new static(json_decode(file_get_contents($file), true));
     }
 

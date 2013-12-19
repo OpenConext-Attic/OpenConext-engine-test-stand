@@ -8,6 +8,7 @@ use OpenConext\EngineTestStand\Fixture\SpFixture;
 class ServiceProvider
 {
     const LOGIN_URL = '/sp.php/{name}/login-redirect';
+    const ACS_URL = '/sp.php/{name}/acs';
     const BASE_URL_CONFIG_NAME = 'engine-test-stand-url';
 
     protected $name;
@@ -36,6 +37,13 @@ class ServiceProvider
     {
         $host = $this->config->expect(self::BASE_URL_CONFIG_NAME);
         $path = str_replace('{name}', urlencode($this->name), self::LOGIN_URL);
+        return $host . $path;
+    }
+
+    public function assertionConsumerServiceLocation()
+    {
+        $host = $this->config->expect(self::BASE_URL_CONFIG_NAME);
+        $path = str_replace('{name}', urlencode($this->name), self::ACS_URL);
         return $host . $path;
     }
 }

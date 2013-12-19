@@ -2,7 +2,7 @@
 
 namespace OpenConext\EngineTestStand\Fixture;
 
-abstract class AbstractFixture
+abstract class AbstractSerializedFixture
 {
     protected $file;
     protected $fixture;
@@ -26,5 +26,10 @@ abstract class AbstractFixture
         }
 
         file_put_contents($this->file, serialize($fixtureData));
+    }
+
+    public function __destruct()
+    {
+        $this->save();
     }
 }

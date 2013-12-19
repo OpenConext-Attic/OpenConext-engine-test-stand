@@ -71,7 +71,7 @@ class Container extends \SAML2_Compat_AbstractContainer
         $formData = '';
         foreach ($data as $name => $value) {
             $value = htmlentities($value, ENT_COMPAT, 'utf-8');
-            $formData .= "            <input type=\"text\" value=\"$value\" />" . PHP_EOL;
+            $formData .= "            <input name=\"$name\" type=\"text\" value=\"$value\" />" . PHP_EOL;
         }
 
         $this->response = new Response(
@@ -83,6 +83,8 @@ class Container extends \SAML2_Compat_AbstractContainer
     <body>
         <form id="postform" action="{$url}" method="post">
             $formData
+
+            <input type="submit" value="GO" />
         </form>
         <script>setTimeout(function() {document.getElementById('postform').submit();}, 1500);</script>
     </body>

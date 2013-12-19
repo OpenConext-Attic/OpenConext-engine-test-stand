@@ -2,7 +2,7 @@
 
 namespace OpenConext\EngineTestStand\Fixture;
 
-abstract class RoleFixture extends AbstractFixture
+abstract class RoleFixture extends AbstractSerializedFixture
 {
     public function register($name, $entityId)
     {
@@ -19,6 +19,9 @@ abstract class RoleFixture extends AbstractFixture
      */
     public function get($name)
     {
+        if (!isset($this->fixture[$name])) {
+            throw new \RuntimeException('No fixture for: ' . $name);
+        }
         return $this->fixture[$name];
     }
 }
