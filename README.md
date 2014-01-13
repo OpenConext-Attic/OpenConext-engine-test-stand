@@ -56,10 +56,25 @@ functionalTesting.engineBlockUrl = "https://engine-test.demo.openconext.org"
 
 ### Usage ###
 
+Running the normal functional tests:
+````
+./bin/behat.sh
+````
 
+Replaying a SAML Request / Response cycle:
 ````
-ant behat
+./bin/behat-replay.sh
 ````
+
+Dumping the internal state of the mock Service Registry
+```
+php ./bin/dump_sr_state.php
+```
+
+Dumping the internal state of the mock Service Registry:
+```
+./bin/dump_sr_state.php
+```
 
 ## About OpenConext
 
