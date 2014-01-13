@@ -6,6 +6,8 @@ use OpenConext\EngineTestStand\Config;
 
 class EngineBlock
 {
+    const DIR = '/tmp/eb-fixtures/';
+    const SUPER_GLOBAL_SERVER_FILENAME = 'superglobal.server.overrides.json';
     const BASE_URL_CONFIG_NAME = 'engineblock-url';
 
     const IDP_METADATA_URL = '/authentication/idp/metadata';
@@ -55,5 +57,26 @@ class EngineBlock
         $host = $this->config->expect(self::BASE_URL_CONFIG_NAME);
         $path = self::ACS_URL;
         return $host . $path;
+    }
+
+    public function overrideHostname($hostname)
+    {
+        @mkdir(self::DIR);
+        file_put_contents(
+            self::DIR . self::SUPER_GLOBAL_SERVER_FILENAME,
+            json_encode(array('HTTP_HOST' => $hostname))
+        );
+    }
+
+    public function overrideTime($time)
+    {
+        @mkdir('/tmp/eb-fixtures/saml2/');
+        file_put_contents('/tmp/eb-fixtures/saml2/time', $time);
+    }
+
+    public function setNewIdToUse($newId)
+    {
+        @mkdir('/tmp/eb-fixtures/saml2/');
+        file_put_contents('/tmp/eb-fixtures/saml2/id', $newId);
     }
 }

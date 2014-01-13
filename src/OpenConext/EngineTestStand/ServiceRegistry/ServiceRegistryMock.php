@@ -7,6 +7,9 @@ class ServiceRegistryMock
     const DIR = '/tmp/eb-fixtures/janus/';
     const FILENAME = 'entities';
 
+    const TYPE_SP = 1;
+    const TYPE_IDP = 2;
+
     protected $entities = array();
 
     public static function create()
@@ -22,119 +25,94 @@ class ServiceRegistryMock
         $this->entities = $entities;
     }
 
-    public function addIdpsFromMetadataUrl($metadataUrl)
+    public function reset()
     {
-        $xml = file_get_contents($metadataUrl);
+        $this->entities = array();
+        return $this;
+    }
 
-        $document = new \DOMDocument();
-        $document->loadXML($xml);
+    public function setEntitySsoLocation($entityId, $ssoLocation)
+    {
+        $this->entities[$entityId]['SingleSignOnService:0:Location'] = $ssoLocation;
+        return $this;
+    }
 
-        foreach ($document->childNodes as $childNode) {
-            if ($childNode instanceof \DOMElement) {
-                $entities = new \SAML2_XML_md_EntitiesDescriptor($childNode);
-                break;
-            }
-        }
-        if (!isset($entities)) {
-            throw new \RuntimeException("Metadata from $metadataUrl does not contain any elements?");
-        }
+    public function setEntityAcsLocation($entityId, $acsLocation)
+    {
+        $this->entities[$entityId]['AssertionConsumerService:0:Location'] = $acsLocation;
+        return $this;
+    }
 
-        /** @var \SAML2_XML_md_EntityDescriptor $entity */
-        foreach ($entities->children as $entity) {
-            $ssoUrl = null;
-            foreach ($entity->RoleDescriptor as $role) {
-                if (!$role instanceof \SAML2_XML_md_IDPSSODescriptor) {
-                    continue;
-                }
+    public function addSpsFromJsonExport($spsConfigExportUrl)
+    {
+        $this->addEntitiesFromJsonConfigExport($spsConfigExportUrl);
+        return $this;
+    }
 
-                if (count($role->SingleSignOnService) > 1) {
-                    throw new \RuntimeException('Multiple SSO services?');
-                }
+    public function addIdpsFromJsonExport($idpsConfigExportUrl)
+    {
+        $this->addEntitiesFromJsonConfigExport($idpsConfigExportUrl);
+        return $this;
+    }
 
-                $ssoUrl = $role->SingleSignOnService[0]->Location;
-            }
-            if (is_null($ssoUrl)) {
-                throw new \RuntimeException("No SSO URL found for {$entity->entityID} at {$metadataUrl}?");
-            }
+    protected function addEntitiesFromJsonConfigExport($configExportUrl, $type = self::TYPE_SP)
+    {
+        echo "Downloading ServiceRegistry configuration from: '{$configExportUrl}'..." . PHP_EOL;
+        $entities = json_decode(file_get_contents($configExportUrl), true);
 
-            foreach ($entity->RoleDescriptor as $role) {
-                if (!$role instanceof \SAML2_XML_md_IDPSSODescriptor) {
-                    continue;
-                }
+        foreach ($entities as $entity) {
+            $entity = $this->flattenArray($entity);
+            $entity['workflowState'] = 'prodaccepted';
 
-                foreach ($role->KeyDescriptor as $key) {
-                    if ($key->use !== 'signing') {
-                        continue;
+            $entityId = $entity['entityid'];
+
+            $this->entities[$entityId] = $entity;
+
+            if (!empty($entity['allowedEntities'])) {
+                $this->whitelist($entityId);
+
+                foreach ($entity['allowedEntities'] as $allowedEntityId) {
+                    if ($type === self::TYPE_SP) {
+                        $this->allow($entityId, $allowedEntityId);
                     }
-
-                    foreach ($key->KeyInfo->info as $info) {
-                        if (!$info instanceof \SAML2_XML_ds_X509Data) {
-                            continue;
-                        }
-
-                        foreach ($info->data as $dataElement) {
-                            if (!$dataElement instanceof \SAML2_XML_ds_X509Certificate) {
-                                continue;
-                            }
-
-                            $certData = preg_replace("/\\s/", '', $dataElement->certificate);
-                        }
+                    else {
+                        $this->allow($allowedEntityId, $entityId);
                     }
                 }
             }
-            if (!isset($certData)) {
-                throw new \RuntimeException("Idp doesnt have a certificate?");
-            }
 
-            $this->addIdp($entity->entityID, $ssoUrl, $certData);
+            if (!empty($entity['blockedEntities'])) {
+                $this->blacklist($entityId);
+                foreach ($entity['blockedEntities'] as $blockedEntityId) {
+                    $this->block($entityId, $blockedEntityId);
+                    if ($type === self::TYPE_SP) {
+                        $this->block($entityId, $blockedEntityId);
+                    }
+                    else {
+                        $this->block($blockedEntityId, $entityId);
+                    }
+                }
+            }
         }
     }
 
-    public function addSp($entityId, $acsLocation, $certData = '')
+    protected function flattenArray(array $array, array $newArray = array(), $prefix = false)
     {
-        $this->entities[$entityId] = array(
-            'Types' => array(
-                'SP'
-            ),
-            'AssertionConsumerService:0:Location' => $acsLocation,
-            'AssertionConsumerService:0:Binding'  => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-            'certData' => $certData,
-
-            'EntityID' => $entityId,
-            'workflowState' => 'prod',
-        );
-    }
-
-    public function addIdp($entityId, $ssoLocation, $certData = '')
-    {
-        $this->entities[$entityId] = array(
-            'Types' => array(
-                'IDP'
-            ),
-            'SingleSignOnService:0:Location' => $ssoLocation,
-            'SingleSignOnService:0:Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-            'certData' => $certData,
-
-            'EntityID' => $entityId,
-            'workflowState' => 'prod',
-        );
-    }
-
-    public function addSpFromAuthnRequest($acsLocation, \SAML2_AuthnRequest $authnRequest)
-    {
-        $entityId = $authnRequest->getIssuer();
-        $this->addSp($entityId, $acsLocation);
-    }
-
-    public function addIdpFromResponse($ssoLocation, \SAML2_Response $response)
-    {
-        $entityId = $response->getIssuer();
-        $this->addIdp($entityId, $ssoLocation);
+        foreach ($array as $name => $value) {
+            if (is_array($value)) {
+                $newArray = $this->flattenArray($value, $newArray, $prefix . $name . ':');
+            }
+            else {
+                $newArray[$prefix . $name] = $value;
+            }
+        }
+        return $newArray;
     }
 
     public function blacklist($entityId)
     {
-        touch(self::DIR . 'blacklisted-' . md5($entityId));
+        $filename = self::DIR . 'blacklisted-' . md5($entityId);
+        file_put_contents($filename, $entityId);
     }
 
     public function whitelist($entityId)
@@ -145,13 +123,15 @@ class ServiceRegistryMock
     public function allow($spEntityId, $idpEntityId)
     {
         @unlink(self::DIR . 'connection-forbidden-' . md5($spEntityId) . '-' . md5($idpEntityId));
-        touch(self::DIR . 'connection-allowed-' . md5($spEntityId) . '-' . md5($idpEntityId));
+        $allowedFilePath = self::DIR . 'connection-allowed-' . md5($spEntityId) . '-' . md5($idpEntityId);
+        file_put_contents($allowedFilePath, $spEntityId . ' - ' . $idpEntityId);
     }
 
     public function block($spEntityId, $idpEntityId)
     {
         @unlink(self::DIR . 'connection-allowed-' . md5($spEntityId) . '-' . md5($idpEntityId));
-        touch(self::DIR . 'connection-forbidden-' . md5($spEntityId) . '-' . md5($idpEntityId));
+        $forbiddenFilePath = self::DIR . 'connection-forbidden-' . md5($spEntityId) . '-' . md5($idpEntityId);
+        file_put_contents($forbiddenFilePath, $spEntityId . ' - ' . $idpEntityId);
     }
 
     public function save()

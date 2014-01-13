@@ -54,7 +54,7 @@ $app->get('/{spName}/login-post', function(Silex\Application $app, $spName) {
     $redirect->send($authnRequest);
 });
 
-$app->get('/{spName}/acs', function() {
+$app->post('/{spName}/acs', function() {
     try {
         $httpPostBinding = new SAML2_HTTPPost();
         $message = $httpPostBinding->receive();
@@ -67,6 +67,9 @@ $app->get('/{spName}/acs', function() {
     if (!($message instanceof SAML2_Response)) {
         throw new \RuntimeException('Unrecognized message type received: ' . get_class($message));
     }
+    return new Response(
+        '<pre>' . var_export($message, true) . '</pre>'
+    );
 });
 
 $app->get('/{spName}/metadata', function(Request $request, $spName) {

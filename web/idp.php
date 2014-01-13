@@ -60,18 +60,17 @@ $app->get('/{idpName}/sso', function(Silex\Application $app, $idpName) {
         return ($item instanceof SAML2_Response ? $item : $result);
     });
 
-    // @todo This will fail horribly when Response signing is used.
-    $xml = str_replace(
-        'Destination="' . $response->getDestination() . '"',
-        'Destination="' . $authnRequest->getAssertionConsumerServiceURL() . '"',
-        $response->xml
-    );
+    $destination = (isset($entityDescriptor->Extensions['DestinationOverride']) ?
+        $entityDescriptor->Extensions['DestinationOverride'] :
+        ($authnRequest->getAssertionConsumerServiceURL() ?
+            $authnRequest->getAssertionConsumerServiceURL() :
+            $response->getDestination()));
 
     /** @var \OpenConext\EngineTestStand\Saml2\Compat\Container $container */
     $container = SAML2_Utils::getContainer();
     $container->postRedirect(
-        $authnRequest->getAssertionConsumerServiceURL(),
-        array('SAMLResponse' => base64_encode($xml))
+        $destination,
+        array('SAMLResponse' => base64_encode($response->xml))
     );
     return $container->getPostResponse();
 });

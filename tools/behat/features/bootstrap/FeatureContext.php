@@ -22,28 +22,49 @@ class FeatureContext extends MinkContext
 {
     const CONFIG_FILE = "/config.json";
 
-    const IDP_FIXTURE_CONFIG_NAME = 'idp-fixture-file';
-    const SP_FIXTURE_CONFIG_NAME = 'sp-fixture-file';
-    const SERVICEREGISTRY_FIXTURE_CONFIG_NAME = 'serviceregistry-fixture-file';
-    const KNOWN_IDPS_CONFIG_NAME = 'known-idps-metadata-url';
+    const IDP_FIXTURE_CONFIG_NAME               = 'idp-fixture-file';
+    const SP_FIXTURE_CONFIG_NAME                = 'sp-fixture-file';
+
+    const SERVICEREGISTRY_FIXTURE_CONFIG_NAME   = 'serviceregistry-fixture-file';
+
+    const IDPS_CONFIG_NAME                      = 'idps-config-url';
+    const SPS_CONFIG_NAME                       = 'sps-config-url';
 
     /**
-     * @Given /^an EngineBlock instance$/
+     * @Given /^an EngineBlock instance configured with JSON data$/
      */
-    public function anEngineblockInstance()
+    public function anEngineblockInstanceConfiguredWithJsonData()
     {
-        $config = Config::create(OPENCONEXT_ETS_ROOT_DIR . self::CONFIG_FILE);
-        $engineBlock = EngineBlock::create($config);
-
         $serviceRegistry = ServiceRegistryMock::create();
-
-        // Add EngineBlock as an SP
-        $serviceRegistry->addSp($engineBlock->spEntityId(), $engineBlock->assertionConsumerLocation());
-        // Add EngineBlock as an IdP
-        $serviceRegistry->addIdp($engineBlock->idpEntityId(), $engineBlock->assertionConsumerLocation());
+        $config = Config::create(OPENCONEXT_ETS_ROOT_DIR . self::CONFIG_FILE);
 
         // Add all known IdPs
-        $serviceRegistry->addIdpsFromMetadataUrl($config->expect(self::KNOWN_IDPS_CONFIG_NAME));
+        $serviceRegistry->reset();
+        $serviceRegistry->addSpsFromJsonExport($config->expect(self::SPS_CONFIG_NAME));
+        $serviceRegistry->addIdpsFromJsonExport($config->expect(self::IDPS_CONFIG_NAME));
+
+    }
+
+    /**
+     * @Given /^EngineBlock is expected to send a AuthnRequest like the one at "([^"]*)"$/
+     */
+    public function engineblockIsExpectedToSendAAuthnrequestLikeTheOneAt($authnRequestLogFile)
+    {
+        $config = Config::create(OPENCONEXT_ETS_ROOT_DIR . self::CONFIG_FILE);
+
+        // Prefix the filepath with the root dir if it's not an absolute path.
+        if ($authnRequestLogFile[0] !== '/') {
+            $authnRequestLogFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $authnRequestLogFile;
+        }
+
+        // Parse an AuthnRequest out of the log file
+        $logReader = LogReader::create($authnRequestLogFile);
+        $authnRequest = $logReader->getAuthnRequest();
+        $hostname = parse_url($authnRequest->getIssuer(), PHP_URL_HOST);
+
+        $engineBlock = EngineBlock::create($config);
+        $engineBlock->overrideHostname($hostname);
+        $engineBlock->setNewIdToUse($authnRequest->getId());
     }
 
     /**
@@ -54,8 +75,8 @@ class FeatureContext extends MinkContext
         $idpFixtureFile = Config::create(OPENCONEXT_ETS_ROOT_DIR . self::CONFIG_FILE)
             ->expect(self::IDP_FIXTURE_CONFIG_NAME);
 
-        IdpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $idpFixtureFile)
-            ->register($name, $entityId);
+        $idpFixture = IdpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $idpFixtureFile);
+        $idpFixture->register($name, $entityId);
     }
 
     /**
@@ -89,6 +110,8 @@ class FeatureContext extends MinkContext
         $serviceRegistry->blacklist($spEntityId);
         $serviceRegistry->allow($spEntityId, $idpEntityId);
 
+        // Override the Destination for the Response
+        $idpFixture->overrideResponseDestination($idpName, EngineBlock::create($config)->assertionConsumerLocation());
     }
 
     /**
@@ -113,12 +136,13 @@ class FeatureContext extends MinkContext
         $spFixture = SpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $spFixtureFile);
         $spFixture->configureFromAuthnRequest($spName, $authnRequest);
 
+        // Determine the ACS URL for the Mock SP
         $serviceProvider = ServiceProvider::create($spName, $spFixture->get($spName), $config);
-        $acsLocation = $serviceProvider->assertionConsumerServiceLocation();
+        $acsUrl = $serviceProvider->assertionConsumerServiceLocation();
 
-        // Write out how the ServiceRegistry should behave
+        // Override the ACS Location for the SP used in the response to go to the Mock SP
         $serviceRegistry = ServiceRegistryMock::create();
-        $serviceRegistry->addSpFromAuthnRequest($acsLocation, $authnRequest);
+        $serviceRegistry->setEntityAcsLocation($authnRequest->getIssuer(), $acsUrl);
     }
 
     /**
@@ -137,18 +161,22 @@ class FeatureContext extends MinkContext
 
         var_dump($response);
 
-        // Write out how the SP should behave
+        // Write out how the IDP should behave
         $config = Config::create(OPENCONEXT_ETS_ROOT_DIR . self::CONFIG_FILE);
         $idpFixtureFile = $config->expect(self::IDP_FIXTURE_CONFIG_NAME);
         $idpFixture = IdpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $idpFixtureFile);
         $idpFixture->configureFromResponse($idpName, $response);
 
+        // Determine the SSO Location for the Mock Idp
         $identityProvider = IdentityProvider::create($idpName, $idpFixture->get($idpName), $config);
-        $ssoLocation = $identityProvider->singleSignOnLocation();
+        $ssoUrl = $identityProvider->singleSignOnLocation();
 
-        // Write out how the ServiceRegistry should behave
+        // Override the SSO Location for the IDP used in the response to go to the Mock Idp
         $serviceRegistry = ServiceRegistryMock::create();
-        $serviceRegistry->addIdpFromResponse($ssoLocation, $response);
+        $serviceRegistry->setEntitySsoLocation($response->getIssuer(), $ssoUrl);
+
+        $engineBlock = EngineBlock::create($config);
+        $engineBlock->overrideTime($response->getIssueInstant());
     }
 
     /**

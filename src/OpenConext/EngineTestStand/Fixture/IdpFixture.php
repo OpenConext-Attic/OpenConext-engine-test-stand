@@ -12,4 +12,15 @@ class IdpFixture extends RoleFixture
         $entity->Extensions[] = $response;
         $this->fixture[$idpName] = $entity;
     }
+
+    public function overrideResponseDestination($idpName, $acsUrl)
+    {
+        if (!isset($this->fixture[$idpName])) {
+            throw new \RuntimeException("IDP $idpName does not exist?");
+        }
+
+        /** @var \SAML2_XML_md_EntityDescriptor $fixture */
+        $fixture = $this->fixture[$idpName];
+        $fixture->Extensions['DestinationOverride'] = $acsUrl;
+    }
 }
