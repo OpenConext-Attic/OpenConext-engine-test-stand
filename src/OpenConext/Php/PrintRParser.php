@@ -8,13 +8,39 @@ namespace OpenConext\Php;
  */
 class PrintRParser
 {
+    /**
+     * @var string
+     */
     protected $content;
 
+    /**
+     * @var bool
+     */
+    protected $debug = false;
+
+    /**
+     * Create a new PrintRParser giving it the content it needs to parse.
+     *
+     * @param $content
+     */
     public function __construct($content)
     {
         $this->content = $content;
     }
 
+    /**
+     * Turn on 'echo' debugging (off by default).
+     */
+    public function setDebugMode()
+    {
+        $this->debug = true;
+    }
+
+    /**
+     * Parse the given content into an array.
+     *
+     * @return array
+     */
     public function parse()
     {
         return $this->parseArray();
@@ -174,6 +200,10 @@ class PrintRParser
 
     protected function debug($line)
     {
-        //echo $line . PHP_EOL;
+        if (!$this->debug) {
+            return;
+        }
+
+        echo $line . PHP_EOL;
     }
 }
