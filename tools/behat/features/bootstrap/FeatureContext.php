@@ -193,4 +193,23 @@ class FeatureContext extends MinkContext
 
         $this->visit($loginUrl);
     }
+
+    /**
+     * @Then /^the response should be compared with the one at "([^"]*)"$/
+     */
+    public function theResponseShouldBeComparedWithTheOneAt($responseLogFile)
+    {
+        // Prefix the filepath with the root dir if it's not an absolute path.
+        if ($responseLogFile[0] !== '/') {
+            $responseLogFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $responseLogFile;
+        }
+
+        // Parse a Response out of the log file
+        $logReader = LogReader::create($responseLogFile);
+        $response = $logReader->getResponse();
+        var_dump($response->xml);
+
+        $content = $this->getSession()->getPage()->getContent();
+        var_dump($content);
+    }
 }

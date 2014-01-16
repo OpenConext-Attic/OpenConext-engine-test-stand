@@ -25,9 +25,4 @@ Feature:
       And print last response
       And I press "Submit"
       And print last response
-#      And I press "Dummy Idp"
-#      And I press "Continue"
-
-#     Then EngineBlock should send a request to "Dummy Idp" like the one at "/tmp/eb.request.log"
-#      And IdP "Dummy Idp" should return a response like the one at "/tmp/idp.response.log"
-#      And SP "Dummy SP" should receive a response like the one at "/tmp/eb.response.log"
+     Then the response should be compared with the one at "fixtures/replay/eb.response.log"

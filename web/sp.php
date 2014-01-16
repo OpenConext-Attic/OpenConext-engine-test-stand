@@ -67,8 +67,13 @@ $app->post('/{spName}/acs', function() {
     if (!($message instanceof SAML2_Response)) {
         throw new \RuntimeException('Unrecognized message type received: ' . get_class($message));
     }
+
+    $message->xml = base64_decode($_POST['SAMLResponse']);
+
     return new Response(
-        '<pre>' . var_export($message, true) . '</pre>'
+        $message->xml,
+        200,
+        array('Content-Type' => 'application/xml')
     );
 });
 
