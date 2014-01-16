@@ -2,6 +2,9 @@
 
 namespace OpenConext\EngineTestStand\Service;
 
+use OpenConext\Corto\XmlToArray;
+use OpenConext\Php\PrintRParser;
+
 class LogReader
 {
     protected $logFile;
@@ -48,7 +51,14 @@ class LogReader
 
     public function getResponse()
     {
-        $xml = $this->getResponseXml();
+        $response = $this->getResponseStructure();
+
+        if (isset($response['__']['Raw'])) {
+            $xml = $response['__']['Raw'];
+        }
+        else {
+            $xml = XmlToArray::array2xml($response);
+        }
 
         $document = new \DOMDocument();
         $document->loadXML($xml);
@@ -58,14 +68,30 @@ class LogReader
         return $response;
     }
 
+    public function getResponseStructure()
+    {
+        $content = $this->getContent();
+        $content = $this->cleanContent($content);
+
+        $parser = new PrintRParser($content);
+        $response = $parser->parse();
+
+        return $response;
+    }
+
     public function getResponseXml()
     {
-        $content = file_get_contents($this->logFile);
+        $content = $this->getContent();
 
         return $this->getResponseXmlFromLogDump($content);
     }
 
-    protected function getResponseXmlFromLogDump($content)
+    protected function getContent()
+    {
+        return file_get_contents($this->logFile);
+    }
+
+    protected function cleanContent($content)
     {
         $chunkStartMatches = array();
         $chunkEndMatches = array();
@@ -85,10 +111,7 @@ class LogReader
         // And turn all \n literals into actual newlines
         $content = preg_replace('/\\\n/', "\n", $content);
 
-        $xmlMatches = array();
-        if (!preg_match('/<\?xml.+<samlp:Response.+<\/samlp:Response>/s', $content, $xmlMatches)) {
-            throw new \RuntimeException('Can not find raw XML Response in log dump!');
-        }
-        return $xmlMatches[0];
+        return $content;
     }
 }
+
