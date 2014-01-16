@@ -5,7 +5,8 @@
         "simplesamlphp/simplesamlphp": "dev-trunk",
         "simplesamlphp/saml2": "0.2.0",
         "openid/php-openid": "dev-master#a287b2d85e753c84b3b883ed8ee3ffe8692c8477 as 2.2.2",
-        "silex/silex": "~1.1"
+        "silex/silex": "~1.1",
+        "phpspec/php-diff": "1.0.*"
     },
     "require-dev": {
         "behat/behat": "2.4.*",

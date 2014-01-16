@@ -25,8 +25,6 @@ class FeatureContext extends MinkContext
     const IDP_FIXTURE_CONFIG_NAME               = 'idp-fixture-file';
     const SP_FIXTURE_CONFIG_NAME                = 'sp-fixture-file';
 
-    const SERVICEREGISTRY_FIXTURE_CONFIG_NAME   = 'serviceregistry-fixture-file';
-
     const IDPS_CONFIG_NAME                      = 'idps-config-url';
     const SPS_CONFIG_NAME                       = 'sps-config-url';
 
@@ -207,9 +205,26 @@ class FeatureContext extends MinkContext
         // Parse a Response out of the log file
         $logReader = LogReader::create($responseLogFile);
         $response = $logReader->getResponse();
-        var_dump($response->xml);
+        $originalResponseXml = $this->formatXml($response->xml);
+        $replayedResponseXml = $this->formatXml($this->getSession()->getPage()->getContent());
 
-        $content = $this->getSession()->getPage()->getContent();
-        var_dump($content);
+        var_dump($originalResponseXml);
+        var_dump($replayedResponseXml);
+
+        $diff = new Diff(
+            explode("\n", $originalResponseXml),
+            explode("\n", $replayedResponseXml)
+        );
+        $renderer = new Diff_Renderer_Text_Unified;
+        echo $diff->render($renderer);
+    }
+
+    protected function formatXml($xml)
+    {
+        $dom = new DOMDocument;
+        $dom->preserveWhiteSpace = FALSE;
+        $dom->loadXML($xml);
+        $dom->formatOutput = TRUE;
+        return $dom->saveXml();
     }
 }
