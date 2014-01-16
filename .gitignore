@@ -2,3 +2,4 @@
 config.json
 fixtures/replay/*
 vendor
+idp.states.php.serialized
