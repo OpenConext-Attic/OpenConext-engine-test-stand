@@ -219,6 +219,43 @@ class FeatureContext extends MinkContext
     }
 
     /**
+     * @Then /^the request should be compared with the one at "([^"]*)"$/
+     */
+    public function theRequestShouldBeComparedWithTheOneAt($requestLogFile)
+    {
+        $node = $this->getSession()->getPage()->findById('authnRequestXml');
+        if (!$node) {
+            throw new \RuntimeException('authnRequestXml id not found on page?');
+        }
+        $authnRequestXml = trim(html_entity_decode($node->getHtml()));
+        if (empty($authnRequestXml)) {
+            throw new \RuntimeException('authnRequestXml is on page, but no content found?');
+        }
+
+        // Prefix the filepath with the root dir if it's not an absolute path.
+        if ($requestLogFile[0] !== '/') {
+            $requestLogFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $requestLogFile;
+        }
+
+        // Parse a Response out of the log file
+        $logReader = LogReader::create($requestLogFile);
+        $request = $logReader->getAuthnRequest();
+        var_dump($request);
+        $originalRequestXml = $this->formatXml($request->xml);
+        $replayedRequestXml = $this->formatXml($authnRequestXml);
+
+        var_dump($originalRequestXml);
+        var_dump($replayedRequestXml);
+
+        $diff = new Diff(
+            explode("\n", $originalRequestXml),
+            explode("\n", $replayedRequestXml)
+        );
+        $renderer = new Diff_Renderer_Text_Unified;
+        echo $diff->render($renderer);
+    }
+
+    /**
      * @Then /^the response should be compared with the one at "([^"]*)"$/
      */
     public function theResponseShouldBeComparedWithTheOneAt($responseLogFile)

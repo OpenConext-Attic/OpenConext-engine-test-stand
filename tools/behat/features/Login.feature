@@ -21,6 +21,7 @@ Feature:
      When I log in at "Replay SP"
       And print last response
       And I follow "GO"
+     Then the request should be compared with the one at "fixtures/replay/eb.request.log"
       And print last response
       And I press "GO"
       And print last response

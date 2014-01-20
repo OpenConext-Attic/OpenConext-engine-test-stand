@@ -4,6 +4,7 @@ use \OpenConext\EngineTestStand\Fixture\IdpFixture;
 use \Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\Response;
 use \Symfony\Component\HttpFoundation\Request;
+use \OpenConext\EngineTestStand\Saml2\Compat\Container;
 
 // Project root
 define('OPENCONEXT_ETS_ROOT_DIR', __DIR__ . '/../');
@@ -70,7 +71,10 @@ $app->get('/{idpName}/sso', function(Silex\Application $app, $idpName) {
     $container = SAML2_Utils::getContainer();
     $container->postRedirect(
         $destination,
-        array('SAMLResponse' => base64_encode($response->xml))
+        array(
+            'authnRequestXml'=> htmlentities($container->getLastDebugMessageOfType(Container::DEBUG_TYPE_IN)),
+            'SAMLResponse' => base64_encode($response->xml),
+        )
     );
     return $container->getPostResponse();
 });

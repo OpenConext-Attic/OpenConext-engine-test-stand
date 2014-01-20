@@ -99,6 +99,7 @@ class Container extends \SAML2_Compat_AbstractContainer
         <title>Redirecting...</title>
     </head>
     <body>
+        <pre id="authnRequestXml">{$data['authnRequestXml']}</pre>
         <form id="postform" action="{$url}" method="post">
             $formData
 
