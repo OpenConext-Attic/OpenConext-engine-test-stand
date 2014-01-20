@@ -1,16 +1,12 @@
 <?php
 
 use \OpenConext\EngineTestStand\Fixture\IdpFixture;
-use \Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\Response;
 use \Symfony\Component\HttpFoundation\Request;
 use \OpenConext\EngineTestStand\Saml2\Compat\Container;
 
 // Project root
 define('OPENCONEXT_ETS_ROOT_DIR', __DIR__ . '/../');
-
-// Include Composer Autoloader
-require_once OPENCONEXT_ETS_ROOT_DIR. '/vendor/autoload.php';
 
 // Bootstrap the application (define dependencies)
 /** @var \Silex\Application $app */
@@ -78,7 +74,5 @@ $app->get('/{idpName}/sso', function(Silex\Application $app, $idpName) {
     );
     return $container->getPostResponse();
 });
-
-
 
 $app->run();

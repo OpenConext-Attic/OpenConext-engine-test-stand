@@ -4,6 +4,9 @@ use \OpenConext\EngineTestStand\Config;
 use \OpenConext\EngineTestStand\Fixture\SpFixture;
 use \OpenConext\EngineTestStand\Fixture\IdpFixture;
 
+// Include Composer Autoloader
+require_once OPENCONEXT_ETS_ROOT_DIR. '/vendor/autoload.php';
+
 SAML2_Compat_ContainerSingleton::setContainer(new \OpenConext\EngineTestStand\Saml2\Compat\Container());
 
 $app = new Silex\Application();

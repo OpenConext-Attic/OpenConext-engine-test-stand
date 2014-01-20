@@ -1,15 +1,14 @@
 <?php
 
-use \OpenConext\EngineTestStand\Fixture\SpFixture;
 use \Symfony\Component\HttpFoundation\RedirectResponse;
 use \Symfony\Component\HttpFoundation\Request;
 use \Symfony\Component\HttpFoundation\Response;
+use \OpenConext\EngineTestStand\Saml2\AuthnRequest\AuthnRequestFactory;
+use \OpenConext\EngineTestStand\Fixture\SpFixture;
+use \OpenConext\EngineTestStand\Config;
 
 // Project root
 define('OPENCONEXT_ETS_ROOT_DIR', __DIR__ . '/../');
-
-// Include Composer Autoloader
-require_once OPENCONEXT_ETS_ROOT_DIR. '/vendor/autoload.php';
 
 // Bootstrap the application (define dependencies)
 /** @var \Silex\Application $app */
@@ -21,10 +20,10 @@ $app = require_once OPENCONEXT_ETS_ROOT_DIR . '/src/bootstrap.php';
 $app->get('/{spName}/login-redirect', function(Silex\Application $app, $spName) {
     /** @var SpFixture $spFixture */
     $spFixture = $app['sp-fixture'];
-    /** @var \OpenConext\EngineTestStand\Config $config */
+    /** @var Config $config */
     $config = $app['config'];
 
-    $factory = new \OpenConext\EngineTestStand\Saml2\AuthnRequest\AuthnRequestFactory();
+    $factory = new AuthnRequestFactory();
     $authnRequest = $factory->createFromEntityDescriptor(
         $spFixture->get(urldecode($spName)),
         $config->expect('engineblock-url') . '/authentication/idp/single-sign-on'
@@ -44,7 +43,7 @@ $app->get('/{spName}/login-post', function(Silex\Application $app, $spName) {
     /** @var \OpenConext\EngineTestStand\Config $config */
     $config = $app['config'];
 
-    $factory = new \OpenConext\EngineTestStand\Saml2\AuthnRequest\AuthnRequestFactory();
+    $factory = new AuthnRequestFactory();
     $authnRequest = $factory->createFromEntityDescriptor(
         $spFixture->get(urldecode($spName)),
         $config->expect('engineblock-url') . '/authentication/idp/single-sign-on'
