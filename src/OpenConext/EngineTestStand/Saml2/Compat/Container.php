@@ -7,10 +7,25 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Container extends \SAML2_Compat_AbstractContainer
 {
+    const DEBUG_TYPE_IN = 'in';
+    const DEBUG_TYPE_OUT = 'in';
+    const DEBUG_TYPE_ENCRYPT = 'encrypt';
+    const DEBUG_TYPE_DECRYPT = 'decrypt';
+
     /**
      * @var Response
      */
     protected $response;
+
+    /**
+     * @var array
+     */
+    protected $lastDebugMessage = array();
+
+    public function getLastDebugMessageOfType($type = self::DEBUG_TYPE_IN)
+    {
+        return $this->lastDebugMessage[$type];
+    }
 
     /**
      * Get a PSR-3 compatible logger.
@@ -44,6 +59,7 @@ class Container extends \SAML2_Compat_AbstractContainer
      */
     public function debugMessage($message, $type)
     {
+        $this->lastDebugMessage[$type] = $message;
         $this->getLogger()->debug($type . ': ' . $message);
     }
 
