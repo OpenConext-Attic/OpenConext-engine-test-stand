@@ -20,11 +20,6 @@ class ReplayContext extends AbstractSubContext
             throw new \RuntimeException('authnRequestXml is on page, but no content found?');
         }
 
-        // Prefix the filepath with the root dir if it's not an absolute path.
-        if ($requestLogFile[0] !== '/') {
-            $requestLogFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $requestLogFile;
-        }
-
         // Parse a Response out of the log file
         $logReader = LogReader::create($requestLogFile);
         $request = $logReader->getAuthnRequest();
@@ -48,11 +43,6 @@ class ReplayContext extends AbstractSubContext
      */
     public function theResponseShouldBeComparedWithTheOneAt($responseLogFile)
     {
-        // Prefix the filepath with the root dir if it's not an absolute path.
-        if ($responseLogFile[0] !== '/') {
-            $responseLogFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $responseLogFile;
-        }
-
         // Parse a Response out of the log file
         $logReader = LogReader::create($responseLogFile);
         $response = $logReader->getResponse();

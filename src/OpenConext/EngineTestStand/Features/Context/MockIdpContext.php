@@ -31,11 +31,6 @@ class MockIdpContext extends AbstractSubContext
      */
     public function idpIsConfiguredToReturnAResponseLikeTheOneAt($idpName, $responseLogFile)
     {
-        // Prefix the filepath with the root dir if it's not an absolute path.
-        if ($responseLogFile[0] !== '/') {
-            $responseLogFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $responseLogFile;
-        }
-
         // Parse a Response out of the log file
         $logReader = LogReader::create($responseLogFile);
         $response = $logReader->getResponse();

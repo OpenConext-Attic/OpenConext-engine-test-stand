@@ -9,9 +9,14 @@ class LogReader
 {
     protected $logFile;
 
-    public static function create($log)
+    public static function create($logFile)
     {
-        return new static($log);
+        // Prefix the filepath with the root dir if it's not an absolute path.
+        if ($logFile[0] !== '/') {
+            $logFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $logFile;
+        }
+
+        return new static($logFile);
     }
 
     protected function __construct($logFile)

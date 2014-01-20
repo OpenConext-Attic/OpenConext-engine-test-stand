@@ -68,11 +68,6 @@ class MockSpContext extends AbstractSubContext
      */
     public function spIsConfiguredToGenerateAAuthnrequestLikeTheOneAt($spName, $authnRequestLogFile)
     {
-        // Prefix the filepath with the root dir if it's not an absolute path.
-        if ($authnRequestLogFile[0] !== '/') {
-            $authnRequestLogFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $authnRequestLogFile;
-        }
-
         // Parse an AuthnRequest out of the log file
         $logReader = LogReader::create($authnRequestLogFile);
         $authnRequest = $logReader->getAuthnRequest();
