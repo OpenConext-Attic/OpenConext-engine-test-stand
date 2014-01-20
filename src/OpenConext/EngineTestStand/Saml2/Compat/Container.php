@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Container extends \SAML2_Compat_AbstractContainer
 {
+    const ID_PREFIX = 'OPENCONEXT_ETS_';
+
     const DEBUG_TYPE_IN = 'in';
     const DEBUG_TYPE_OUT = 'in';
     const DEBUG_TYPE_ENCRYPT = 'encrypt';
@@ -41,7 +43,7 @@ class Container extends \SAML2_Compat_AbstractContainer
      */
     public function generateId()
     {
-        return 'OPENCONEXT_ETS_' . rand(0, 100000000);
+        return self::ID_PREFIX . rand(0, 100000000);
     }
 
     /**
