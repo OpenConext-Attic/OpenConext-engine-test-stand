@@ -59,9 +59,18 @@ $app->post('/{spName}/acs', function() {
         $httpPostBinding = new SAML2_HTTPPost();
         $message = $httpPostBinding->receive();
     }
-    catch (Exception $e) {
-        $httpRedirectBinding = new SAML2_HTTPRedirect();
-        $message = $httpRedirectBinding->receive();
+    catch (Exception $e1) {
+        try {
+            $httpRedirectBinding = new SAML2_HTTPRedirect();
+            $message = $httpRedirectBinding->receive();
+        }
+        catch (Exception $e2) {
+            throw new \RuntimeException(
+                'Unable to retrieve SAML message?',
+                1,
+                $e1
+            );
+        }
     }
 
     if (!($message instanceof SAML2_Response)) {
