@@ -41,6 +41,8 @@ class FeatureContext extends MinkContext
         $serviceRegistry->addSpsFromJsonExport($config->expect(self::SPS_CONFIG_NAME));
         $serviceRegistry->addIdpsFromJsonExport($config->expect(self::IDPS_CONFIG_NAME));
 
+        $eb = EngineBlock::create($config);
+        $eb->clearNewIds();
     }
 
     /**
@@ -62,7 +64,31 @@ class FeatureContext extends MinkContext
 
         $engineBlock = EngineBlock::create($config);
         $engineBlock->overrideHostname($hostname);
-        $engineBlock->setNewIdToUse($authnRequest->getId());
+        $engineBlock->setNewIdsToUse(array(EngineBlock::ID_USAGE_SAML2_REQUEST => $authnRequest->getId()));
+    }
+
+    /**
+     * @Given /^EngineBlock is expected to send a Response like the one at "([^"]*)"$/
+     */
+    public function engineblockIsExpectedToSendAResponseLikeTheOneAt($responseLogFile)
+    {
+        $config = Config::create(OPENCONEXT_ETS_ROOT_DIR . self::CONFIG_FILE);
+
+        // Prefix the filepath with the root dir if it's not an absolute path.
+        if ($responseLogFile[0] !== '/') {
+            $responseLogFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $responseLogFile;
+        }
+
+        // Parse an AuthnRequest out of the log file
+        $logReader = LogReader::create($responseLogFile);
+        $response = $logReader->getResponse();
+        $responseAssertions = $response->getAssertions();
+
+        $engineBlock = EngineBlock::create($config);
+        $engineBlock->setNewIdsToUse(array(
+            EngineBlock::ID_USAGE_SAML2_RESPONSE => $response->getId(),
+            EngineBLock::ID_USAGE_SAML2_ASSERTION => $responseAssertions[0]->getId(),
+        ));
     }
 
     /**

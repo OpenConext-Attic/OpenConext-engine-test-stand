@@ -15,6 +15,12 @@ class EngineBlock
     const SSO_URL = '/authentication/idp/single-sign-on';
     const ACS_URL = '/authentication/sp/consume-assertion';
 
+    const ID_USAGE_SAML2_RESPONSE   = 'saml2-response';
+    const ID_USAGE_SAML2_REQUEST    = 'saml2-request';
+    const ID_USAGE_SAML2_ASSERTION  = 'saml2-assertion';
+    const ID_USAGE_SAML2_METADATA   = 'saml2-metadata';
+    const ID_USAGE_OTHER            = 'other';
+
     protected $config;
 
     /**
@@ -74,9 +80,25 @@ class EngineBlock
         file_put_contents('/tmp/eb-fixtures/saml2/time', $time);
     }
 
-    public function setNewIdToUse($newId)
+    public function setNewIdsToUse(array $idFrame)
     {
-        @mkdir('/tmp/eb-fixtures/saml2/');
-        file_put_contents('/tmp/eb-fixtures/saml2/id', $newId);
+        $dir = '/tmp/eb-fixtures/saml2/';
+        $path = $dir . 'id';
+        @mkdir($dir);
+
+        $fixture = array();
+        if (file_exists($path)) {
+            $fixture = json_decode(file_get_contents($path), true);
+        }
+
+        $fixture[] = $idFrame;
+
+        file_put_contents($path, json_encode($fixture));
+        chmod($path, 0777);
+    }
+
+    public function clearNewIds()
+    {
+        unlink('/tmp/eb-fixtures/saml2/id');
     }
 }
