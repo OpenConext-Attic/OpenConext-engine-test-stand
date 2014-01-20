@@ -46,7 +46,9 @@ class LogReader
         $document = new \DOMDocument();
         $document->loadXML($request);
 
-        return new \SAML2_AuthnRequest($document->firstChild);
+        $authnRequest = new \SAML2_AuthnRequest($document->firstChild);
+        $authnRequest->xml = $request;
+        return $authnRequest;
     }
 
     public function getResponse()
