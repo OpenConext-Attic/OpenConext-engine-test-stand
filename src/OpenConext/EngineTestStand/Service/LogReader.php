@@ -86,13 +86,6 @@ class LogReader
         return $response;
     }
 
-    public function getResponseXml()
-    {
-        $content = $this->getContent();
-
-        return $this->getResponseXmlFromLogDump($content);
-    }
-
     protected function getContent()
     {
         return file_get_contents($this->logFile);
