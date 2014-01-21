@@ -52,11 +52,6 @@ class EngineBlockContext extends AbstractSubContext
     {
         $config = $this->getMainContext()->getApplicationConfig();
 
-        // Prefix the filepath with the root dir if it's not an absolute path.
-        if ($responseLogFile[0] !== '/') {
-            $responseLogFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $responseLogFile;
-        }
-
         // Parse an AuthnRequest out of the log file
         $logReader = LogReader::create($responseLogFile);
         $response = $logReader->getResponse();

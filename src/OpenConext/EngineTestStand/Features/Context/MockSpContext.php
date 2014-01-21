@@ -21,7 +21,7 @@ class MockSpContext extends AbstractSubContext
     {
         $config  = $this->getMainContext()->getApplicationConfig();
         $spFixtureFile = $config->expect(self::SP_FIXTURE_CONFIG_NAME);
-        $fixture = SpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $spFixtureFile);
+        $fixture = SpFixture::create($spFixtureFile);
 
         $serviceProvider = ServiceProvider::create($spName, $fixture->get($spName), $config);
         $loginUrl = $serviceProvider->loginUrl();
@@ -37,7 +37,7 @@ class MockSpContext extends AbstractSubContext
         $config = $this->getMainContext()->getApplicationConfig();
         $spFixtureFile = $config->expect(self::SP_FIXTURE_CONFIG_NAME);
 
-        $spFixture = SpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $spFixtureFile);
+        $spFixture = SpFixture::create($spFixtureFile);
         $spFixture->register($name, $entityId);
     }
 
@@ -48,11 +48,11 @@ class MockSpContext extends AbstractSubContext
     {
         $config = $this->getMainContext()->getApplicationConfig();
         $spFixtureFile = $config->expect(self::SP_FIXTURE_CONFIG_NAME);
-        $spFixture = SpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $spFixtureFile);
+        $spFixture = SpFixture::create($spFixtureFile);
         $spEntityId = $spFixture->get($spName)->entityID;
 
         $idpFixtureFile = $config->expect(MockIdpContext::IDP_FIXTURE_CONFIG_NAME);
-        $idpFixture = IdpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $idpFixtureFile);
+        $idpFixture = IdpFixture::create($idpFixtureFile);
         $idpEntityId = $idpFixture->get($idpName)->entityID;
 
         $serviceRegistry = ServiceRegistryMock::create();
@@ -77,7 +77,7 @@ class MockSpContext extends AbstractSubContext
         // Write out how the SP should behave
         $config = $this->getMainContext()->getApplicationConfig();
         $spFixtureFile = $config->expect(self::SP_FIXTURE_CONFIG_NAME);
-        $spFixture = SpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $spFixtureFile);
+        $spFixture = SpFixture::create($spFixtureFile);
         $spFixture->configureFromAuthnRequest($spName, $authnRequest);
 
         // Determine the ACS URL for the Mock SP

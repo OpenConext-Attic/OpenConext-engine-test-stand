@@ -9,7 +9,16 @@ abstract class AbstractSerializedFixture
 
     public static function create($file)
     {
-        $fixture = unserialize(file_get_contents($file));
+        // Absolutize file path.
+        if (substr($file, 0, 1) !== '/') {
+            $file = __DIR__ . '/../../../../' . $file;
+        }
+
+        $fixture = array();
+        if (is_file($file)) {
+            $fixture = unserialize(file_get_contents($file));
+        }
+
         return new static($file, $fixture);
     }
 

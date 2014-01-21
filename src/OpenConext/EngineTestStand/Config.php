@@ -8,9 +8,15 @@ class Config
 
     public static function create($file)
     {
-        if (!file_exists($file)) {
-            return new static(array());
+        // Absolutize file path.
+        if (substr($file, 0, 1) !== '/') {
+            $file = __DIR__ . '/../../../' . $file;
         }
+
+        if (!is_file($file)) {
+            throw new \RuntimeException('Unable to use configuration from ' . $file);
+        }
+
         return new static(json_decode(file_get_contents($file), true));
     }
 

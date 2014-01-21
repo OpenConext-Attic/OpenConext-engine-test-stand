@@ -9,14 +9,18 @@ class LogReader
 {
     protected $logFile;
 
-    public static function create($logFile)
+    public static function create($file)
     {
-        // Prefix the filepath with the root dir if it's not an absolute path.
-        if ($logFile[0] !== '/') {
-            $logFile = OPENCONEXT_ETS_ROOT_DIR . '/' . $logFile;
+        // Absolutize file path.
+        if (substr($file, 0, 1) !== '/') {
+            $file = __DIR__ . '/../../../../' . $file;
         }
 
-        return new static($logFile);
+        if (!is_file($file)) {
+            throw new \RuntimeException("Can not find log file '$file'.");
+        }
+
+        return new static($file);
     }
 
     protected function __construct($logFile)

@@ -22,7 +22,7 @@ class MockIdpContext extends AbstractSubContext
         $idpFixtureFile = $config = $this->getMainContext()->getApplicationConfig()
             ->expect(self::IDP_FIXTURE_CONFIG_NAME);
 
-        $idpFixture = IdpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $idpFixtureFile);
+        $idpFixture = IdpFixture::create($idpFixtureFile);
         $idpFixture->register($name, $entityId);
     }
 
@@ -40,7 +40,7 @@ class MockIdpContext extends AbstractSubContext
         // Write out how the IDP should behave
         $config = $config = $this->getMainContext()->getApplicationConfig();
         $idpFixtureFile = $config->expect(self::IDP_FIXTURE_CONFIG_NAME);
-        $idpFixture = IdpFixture::create(OPENCONEXT_ETS_ROOT_DIR . $idpFixtureFile);
+        $idpFixture = IdpFixture::create($idpFixtureFile);
         $idpFixture->configureFromResponse($idpName, $response);
 
         // Determine the SSO Location for the Mock Idp

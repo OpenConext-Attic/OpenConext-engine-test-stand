@@ -8,16 +8,15 @@ use OpenConext\EngineTestStand\Features\Context\MockIdpContext;
 use OpenConext\EngineTestStand\Features\Context\MockSpContext;
 use OpenConext\EngineTestStand\Features\Context\ReplayContext;
 
-// Require 3rd-party libraries here:
-define('OPENCONEXT_ETS_ROOT_DIR', realpath(__DIR__ . '/../../../../'));
-require OPENCONEXT_ETS_ROOT_DIR . '/vendor/autoload.php';
+// Include Composer autoloader
+require realpath(__DIR__ . '/../../../../') . '/vendor/autoload.php';
 
 /**
  * Features context.
  */
 class FeatureContext extends BehatContext
 {
-    const CONFIG_FILE = "/config.json";
+    const CONFIG_FILE = "config.json";
 
     const SUB_CONTEXT_MINK          = 'mink';
     const SUB_CONTEXT_ENGINE_BLOCK  = 'engine';
@@ -47,7 +46,7 @@ class FeatureContext extends BehatContext
      */
     public function getApplicationConfig()
     {
-        return Config::create(OPENCONEXT_ETS_ROOT_DIR . self::CONFIG_FILE);
+        return Config::create(self::CONFIG_FILE);
     }
 
     /**

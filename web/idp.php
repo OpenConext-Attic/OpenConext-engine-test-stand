@@ -5,12 +5,11 @@ use \Symfony\Component\HttpFoundation\Response;
 use \Symfony\Component\HttpFoundation\Request;
 use \OpenConext\EngineTestStand\Saml2\Compat\Container;
 
-// Project root
-define('OPENCONEXT_ETS_ROOT_DIR', __DIR__ . '/../');
-
 // Bootstrap the application (define dependencies)
+require __DIR__ . '/../vendor/autoload.php';
+
 /** @var \Silex\Application $app */
-$app = require_once OPENCONEXT_ETS_ROOT_DIR . '/src/bootstrap.php';
+$app = require __DIR__ . '/../src/bootstrap.php';
 
 ######
 # Metadata

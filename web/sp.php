@@ -7,12 +7,11 @@ use \OpenConext\EngineTestStand\Saml2\AuthnRequest\AuthnRequestFactory;
 use \OpenConext\EngineTestStand\Fixture\SpFixture;
 use \OpenConext\EngineTestStand\Config;
 
-// Project root
-define('OPENCONEXT_ETS_ROOT_DIR', __DIR__ . '/../');
-
 // Bootstrap the application (define dependencies)
+require __DIR__ . '/../vendor/autoload.php';
+
 /** @var \Silex\Application $app */
-$app = require_once OPENCONEXT_ETS_ROOT_DIR . '/src/bootstrap.php';
+$app = require __DIR__ . '/../src/bootstrap.php';
 
 ######
 # Start SSO with a HTTP-Redirect
