@@ -1,22 +1,74 @@
 {
-    "name": "openconext/engineblock-tester",
-    "description": "Surfnet OpenConext SAML proxy",
+    "name": "openconext/engine-test-stand",
+    "description": "SURFnet OpenConext SAML proxy Tester",
+    "license": "Apache-2.0",
+    "type": "project",
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
     "require": {
+        "php": ">=5.3.3",
+        "phpunit/phpunit": "3.7.*",
+        "ibuildings/qa-tools": "1.1.*",
+
+        "behat/behat": "*",
+        "behat/mink": "*",
+        "behat/mink-extension": "*",
+        "behat/mink-goutte-driver": "*",
+        "behat/symfony2-extension": "*",
+
+        "doctrine/orm": "~2.2,>=2.2.3",
+        "doctrine/doctrine-bundle": "~1.2",
+        "twig/extensions": "~1.0",
+
+        "symfony/symfony": "~2.4",
+        "symfony/assetic-bundle": "~2.3",
+        "symfony/swiftmailer-bundle": "~2.3",
+        "symfony/monolog-bundle": "~2.4",
+
+        "sensio/distribution-bundle": "~2.3",
+        "sensio/framework-extra-bundle": "~3.0",
+        "sensio/generator-bundle": "~2.3",
+
+        "incenteev/composer-parameter-handler": "~2.0",
+
         "simplesamlphp/simplesamlphp": "dev-trunk",
         "simplesamlphp/saml2": "0.2.0",
         "openid/php-openid": "dev-master#a287b2d85e753c84b3b883ed8ee3ffe8692c8477 as 2.2.2",
-        "silex/silex": "~1.1",
+
         "phpspec/php-diff": "1.0.*"
     },
     "require-dev": {
-        "behat/behat": "2.4.*",
-        "behat/mink": "1.5.0",
-        "behat/mink-extension": "1.1.4",
-        "behat/mink-goutte-driver": "1.0.9",
-        "phpunit/phpunit": "3.7.*"
+        "ibuildings/qa-tools": "~1.1"
     },
-    "autoload": {
-        "psr-0": { "OpenConext": "src/" }
+    "scripts": {
+        "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
+        ],
+        "post-update-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
+        ]
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-web-dir": "web",
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml"
+        },
+        "branch-alias": {
+            "dev-master": "2.4-dev"
+        }
     },
     "repositories": [
         {
@@ -33,6 +85,54 @@
                     "files": ["xmlseclibs.php"]
                 }
             }
+        },
+        {
+            "type": "composer",
+            "url": "https://deploy:********@packagist.ibuildings.nl"
         }
     ]
 }
+
+git add .gitignore
+git rm bin/behat-replay.sh
+git rm bin/behat.sh
+git rm bin/dump_sr_state.php
+git rm bin/show-response.php
+git add composer.json
+git add composer.lock
+git rm config.json.demo
+git rm fixtures/db/MUST_BE_WRITABLE_FOR_CLI_USER
+git rm fixtures/keys/README.md
+git rm fixtures/keys/certificate-rolled-over.crt
+git rm fixtures/keys/certificate.crt
+git rm fixtures/keys/private_key-rolled-over.pem
+git rm fixtures/keys/private_key.pem
+git rm fixtures/keys/public_key-rolled-over.pem
+git rm fixtures/keys/public_key.pem
+git rm src/OpenConext/Corto/XmlToArray.php
+git rm src/OpenConext/EngineTestStand/Config.php
+git rm src/OpenConext/EngineTestStand/Features/Context/AbstractSubContext.php
+git rm src/OpenConext/EngineTestStand/Features/Context/EngineBlockContext.php
+git rm src/OpenConext/EngineTestStand/Features/Context/MinkContext.php
+git rm src/OpenConext/EngineTestStand/Features/Context/MockIdpContext.php
+git rm src/OpenConext/EngineTestStand/Features/Context/MockSpContext.php
+git rm src/OpenConext/EngineTestStand/Features/Context/ReplayContext.php
+git rm src/OpenConext/EngineTestStand/Fixture/AbstractSerializedFixture.php
+git rm src/OpenConext/EngineTestStand/Fixture/IdpFixture.php
+git rm src/OpenConext/EngineTestStand/Fixture/RoleFixture.php
+git rm src/OpenConext/EngineTestStand/Fixture/SpFixture.php
+git rm src/OpenConext/EngineTestStand/Saml2/AuthnRequest/AuthnRequestFactory.php
+git rm src/OpenConext/EngineTestStand/Saml2/Compat/Container.php
+git rm src/OpenConext/EngineTestStand/Saml2/Compat/SyslogLogger.php
+git rm src/OpenConext/EngineTestStand/Service/EngineBlock.php
+git rm src/OpenConext/EngineTestStand/Service/IdentityProvider.php
+git rm src/OpenConext/EngineTestStand/Service/LogReader.php
+git rm src/OpenConext/EngineTestStand/Service/ServiceProvider.php
+git rm src/OpenConext/EngineTestStand/ServiceRegistry/ServiceRegistryMock.php
+git rm src/OpenConext/Php/PrintRParser.php
+git rm src/OpenConext/Php/php.print_r.peg
+git rm src/bootstrap.php
+git rm tests/OpenConext/Php/PrintRParserTest.php
+git rm web/idp.php
+git rm web/index.html
+git rm web/sp.php
