@@ -991,12 +991,11 @@ CONTENT;
         $this->assertNotEmpty($parsed);
 
         $this->markTestIncomplete('Parser should be able to output what came in');
-        return;
 
-        $reprinted = print_r($parsed, true);
-        $reprinted = substr($reprinted, 0, strlen($reprinted) - 1);
-        file_put_contents('/tmp/content-original', $content);
-        file_put_contents('/tmp/content-parsed', $reprinted);
-        $this->assertEquals($content, $reprinted);
+//        $reprinted = print_r($parsed, true);
+//        $reprinted = substr($reprinted, 0, strlen($reprinted) - 1);
+//        file_put_contents('/tmp/content-original', $content);
+//        file_put_contents('/tmp/content-parsed', $reprinted);
+//        $this->assertEquals($content, $reprinted);
     }
 }

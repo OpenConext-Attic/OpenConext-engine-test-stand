@@ -87,52 +87,8 @@
             }
         },
         {
-            "type": "composer",
-            "url": "https://deploy:********@packagist.ibuildings.nl"
+            "type": "vcs",
+            "url": "https://github.com/relaxnow/qa-tools"
         }
     ]
 }
-
-git add .gitignore
-git rm bin/behat-replay.sh
-git rm bin/behat.sh
-git rm bin/dump_sr_state.php
-git rm bin/show-response.php
-git add composer.json
-git add composer.lock
-git rm config.json.demo
-git rm fixtures/db/MUST_BE_WRITABLE_FOR_CLI_USER
-git rm fixtures/keys/README.md
-git rm fixtures/keys/certificate-rolled-over.crt
-git rm fixtures/keys/certificate.crt
-git rm fixtures/keys/private_key-rolled-over.pem
-git rm fixtures/keys/private_key.pem
-git rm fixtures/keys/public_key-rolled-over.pem
-git rm fixtures/keys/public_key.pem
-git rm src/OpenConext/Corto/XmlToArray.php
-git rm src/OpenConext/EngineTestStand/Config.php
-git rm src/OpenConext/EngineTestStand/Features/Context/AbstractSubContext.php
-git rm src/OpenConext/EngineTestStand/Features/Context/EngineBlockContext.php
-git rm src/OpenConext/EngineTestStand/Features/Context/MinkContext.php
-git rm src/OpenConext/EngineTestStand/Features/Context/MockIdpContext.php
-git rm src/OpenConext/EngineTestStand/Features/Context/MockSpContext.php
-git rm src/OpenConext/EngineTestStand/Features/Context/ReplayContext.php
-git rm src/OpenConext/EngineTestStand/Fixture/AbstractSerializedFixture.php
-git rm src/OpenConext/EngineTestStand/Fixture/IdpFixture.php
-git rm src/OpenConext/EngineTestStand/Fixture/RoleFixture.php
-git rm src/OpenConext/EngineTestStand/Fixture/SpFixture.php
-git rm src/OpenConext/EngineTestStand/Saml2/AuthnRequest/AuthnRequestFactory.php
-git rm src/OpenConext/EngineTestStand/Saml2/Compat/Container.php
-git rm src/OpenConext/EngineTestStand/Saml2/Compat/SyslogLogger.php
-git rm src/OpenConext/EngineTestStand/Service/EngineBlock.php
-git rm src/OpenConext/EngineTestStand/Service/IdentityProvider.php
-git rm src/OpenConext/EngineTestStand/Service/LogReader.php
-git rm src/OpenConext/EngineTestStand/Service/ServiceProvider.php
-git rm src/OpenConext/EngineTestStand/ServiceRegistry/ServiceRegistryMock.php
-git rm src/OpenConext/Php/PrintRParser.php
-git rm src/OpenConext/Php/php.print_r.peg
-git rm src/bootstrap.php
-git rm tests/OpenConext/Php/PrintRParserTest.php
-git rm web/idp.php
-git rm web/index.html
-git rm web/sp.php

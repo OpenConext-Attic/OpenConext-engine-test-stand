@@ -89,7 +89,7 @@
         <exec executable="bin/phpmd" failonerror="true">
             <arg path="src"/>
             <arg value="xml"/>
-            <arg value="phpmd.xml"/>
+            <arg value="tools/phpmd/phpmd.xml"/>
             <arg value="--reportfile"/>
             <arg value="build/artifacts/logs/pmd.xml"/>
         </exec>
@@ -100,7 +100,7 @@
         <exec executable="bin/phpcs" failonerror="true">
             <arg value="--report-checkstyle=build/artifacts/logs/checkstyle-php.xml"/>
             <arg value="--report=full"/>
-            <arg value="--standard=phpcs.xml"/>
+            <arg value="--standard=tools/phpcs/ruleset.xml"/>
             <!-- Don't show warnings-->
             <arg value="--warning-severity=0"/>
             <arg value="--extensions=php"/>

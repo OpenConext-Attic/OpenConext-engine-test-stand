@@ -1,4 +1,0 @@
-dev:
-    extensions:
-        Behat\MinkExtension\Extension:
-            base_url: https://engine.demo.openconext.org

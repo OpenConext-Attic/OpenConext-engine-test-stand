@@ -132,7 +132,7 @@
             depends="get-changeset.php-commasep"
             if="changeset.php.notempty">
         <exec executable="${test-tree-location}/bin/phpmd" failonerror="true">
-            <arg line="${changeset.php.absolute.commasep} text ${test-tree-location}/phpmd.xml"/>
+            <arg line="${changeset.php.absolute.commasep} text ${test-tree-location}/tools/phpmd/phpmd.xml"/>
         </exec>
         <echo message="OK"/>
     </target>
@@ -141,7 +141,7 @@
             depends="get-changeset.php-spacesep"
             if="changeset.php.notempty">
         <exec executable="${test-tree-location}/bin/phpcs" failonerror="true">
-            <arg value="--standard=${test-tree-location}/phpcs.xml"/>
+            <arg value="--standard=${test-tree-location}/tools/phpcs/ruleset.xml"/>
             <arg value="--warning-severity=0"/> <!-- Don't show warnings-->
             <arg value="--extensions=php"/>
             <arg value="--report=full"/>
