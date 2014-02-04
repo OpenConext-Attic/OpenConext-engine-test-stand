@@ -1,8 +1,8 @@
 <?php
 
-namespace OpenConext\Bundle\ReplayToolsBundle\Command\Helper;
+namespace OpenConext\Component\EngineTestStand\Helper;
 
-class LogStream
+class LogStreamHelper
 {
     const LINE_LENGTH = 1024;
 
@@ -89,23 +89,10 @@ class LogStream
         return $this;
     }
 
-    public function onNotEof($fn)
-    {
-        if (!$this->isEof()) {
-            $fn();
-        }
-        return $this;
-    }
-
-    public function toString()
+    public function __toString()
     {
         $this->rewind();
         return stream_get_contents($this->stream);
-    }
-
-    public function __toString()
-    {
-        return $this->toString();
     }
 
     public function toStream()
@@ -115,6 +102,6 @@ class LogStream
 
     public function __destruct()
     {
-        fclose($this->stream);
+        $this->close();
     }
 }

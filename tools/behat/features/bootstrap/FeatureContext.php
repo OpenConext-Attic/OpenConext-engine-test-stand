@@ -1,59 +1,44 @@
 <?php
 
-use OpenConext\EngineTestStand\Config;
-use Behat\Behat\Context\BehatContext;
-use OpenConext\EngineTestStand\Features\Context\MinkContext;
-use OpenConext\EngineTestStand\Features\Context\EngineBlockContext;
-use OpenConext\EngineTestStand\Features\Context\MockIdpContext;
-use OpenConext\EngineTestStand\Features\Context\MockSpContext;
-use OpenConext\EngineTestStand\Features\Context\ReplayContext;
+use Behat\Behat\Context\ClosuredContextInterface,
+    Behat\Behat\Context\TranslatedContextInterface,
+    Behat\Behat\Context\BehatContext,
+    Behat\Behat\Exception\PendingException;
+use Behat\Gherkin\Node\PyStringNode,
+    Behat\Gherkin\Node\TableNode;
 
-// Include Composer autoloader
-require realpath(__DIR__ . '/../../../../') . '/vendor/autoload.php';
+//
+// Require 3rd-party libraries here:
+//
+//   require_once 'PHPUnit/Autoload.php';
+//   require_once 'PHPUnit/Framework/Assert/Functions.php';
+//
 
 /**
  * Features context.
  */
 class FeatureContext extends BehatContext
 {
-    const CONFIG_FILE = "config.json";
-
-    const SUB_CONTEXT_MINK          = 'mink';
-    const SUB_CONTEXT_ENGINE_BLOCK  = 'engine';
-    const SUB_CONTEXT_MOCK_IDP      = 'idp';
-    const SUB_CONTEXT_MOCK_SP       = 'sp';
-    const SUB_CONTEXT_REPLAY        = 'replay';
-
-    public function __construct()
-    {
-        $this->useContext(self::SUB_CONTEXT_MINK        , new MinkContext());
-        $this->useContext(self::SUB_CONTEXT_ENGINE_BLOCK, new EngineBlockContext());
-        $this->useContext(self::SUB_CONTEXT_MOCK_IDP    , new MockIdpContext());
-        $this->useContext(self::SUB_CONTEXT_MOCK_SP     , new MockSpContext());
-        $this->useContext(self::SUB_CONTEXT_REPLAY      , new ReplayContext());
-    }
-
     /**
-     * @return MinkContext
+     * Initializes context.
+     * Every scenario gets its own context object.
+     *
+     * @param array $parameters context parameters (set them up through behat.yml)
      */
-    public function getMinkContext()
+    public function __construct(array $parameters)
     {
-        return $this->getSubcontext(self::SUB_CONTEXT_MINK);
+        // Initialize your context here
     }
 
-    /**
-     * @return Config
-     */
-    public function getApplicationConfig()
-    {
-        return Config::create(self::CONFIG_FILE);
-    }
-
-    /**
-     * @return string
-     */
-    public function getPageContent()
-    {
-        return $this->getMinkContext()->getSession()->getPage()->getContent();
-    }
+//
+// Place your definition and hook methods here:
+//
+//    /**
+//     * @Given /^I have done something with "([^"]*)"$/
+//     */
+//    public function iHaveDoneSomethingWith($argument)
+//    {
+//        doSomethingWith($argument);
+//    }
+//
 }

@@ -1,10 +1,14 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Saml2\Compat;
+namespace OpenConext\Component\EngineTestStand\Saml2\Compat;
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
+/**
+ * Class SyslogLogger
+ * @package OpenConext\Component\EngineTestStand\Saml2\Compat
+ */
 class SyslogLogger extends AbstractLogger
 {
     /**
@@ -21,6 +25,10 @@ class SyslogLogger extends AbstractLogger
         syslog($level, $message . empty($context) ? '' : ' ' . json_encode($context));
     }
 
+    /**
+     * @param $level
+     * @return int
+     */
     protected function logLevelToSyslogLevel($level)
     {
         switch ($level) {

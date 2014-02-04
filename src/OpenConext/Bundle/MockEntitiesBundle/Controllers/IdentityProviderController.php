@@ -2,12 +2,12 @@
 
 namespace OpenConext\Bundle\MockEntitiesBundle\Controllers;
 
-use OpenConext\EngineTestStand\Fixture\MockIdpsFixtureAbstract;
-use OpenConext\EngineTestStand\Saml2\ResponseFactory;
-use \Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use \Symfony\Component\HttpFoundation\Request;
-use \Symfony\Component\HttpFoundation\Response;
-use \OpenConext\EngineTestStand\Saml2\Compat\Container;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use OpenConext\Component\EngineTestStand\Fixture\MockIdpsFixture;
+use OpenConext\Component\EngineTestStand\Saml2\ResponseFactory;
+use OpenConext\Component\EngineTestStand\Saml2\Compat\Container;
 
 class IdentityProviderController extends Controller
 {
@@ -19,9 +19,9 @@ class IdentityProviderController extends Controller
      */
     public function metadataAction($idpName)
     {
-        /** @var MockIdpsFixtureAbstract $idpFixture */
-        $idpFixture = $this->get('fixture.idp');
-        $entityDescriptor = $idpFixture->get($idpName);
+        /** @var MockIdpsFixture $idpRegistry */
+        $idpRegistry = $this->get('fixture.idp');
+        $entityDescriptor = $idpRegistry->get($idpName);
 
         return new Response(
             $entityDescriptor->toXML()->ownerDocument->saveXML(),
@@ -45,9 +45,9 @@ class IdentityProviderController extends Controller
         }
         $authnRequest = $message;
 
-        /** @var MockIdpsFixtureAbstract $idpFixture */
-        $idpFixture = $this->get('fixture.idp');
-        $entityDescriptor = $idpFixture->get($idpName);
+        /** @var MockIdpsFixture $idpRegistry */
+        $idpRegistry = $this->get('fixture.idp');
+        $entityDescriptor = $idpRegistry->get($idpName);
 
         /** @var ResponseFactory $responseFactory */
         $responseFactory = $this->get('saml2.response_factory');

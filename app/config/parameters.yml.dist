@@ -13,3 +13,14 @@ parameters:
 
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    engineblock_url:        https://engine-test.demo.openconext.org
+    engine_test_stand_url:  https://engine-test-stand.demo.openconext.org
+
+    # Where can we find the JANUS JSON export for IDPs and SPs?
+    idps_config_url:        /tmp/saml20-sp-remote.json
+    sps_config_url:        /tmp/saml20-sp-remote.json
+
+    # Where must we store the writable state of the Mock IdP and Mock SP?
+    idp_fixture_file:     fixtures/db/idp.states.php.serialized
+    sp_fixture_file:      fixtures/db/sp.states.php.serialized

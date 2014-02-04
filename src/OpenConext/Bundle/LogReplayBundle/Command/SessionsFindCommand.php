@@ -1,21 +1,16 @@
 <?php
 
-namespace OpenConext\Bundle\ReplayToolsBundle\Command;
+namespace OpenConext\Bundle\LogReplayBundle\Command;
 
-use OpenConext\Bundle\ReplayToolsBundle\Command\Helper\FileOrStdInHelper;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use OpenConext\Component\EngineTestStand\Helper\FileOrStdInHelper;
 
 /**
- * Hello World command for demo purposes.
- *
- * You could also extend from Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand
- * to get access to the container via $this->getContainer().
- *
- * @author Tobias Schultze <http://tobion.de>
+ * Find sessions in a given log file.
+ * @package OpenConext\Bundle\LogReplayBundle\Command
  */
 class SessionsFindCommand extends Command
 {

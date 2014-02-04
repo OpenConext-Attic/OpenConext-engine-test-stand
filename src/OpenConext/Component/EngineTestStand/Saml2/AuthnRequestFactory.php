@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Saml2;
+namespace OpenConext\Component\EngineTestStand\Saml2;
 
 class AuthnRequestFactory
 {

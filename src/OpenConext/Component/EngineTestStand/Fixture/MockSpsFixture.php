@@ -1,8 +1,8 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Fixture;
+namespace OpenConext\Component\EngineTestStand\Fixture;
 
-class MockSpsFixtureAbstract extends AbstractRoleFixture
+class MockSpsFixture extends AbstractRoleFixture
 {
     public function configureFromAuthnRequest($spName, \SAML2_AuthnRequest $authnRequest)
     {

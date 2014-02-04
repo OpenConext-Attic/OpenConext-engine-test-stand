@@ -1,8 +1,8 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Fixture;
+namespace OpenConext\Component\EngineTestStand\Fixture;
 
-class MockIdpsFixtureAbstract extends AbstractRoleFixture
+class MockIdpsFixture extends AbstractRoleFixture
 {
     public function register($name, $entityId)
     {

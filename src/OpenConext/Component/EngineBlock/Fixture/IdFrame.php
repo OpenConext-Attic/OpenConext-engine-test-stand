@@ -10,7 +10,12 @@ class IdFrame
     const ID_USAGE_SAML2_METADATA   = 'saml2-metadata';
     const ID_USAGE_OTHER            = 'other';
 
-    protected $ids = array();
+    protected $ids;
+
+    public function __construct($ids = array())
+    {
+        $this->ids = $ids;
+    }
 
     public function set($usage, $id)
     {

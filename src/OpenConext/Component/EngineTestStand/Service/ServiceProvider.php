@@ -1,9 +1,9 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Service;
+namespace OpenConext\Component\EngineTestStand\Service;
 
-use OpenConext\EngineTestStand\Config;
-use OpenConext\EngineTestStand\Fixture\MockSpsFixtureAbstract;
+use OpenConext\Component\EngineTestStand\Config;
+use OpenConext\Component\EngineTestStand\Fixture\MockSpsFixture;
 
 class ServiceProvider
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Saml2\Compat;
+namespace OpenConext\Component\EngineTestStand\Saml2\Compat;
 
 use Psr;
 use Symfony\Component\HttpFoundation\Response;

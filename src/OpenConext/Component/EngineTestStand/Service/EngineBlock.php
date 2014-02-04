@@ -1,12 +1,16 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Service;
+namespace OpenConext\Component\EngineTestStand\Service;
 
 use OpenConext\Component\EngineBlock\Fixture\IdFixture;
 use OpenConext\Component\EngineBlock\Fixture\IdFrame;
 use OpenConext\Component\EngineBlock\Fixture\SuperGlobalsFixture;
 use OpenConext\Component\EngineBlock\Fixture\TimeFixture;
 
+/**
+ * Class EngineBlock
+ * @package OpenConext\Component\EngineTestStand\Service
+ */
 class EngineBlock
 {
     const IDP_METADATA_PATH         = '/authentication/idp/metadata';
@@ -19,6 +23,12 @@ class EngineBlock
     protected $superGlobalFixture;
     protected $idFixture;
 
+    /**
+     * @param $baseUrl
+     * @param TimeFixture $timeFixture
+     * @param SuperGlobalsFixture $superGlobalFixture
+     * @param IdFixture $idFixture
+     */
     public function __construct(
         $baseUrl,
         TimeFixture $timeFixture,

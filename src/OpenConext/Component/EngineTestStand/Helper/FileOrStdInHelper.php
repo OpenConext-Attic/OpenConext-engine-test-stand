@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenConext\Bundle\ReplayToolsBundle\Command\Helper;
+namespace OpenConext\Component\EngineTestStand\Helper;
 
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -9,7 +9,7 @@ use Symfony\Component\Yaml\Exception\RuntimeException;
 
 /**
  * Class FileOrStdInHelper
- * @package OpenConext\Bundle\ReplayToolsBundle\Command\Helper
+ * @package OpenConext\Bundle\LogReplayBundle\Command\Helper
  */
 class FileOrStdInHelper
 {

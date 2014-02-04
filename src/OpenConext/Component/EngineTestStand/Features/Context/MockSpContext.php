@@ -1,32 +1,47 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Features\Context;
+namespace OpenConext\Component\EngineTestStand\Features\Context;
 
-use OpenConext\EngineTestStand\Fixture\MockIdpsFixtureAbstract;
-use OpenConext\EngineTestStand\Fixture\MockSpsFixtureAbstract;
-use OpenConext\EngineTestStand\Service\EngineBlock;
-use OpenConext\EngineTestStand\Service\LogReader;
-use OpenConext\EngineTestStand\Service\ServiceProvider;
-use OpenConext\EngineTestStand\Fixture\ServiceRegistryFixture;
-use OpenConext\EngineTestStand\ServiceRegistry\ServiceRegistryMock;
+use OpenConext\Component\EngineTestStand\Fixture\MockIdpsFixture;
+use OpenConext\Component\EngineTestStand\Fixture\MockSpsFixture;
+use OpenConext\Component\EngineTestStand\Service\EngineBlock;
+use OpenConext\Component\EngineTestStand\Service\LogChunkParser;
+use OpenConext\Component\EngineTestStand\Service\MockServiceProviderFactory;
+use OpenConext\Component\EngineBlock\Fixture\ServiceRegistryFixture;
 
 class MockSpContext extends AbstractSubContext
 {
-    const SP_FIXTURE_CONFIG_NAME = 'sp-fixture-file';
+    protected $mockSpRegistry;
+    protected $mockIdpRegistry;
+    protected $serviceRegistryFixture;
+    protected $spFactory;
+    /**
+     * @var EngineBlock
+     */
+    protected $engineBlock;
+
+    public function __construct(
+        MockServiceProviderFactory $spFactory,
+        MockSpsFixture $spsFixture,
+        MockIdpsFixture $idpsFixture,
+        ServiceRegistryFixture $serviceRegistryFixture,
+        EngineBlock $engineBlock
+    ) {
+        $this->spFactory = $spFactory;
+        $this->mockSpRegistry = $spsFixture;
+        $this->mockIdpRegistry = $idpsFixture;
+        $this->serviceRegistryFixture = $serviceRegistryFixture;
+    }
 
     /**
      * @When /^I log in at "([^"]*)"$/
      */
     public function iLogInAt($spName)
     {
-        $config  = $this->getMainContext()->getApplicationConfig();
-        $spFixtureFile = $config->expect(self::SP_FIXTURE_CONFIG_NAME);
-        $fixture = MockSpsFixtureAbstract::create($spFixtureFile);
-
-        $serviceProvider = ServiceProvider::create($spName, $fixture->get($spName), $config);
-        $loginUrl = $serviceProvider->loginUrl();
-
-        $this->getMainContext()->getMinkContext()->visit($loginUrl);
+        $this->getMainContext()->getMinkContext()->visit(
+            $this->spFactory->createForName($spName)
+                ->loginUrl()
+        );
     }
 
     /**
@@ -34,11 +49,7 @@ class MockSpContext extends AbstractSubContext
      */
     public function aServiceProviderNamedWithEntityid($name, $entityId)
     {
-        $config = $this->getMainContext()->getApplicationConfig();
-        $spFixtureFile = $config->expect(self::SP_FIXTURE_CONFIG_NAME);
-
-        $spFixture = MockSpsFixtureAbstract::create($spFixtureFile);
-        $spFixture->register($name, $entityId);
+        $this->mockSpRegistry->set($name, new MockServiceProvider($name, $entityId));
     }
 
     /**
@@ -46,21 +57,15 @@ class MockSpContext extends AbstractSubContext
      */
     public function spMayOnlyAccess($spName, $idpName)
     {
-        $config = $this->getMainContext()->getApplicationConfig();
-        $spFixtureFile = $config->expect(self::SP_FIXTURE_CONFIG_NAME);
-        $spFixture = MockSpsFixtureAbstract::create($spFixtureFile);
-        $spEntityId = $spFixture->get($spName)->entityID;
+        $spEntityId = $this->mockSpRegistry->get($spName)->entityID;
 
-        $idpFixtureFile = $config->expect(MockIdpContext::IDP_FIXTURE_CONFIG_NAME);
-        $idpFixture = MockIdpsFixtureAbstract::create($idpFixtureFile);
-        $idpEntityId = $idpFixture->get($idpName)->entityID;
+        $idpEntityId = $this->mockIdpRegistry->get($idpName)->entityID;
 
-        $serviceRegistry = ServiceRegistryMock::create();
-        $serviceRegistry->blacklist($spEntityId);
-        $serviceRegistry->allow($spEntityId, $idpEntityId);
+        $this->serviceRegistryFixture->blacklist($spEntityId);
+        $this->serviceRegistryFixture->allow($spEntityId, $idpEntityId);
 
         // Override the Destination for the Response
-        $idpFixture->overrideResponseDestination($idpName, EngineBlock::create($config)->assertionConsumerLocation());
+        $this->mockIdpRegistry->overrideResponseDestination($idpName, $this->engineBlock->assertionConsumerLocation());
     }
 
     /**
@@ -69,23 +74,20 @@ class MockSpContext extends AbstractSubContext
     public function spIsConfiguredToGenerateAAuthnrequestLikeTheOneAt($spName, $authnRequestLogFile)
     {
         // Parse an AuthnRequest out of the log file
-        $logReader = LogReader::create($authnRequestLogFile);
+        $logReader = new LogChunkParser($authnRequestLogFile);
         $authnRequest = $logReader->getAuthnRequest();
 
         var_dump($authnRequest);
 
         // Write out how the SP should behave
-        $config = $this->getMainContext()->getApplicationConfig();
-        $spFixtureFile = $config->expect(self::SP_FIXTURE_CONFIG_NAME);
-        $spFixture = MockSpsFixtureAbstract::create($spFixtureFile);
-        $spFixture->configureFromAuthnRequest($spName, $authnRequest);
+        $mockSp = $this->mockSpRegistry->get($spName);
+        $mockSp->configureFromAuthnRequest($authnRequest);
 
         // Determine the ACS URL for the Mock SP
-        $serviceProvider = ServiceProvider::create($spName, $spFixture->get($spName), $config);
+        $serviceProvider = $this->spFactory->createForName($spName);
         $acsUrl = $serviceProvider->assertionConsumerServiceLocation();
 
         // Override the ACS Location for the SP used in the response to go to the Mock SP
-        $serviceRegistry = ServiceRegistryMock::create();
-        $serviceRegistry->setEntityAcsLocation($authnRequest->getIssuer(), $acsUrl);
+        $this->serviceRegistryFixture->setEntityAcsLocation($authnRequest->getIssuer(), $acsUrl);
     }
 }

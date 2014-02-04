@@ -1,31 +1,54 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Features\Context;
+namespace OpenConext\Component\EngineTestStand\Features\Context;
 
-use OpenConext\EngineTestStand\Service\EngineBlock;
-use OpenConext\EngineTestStand\Service\LogReader;
-use OpenConext\EngineTestStand\ServiceRegistry\ServiceRegistryMock;
+use OpenConext\Component\EngineBlock\Fixture\IdFrame;
+use OpenConext\Component\EngineTestStand\Service\EngineBlock;
+use OpenConext\Component\EngineTestStand\Service\LogChunkParser;
+use OpenConext\Component\EngineBlock\Fixture\ServiceRegistryFixture;
 
+/**
+ * Class EngineBlockContext
+ * @package OpenConext\Component\EngineTestStand\Features\Context
+ */
 class EngineBlockContext extends AbstractSubContext
 {
-    const IDPS_CONFIG_NAME = 'idps-config-url';
-    const SPS_CONFIG_NAME  = 'sps-config-url';
+    /**
+     * @var string
+     */
+    protected $idpsConfigUrl;
+
+    /**
+     * @var string
+     */
+    protected $spsConfigUrl;
+
+    /**
+     *
+     */
+    public function __construct(
+        ServiceRegistryFixture $serviceRegistry,
+        EngineBlock $engineBlock,
+        $spsConfigUrl,
+        $idpsConfigUrl
+    ) {
+        $this->serviceRegistryFixture = $serviceRegistry;
+        $this->engineBlock = $engineBlock;
+        $this->spsConfigUrl = $spsConfigUrl;
+        $this->idpsConfigUrl = $idpsConfigUrl;
+    }
 
     /**
      * @Given /^an EngineBlock instance configured with JSON data$/
      */
     public function anEngineblockInstanceConfiguredWithJsonData()
     {
-        $serviceRegistry = ServiceRegistryMock::create();
-        $config = $this->getMainContext()->getApplicationConfig();
-
         // Add all known IdPs
-        $serviceRegistry->reset();
-        $serviceRegistry->addSpsFromJsonExport($config->expect(self::SPS_CONFIG_NAME));
-        $serviceRegistry->addIdpsFromJsonExport($config->expect(self::IDPS_CONFIG_NAME));
+        $this->serviceRegistryFixture->reset();
+        $this->serviceRegistryFixture->addSpsFromJsonExport($this->spsConfigUrl);
+        $this->serviceRegistryFixture->addIdpsFromJsonExport($this->idpsConfigUrl);
 
-        $eb = EngineBlock::create($config);
-        $eb->clearNewIds();
+        $this->engineBlock->clearNewIds();
     }
 
     /**
@@ -33,16 +56,16 @@ class EngineBlockContext extends AbstractSubContext
      */
     public function engineblockIsExpectedToSendAAuthnrequestLikeTheOneAt($authnRequestLogFile)
     {
-        $config = $this->getMainContext()->getApplicationConfig();
-
         // Parse an AuthnRequest out of the log file
-        $logReader = LogReader::create($authnRequestLogFile);
+        $logReader = new LogChunkParser($authnRequestLogFile);
         $authnRequest = $logReader->getAuthnRequest();
-        $hostname = parse_url($authnRequest->getIssuer(), PHP_URL_HOST);
 
-        $engineBlock = EngineBlock::create($config);
-        $engineBlock->overrideHostname($hostname);
-        $engineBlock->setNewIdsToUse(array(EngineBlock::ID_USAGE_SAML2_REQUEST => $authnRequest->getId()));
+        $hostname = parse_url($authnRequest->getIssuer(), PHP_URL_HOST);
+        $this->engineBlock->overrideHostname($hostname);
+
+        $this->engineBlock->setNewIdsToUse(new IdFrame(array(
+            IdFrame::ID_USAGE_SAML2_REQUEST => $authnRequest->getId()
+        )));
     }
 
     /**
@@ -50,17 +73,14 @@ class EngineBlockContext extends AbstractSubContext
      */
     public function engineblockIsExpectedToSendAResponseLikeTheOneAt($responseLogFile)
     {
-        $config = $this->getMainContext()->getApplicationConfig();
-
         // Parse an AuthnRequest out of the log file
-        $logReader = LogReader::create($responseLogFile);
+        $logReader = new LogChunkParser($responseLogFile);
         $response = $logReader->getResponse();
         $responseAssertions = $response->getAssertions();
 
-        $engineBlock = EngineBlock::create($config);
-        $engineBlock->setNewIdsToUse(array(
-            EngineBlock::ID_USAGE_SAML2_RESPONSE => $response->getId(),
-            EngineBLock::ID_USAGE_SAML2_ASSERTION => $responseAssertions[0]->getId(),
-        ));
+        $this->engineBlock->setNewIdsToUse(new IdFrame(array(
+            IdFrame::ID_USAGE_SAML2_RESPONSE  => $response->getId(),
+            IdFrame::ID_USAGE_SAML2_ASSERTION => $responseAssertions[0]->getId(),
+        )));
     }
 }

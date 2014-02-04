@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Features\Context;
+namespace OpenConext\Component\EngineTestStand\Features\Context;
 
 use Behat\MinkExtension\Context\MinkContext as BaseMinkContext;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Fixture;
+namespace OpenConext\Component\EngineTestStand\Fixture;
 
 abstract class AbstractSerializedFixture
 {

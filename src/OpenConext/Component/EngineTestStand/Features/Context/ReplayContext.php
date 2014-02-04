@@ -1,9 +1,13 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Features\Context;
+namespace OpenConext\Component\EngineTestStand\Features\Context;
 
-use OpenConext\EngineTestStand\Service\LogReader;
+use OpenConext\Component\EngineTestStand\Service\LogChunkParser;
 
+/**
+ * Class ReplayContext
+ * @package OpenConext\Component\EngineTestStand\Features\Context
+ */
 class ReplayContext extends AbstractSubContext
 {
     /**
@@ -21,7 +25,7 @@ class ReplayContext extends AbstractSubContext
         }
 
         // Parse a Response out of the log file
-        $logReader = LogReader::create($requestLogFile);
+        $logReader = new LogChunkParser($requestLogFile);
         $request = $logReader->getAuthnRequest();
 
         $this->printDebug(print_r($request, true));
@@ -46,7 +50,7 @@ class ReplayContext extends AbstractSubContext
     public function theResponseShouldBeComparedWithTheOneAt($responseLogFile)
     {
         // Parse a Response out of the log file
-        $logReader = LogReader::create($responseLogFile);
+        $logReader = new LogChunkParser($responseLogFile);
         $response = $logReader->getResponse();
         $originalResponseXml = $this->formatXml($response->xml);
         $replayedResponseXml = $this->formatXml($this->getMainContext()->getPageContent());
@@ -62,6 +66,10 @@ class ReplayContext extends AbstractSubContext
         echo $diff->render($renderer);
     }
 
+    /**
+     * @param $xml
+     * @return string
+     */
     protected function formatXml($xml)
     {
         $dom = new \DOMDocument;

@@ -1,22 +1,16 @@
 <?php
 
-namespace OpenConext\Bundle\ReplayToolsBundle\Command;
+namespace OpenConext\Bundle\LogReplayBundle\Command;
 
-use OpenConext\Bundle\ReplayToolsBundle\Command\Helper\FileOrStdInHelper;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use OpenConext\Bundle\ReplayToolsBundle\Command\Helper\StdinHelper;
+use OpenConext\Component\EngineTestStand\Helper\FileOrStdInHelper;
 
 /**
- * Hello World command for demo purposes.
- *
- * You could also extend from Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand
- * to get access to the container via $this->getContainer().
- *
- * @author Tobias Schultze <http://tobion.de>
+ * For a given list of session identifiers, filter out those without a login flow.
+ * @package OpenConext\Bundle\LogReplayBundle\Command
  */
 class FlowFilterCommand extends Command
 {
@@ -56,81 +50,86 @@ EOF
         $logStream = fopen($logFile, 'r');
 
         $sessionsStream = new FileOrStdInHelper($input, $output, 'sessionFile');
-        $sessionsStream->mapLines(function($line) use ($logStream, $output) {
+        $that = $this;
+        $sessionsStream->mapLines(function($line) use ($logStream, $output, $that) {
             $sessionId = trim($line);
             if (!$sessionId) {
                 return;
             }
 
-            // The four horsemen^H^H^H^H^H^H^H^H^H messages we need to reconstruct a flow.
-            $hasSpRequest   = false;
-            $hasEbRequest   = false;
-            $hasIdpResponse = false;
-            $hasEbResponse  = false;
-
-            rewind($logStream);
-            $history = array(
-                0 => '',
-                1 => '',
-                2 => '',
-                3 => '',
-                4 => '',
-            );
-            while (!feof($logStream)) {
-                $logLine = stream_get_line($logStream, 1024, "\n");
-
-                if (strpos($logLine, $sessionId) === false) {
-                    continue;
-                }
-
-                if (!preg_match("/EB\\[$sessionId\\]\\[/", $logLine)) {
-                    continue;
-                }
-
-                if (strpos($logLine, '[Message INFO] Received response') !== false) {
-                    $hasIdpResponse = true;
-                }
-
-                if (strpos($logLine, '[Message INFO] Received request') !== false) {
-                    $hasSpRequest = true;
-                }
-
-                if (strpos($logLine, '[Message INFO] Redirecting to ') !== false && strpos($logLine, 'SAMLRequest') !== false) {
-                    $hasEbRequest = true;
-                }
-
-                if (strpos($logLine, '[Message INFO] HTTP-Post: Sending Message') !== false) {
-                    $hasAttributeValue = false;
-                    foreach ($history as $historyLine) {
-                        if ($hasAttributeValue || strpos($historyLine, '[saml:AttributeValue]')) {
-                            $hasAttributeValue = true;
-                        }
-                    }
-
-                    if ($hasAttributeValue) {
-                        $hasEbResponse = true;
-                    }
-                    else {
-                        $hasEbRequest = true;
-                    }
-                }
-
-                if ($hasSpRequest && $hasEbRequest && $hasIdpResponse && $hasEbResponse) {
-                    echo "FOUND!!" . PHP_EOL;
-                    $output->writeln($sessionId);
-                    return; // Done! Next session id
-                }
-
-                $history[] = $logLine;
-                if (count($history) > 5) {
-                    array_shift($history);
-                }
-            }
+            $that->filterForSession($sessionId, $logStream, $output);
         });
 
         fclose($logStream);
 
         return 0;
+    }
+
+    protected function filterForSession($sessionId, $logStream, OutputInterface $output)
+    {
+        // The four horsemen^H^H^H^H^H^H^H^H^H messages we need to reconstruct a flow.
+        $hasSpRequest   = false;
+        $hasEbRequest   = false;
+        $hasIdpResponse = false;
+        $hasEbResponse  = false;
+
+        rewind($logStream);
+        $history = array(
+            0 => '',
+            1 => '',
+            2 => '',
+            3 => '',
+            4 => '',
+        );
+        while (!feof($logStream)) {
+            $logLine = stream_get_line($logStream, 1024, "\n");
+
+            if (strpos($logLine, $sessionId) === false) {
+                continue;
+            }
+
+            if (!preg_match("/EB\\[$sessionId\\]\\[/", $logLine)) {
+                continue;
+            }
+
+            if (strpos($logLine, '[Message INFO] Received response') !== false) {
+                $hasIdpResponse = true;
+            }
+
+            if (strpos($logLine, '[Message INFO] Received request') !== false) {
+                $hasSpRequest = true;
+            }
+
+            if (strpos($logLine, '[Message INFO] Redirecting to ') !== false && strpos($logLine, 'SAMLRequest') !== false) {
+                $hasEbRequest = true;
+            }
+
+            if (strpos($logLine, '[Message INFO] HTTP-Post: Sending Message') !== false) {
+                $hasAttributeValue = false;
+                foreach ($history as $historyLine) {
+                    if ($hasAttributeValue || strpos($historyLine, '[saml:AttributeValue]')) {
+                        $hasAttributeValue = true;
+                    }
+                }
+
+                if ($hasAttributeValue) {
+                    $hasEbResponse = true;
+                }
+                else {
+                    $hasEbRequest = true;
+                }
+            }
+
+            if ($hasSpRequest && $hasEbRequest && $hasIdpResponse && $hasEbResponse) {
+                $output->writeln($sessionId);
+                return; // Done! Next session id
+            }
+
+            $history[] = $logLine;
+            if (count($history) > 5) {
+                array_shift($history);
+            }
+        }
     }
 
     /**
@@ -148,7 +147,6 @@ EOF
         $sessionsStream = new FileOrStdInHelper($input, $output, 'sessionFile');
         $sessions = $sessionsStream->mapLines(function($line) { return trim($line); });
 
-        $sessionWithContent = array();
         $count = 0;
         rewind($logStream);
 

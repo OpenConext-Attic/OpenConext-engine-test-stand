@@ -1,23 +1,17 @@
 <?php
 
-namespace OpenConext\Bundle\ReplayToolsBundle\Command;
+namespace OpenConext\Bundle\LogReplayBundle\Command;
 
-use OpenConext\Bundle\ReplayToolsBundle\Command\Helper\FileOrStdInHelper;
-use OpenConext\Bundle\ReplayToolsBundle\Command\Helper\LogStream;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use OpenConext\Bundle\ReplayToolsBundle\Command\Helper\StdinHelper;
+use OpenConext\Component\EngineTestStand\Helper\FileOrStdInHelper;
+use OpenConext\Component\EngineTestStand\Helper\LogStreamHelper;
 
 /**
- * Hello World command for demo purposes.
- *
- * You could also extend from Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand
- * to get access to the container via $this->getContainer().
- *
- * @author Tobias Schultze <http://tobion.de>
+ * Export the first flow in a session a directory.
+ * @package OpenConext\Bundle\LogReplayBundle\Command
  */
 class FlowExportCommand extends Command
 {
@@ -74,7 +68,10 @@ EOF
 
         $sessionsStream = new FileOrStdInHelper($input, $output, 'sessionFile');
 
-        // Required because 5.3 doesn't allow you to use $this in a closure.
+        /**
+         * Required because 5.3 doesn't allow you to use $this in a closure.
+         * @var $that
+         */
         $that = $this;
         $sessionsStream->mapLines(function($line) use ($input, $output, $that) {
             $sessionId = trim($line);
@@ -133,8 +130,8 @@ EOF
     protected function getSessionLog($sessionId)
     {
         // Look through the logfile for all loglines for this session.
-        $logStream = new LogStream(fopen($this->logFile, 'r'));
-        $sessionLogStream = new LogStream(fopen('php://temp','r+'));
+        $logStream = new LogStreamHelper(fopen($this->logFile, 'r'));
+        $sessionLogStream = new LogStreamHelper(fopen('php://temp','r+'));
         $logStream->foreachLine(function($line) use ($sessionLogStream, $sessionId) {
             if (strpos($line, "EB[$sessionId]") === false) {
                 return;
@@ -146,14 +143,14 @@ EOF
     }
 
     // [Message INFO] FLUSHING ... [Message INFO] END OF LOG MESSAGE QUEUE
-    protected function fixMessageOrdering(LogStream $sessionLog)
+    protected function fixMessageOrdering(LogStreamHelper $sessionLog)
     {
         $sessionLog->rewind();
 
         while (!$sessionLog->isEof()) {
             $sessionLog->foreachLine(function($line) {
                 if (strstr($line, '[Message INFO] END OF LOG MESSAGE QUEUE')) {
-                    return LogStream::STOP;
+                    return LogStreamHelper::STOP;
                 }
             });
             if ($sessionLog->isEof()) {
@@ -168,7 +165,7 @@ EOF
                 $reversed .= $line;
 
                 if (strstr($line, '[Message INFO] FLUSHING')) {
-                    return LogStream::STOP;
+                    return LogStreamHelper::STOP;
                 }
 
                 if ($maxLogLines-- === 0) {
@@ -185,7 +182,7 @@ EOF
         return $sessionLog;
     }
 
-    protected function getSpRequestFromSessionLog(LogStream $sessionLogStream)
+    protected function getSpRequestFromSessionLog(LogStreamHelper $sessionLogStream)
     {
         // Starting at the beginning.
         $sessionLogStream->rewind();
@@ -202,7 +199,7 @@ EOF
         return $message;
     }
 
-    protected function getEbRequestFromSessionLog(LogStream $sessionLogStream)
+    protected function getEbRequestFromSessionLog(LogStreamHelper $sessionLogStream)
     {
         // Starting at the beginning.
         $sessionLogStream->rewind();
@@ -211,7 +208,7 @@ EOF
         $sessionLogStream->foreachLine(function($line) use (&$found) {
             if (strstr($line, '[Message INFO] Redirecting to') && strstr($line, 'SAMLRequest=')) {
                 $found = $line;
-                return LogStream::STOP;
+                return LogStreamHelper::STOP;
             }
         });
 
@@ -222,7 +219,7 @@ EOF
         return $found;
     }
 
-    protected function getIdpResponseFromSessionLog(LogStream $sessionLogStream)
+    protected function getIdpResponseFromSessionLog(LogStreamHelper $sessionLogStream)
     {
         // Starting at the beginning.
         $sessionLogStream->rewind();
@@ -233,7 +230,7 @@ EOF
         return $receivedResponse;
     }
 
-    protected function getEbResponseFromSessionLog(LogStream $sessionLogStream)
+    protected function getEbResponseFromSessionLog(LogStreamHelper $sessionLogStream)
     {
         // Starting at the beginning.
         $sessionLogStream->rewind();
@@ -252,7 +249,7 @@ EOF
         throw new \RuntimeException('No Response found?');
     }
 
-    protected function findReceivedResponse(LogStream $sessionLogStream)
+    protected function findReceivedResponse(LogStreamHelper $sessionLogStream)
     {
         return $this->findFirstChunkedDumpPostfixedWith(
             $sessionLogStream,
@@ -260,7 +257,7 @@ EOF
         );
     }
 
-    protected function findMessageSentViaPost(LogStream $sessionLogStream)
+    protected function findMessageSentViaPost(LogStreamHelper $sessionLogStream)
     {
         return $this->findFirstChunkedDumpPostfixedWith(
             $sessionLogStream,
@@ -268,11 +265,11 @@ EOF
         );
     }
 
-    protected function findFirstChunkedDumpPostfixedWith(LogStream $sessionLogStream, $postfixMessage)
+    protected function findFirstChunkedDumpPostfixedWith(LogStreamHelper $sessionLogStream, $postfixMessage)
     {
         $sessionLogStream->foreachLine(function($line) use ($postfixMessage) {
             if (strpos($line, $postfixMessage)) {
-                return LogStream::STOP;
+                return LogStreamHelper::STOP;
             }
         });
 
@@ -283,7 +280,7 @@ EOF
         $logChunk = '';
         $sessionLogStream->foreachLineReverse(function($line) {
             if (strpos($line, '!CHUNKSTART>')) {
-                return LogStream::STOP;
+                return LogStreamHelper::STOP;
             }
         });
         $sessionLogStream->onEof(function() {
@@ -292,7 +289,7 @@ EOF
         $sessionLogStream->foreachLine(function($line) use (&$logChunk, $postfixMessage) {
             $logChunk .= $line;
             if (strpos($line, $postfixMessage)) {
-                return LogStream::STOP;
+                return LogStreamHelper::STOP;
             }
         });
         $sessionLogStream->onEof(function() use ($postfixMessage) {

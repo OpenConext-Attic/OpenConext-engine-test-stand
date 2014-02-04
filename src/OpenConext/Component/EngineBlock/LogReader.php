@@ -1,31 +1,39 @@
 <?php
 
-namespace OpenConext\EngineTestStand\Service;
+namespace OpenConext\Component\EngineTestStand\Service;
 
 use OpenConext\Corto\XmlToArray;
 use OpenConext\Php\PrintRParser;
 
-class LogReader
+class LogChunkParser
 {
     protected $logFile;
 
-    public static function create($file)
-    {
-        // Absolutize file path.
-        if (substr($file, 0, 1) !== '/') {
-            $file = __DIR__ . '/../../../../' . $file;
-        }
-
-        if (!is_file($file)) {
-            throw new \RuntimeException("Can not find log file '$file'.");
-        }
-
-        return new static($file);
-    }
-
-    protected function __construct($logFile)
+    public function __construct($logFile)
     {
         $this->logFile = $logFile;
+
+        $this->makeAbsolute();
+        $this->verifyLogFile();
+    }
+
+    protected function makeAbsolute()
+    {
+        $startsWithSlash = (substr($this->logFile, 0, 1) === '/');
+        if ($startsWithSlash) {
+            return;
+        }
+
+        $this->logFile = __DIR__ . '/../../../../' . $this->logFile;
+    }
+
+    protected function verifyLogFile()
+    {
+        if (is_file($this->logFile)) {
+            return;
+        }
+
+        throw new \RuntimeException("Can not find log file '{$this->logFile}'.");
     }
 
     public function getAuthnRequest()

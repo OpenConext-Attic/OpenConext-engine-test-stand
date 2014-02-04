@@ -33,7 +33,7 @@ class ServiceProviderController extends Controller
     {
         /** @var SpFixture $spFixture */
         $spFixture = $app['sp-fixture'];
-        /** @var \OpenConext\EngineTestStand\Config $config */
+        /** @var \OpenConext\Component\EngineTestStand\Config $config */
         $config = $app['config'];
 
         $factory = new AuthnRequestFactory();

@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenConext\EngineTestStand\ServiceRegistry;
+namespace OpenConext\Component\EngineBlock\Fixture;
 
 class ServiceRegistryFixture
 {
