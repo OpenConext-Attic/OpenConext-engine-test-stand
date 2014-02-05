@@ -3,8 +3,8 @@
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
 use OpenConext\Component\EngineBlock\Fixture\IdFrame;
+use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
-use OpenConext\Component\EngineTestStand\Service\LogChunkParser;
 use OpenConext\Component\EngineBlock\Fixture\ServiceRegistryFixture;
 
 /**

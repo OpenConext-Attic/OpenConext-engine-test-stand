@@ -2,7 +2,7 @@
 
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
-use OpenConext\Component\EngineTestStand\Service\LogChunkParser;
+use OpenConext\Component\EngineBlock\LogChunkParser;
 
 /**
  * Class ReplayContext

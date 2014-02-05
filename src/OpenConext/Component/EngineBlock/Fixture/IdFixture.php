@@ -2,12 +2,17 @@
 
 namespace OpenConext\Component\EngineBlock\Fixture;
 
+use OpenConext\Component\EngineBlock\DataStore\JsonDataStore;
+
 class IdFixture
 {
+    protected $dataStore;
     protected $frames = array();
 
-    public function __constructor()
+    function __construct($dataStore)
     {
+        $this->dataStore = $dataStore;
+        $this->frames = $this->dataStore->load();
     }
 
     public function addFrame(IdFrame $frame)
@@ -15,25 +20,13 @@ class IdFixture
         $this->frames[] = $frame;
     }
 
-    public function save()
-    {
-        $dir = '/tmp/eb-fixtures/saml2/';
-        $path = $dir . 'id';
-        @mkdir($dir);
-
-        $fixture = array();
-        if (file_exists($path)) {
-            $fixture = json_decode(file_get_contents($path), true);
-        }
-
-        $fixture[] = $idFrame;
-
-        file_put_contents($path, json_encode($fixture));
-        chmod($path, 0777);
-    }
-
     public function clear()
     {
+        $this->frames = array();
+    }
 
+    public function __destruct()
+    {
+        $this->dataStore->save($this->frames);
     }
 }

@@ -1,9 +1,8 @@
 <?php
 
-namespace OpenConext\Component\EngineTestStand\Service;
+namespace OpenConext\Component\EngineBlock;
 
-use OpenConext\Corto\XmlToArray;
-use OpenConext\Php\PrintRParser;
+use OpenConext\Component\EngineBlock\Corto\XmlToArray;
 
 class LogChunkParser
 {

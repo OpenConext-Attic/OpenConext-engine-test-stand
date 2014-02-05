@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenConext\Php;
+namespace OpenConext\Component\EngineBlock;
 
 /**
  * Class AbstractSimpleParser

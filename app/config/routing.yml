@@ -1,0 +1,4 @@
+aie_admin:
+    resource: "@MockEntitiesBundle/Controllers/"
+    type:     annotation
+    prefix:   /

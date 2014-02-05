@@ -2,14 +2,12 @@
 
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
-use Behat\Behat\Exception\PendingException;
-use OpenConext\Component\EngineTestStand\Fixture\MockIdpsFixture;
+use OpenConext\Component\EngineBlock\LogChunkParser;
+use OpenConext\Component\EngineTestStand\EntityRegistry;
+use OpenConext\Component\EngineTestStand\MockIdentityProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
-use OpenConext\Component\EngineTestStand\Service\IdentityProvider;
-use OpenConext\Component\EngineTestStand\Service\LogChunkParser;
 use OpenConext\Component\EngineBlock\Fixture\ServiceRegistryFixture;
-use OpenConext\Component\EngineTestStand\Service\MockIdentityProvider;
-use OpenConext\Component\EngineTestStand\Service\MockIdentityProviderFactory;
+use OpenConext\Component\EngineTestStand\MockIdentityProviderFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
@@ -36,32 +34,32 @@ class MockIdpContext extends AbstractSubContext
     /**
      * @var MockIdentityProviderFactory
      */
-    protected $idpFactory;
+    protected $mockIdpFactory;
 
     /**
-     * @param ServiceRegistryFixture        $serviceRegistryFixture
-     * @param EngineBlock                   $engineBlock
-     * @param ParameterBag                  $mockIdpRegistry
-     * @param MockIdentityProviderFactory   $idpFactory
+     * @param ServiceRegistryFixture $serviceRegistryFixture
+     * @param EngineBlock $engineBlock
+     * @param EntityRegistry $mockIdpRegistry
+     * @param MockIdentityProviderFactory $idpFactory
      */
-    protected function __construct(
+    public function __construct(
         ServiceRegistryFixture $serviceRegistryFixture,
         EngineBlock $engineBlock,
-        ParameterBag $mockIdpRegistry,
-        MockIdentityProviderFactory $idpFactory
+        MockIdentityProviderFactory $idpFactory,
+        EntityRegistry $mockIdpRegistry
     ) {
         $this->serviceRegistryFixture = $serviceRegistryFixture;
         $this->engineBlock = $engineBlock;
+        $this->mockIdpFactory = $idpFactory;
         $this->mockIdpRegistry = $mockIdpRegistry;
-        $this->idpFactory = $idpFactory;
     }
 
     /**
-     * @Given /^an Identity Provider named "([^"]*)" with EntityID "([^"]*)"$/
+     * @Given /^an Identity Provider named "([^"]*)"$/
      */
-    public function anIdentityProviderNamedWithEntityid($name, $entityId)
+    public function anIdentityProviderNamedWithEntityid($name)
     {
-        $this->mockIdpRegistry->set($name, new MockIdentityProvider($name, $entityId));
+        $this->mockIdpRegistry->set($name, $this->mockIdpFactory->createNew($name));
     }
 
     /**
@@ -76,8 +74,9 @@ class MockIdpContext extends AbstractSubContext
         $this->printDebug(print_r($response, true));
 
         // Write out how the IDP should behave
+        /** @var MockIdentityProvider $mockIdp */
         $mockIdp = $this->mockIdpRegistry->get($idpName);
-        $mockIdp->configureFromResponse($response);
+        $mockIdp->setResponse($response);
 
         $ssoUrl = $mockIdp->singleSignOnLocation();
 

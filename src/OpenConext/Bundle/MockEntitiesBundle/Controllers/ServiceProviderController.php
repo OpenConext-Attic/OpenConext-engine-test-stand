@@ -1,63 +1,89 @@
 <?php
 
+namespace OpenConext\Bundle\MockEntitiesBundle\Controllers;
+
+use OpenConext\Component\EngineTestStand\EntityRegistry;
+use OpenConext\Component\EngineTestStand\MockServiceProvider;
+use OpenConext\Component\EngineTestStand\Saml2\AuthnRequestFactory;
+use OpenConext\Component\EngineTestStand\Saml2\Compat\Container;
+use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ServiceProviderController extends Controller
 {
     /**
+     * @Route("/{spName}/login-redirect", name="mock_sp_login_redirect")
+     *
      * @return RedirectResponse
      */
-    public function triggerLoginRedirect()
+    public function triggerLoginRedirect($spName)
     {
-        /** @var SpFixture $spFixture */
-        $spFixture = $app['sp-fixture'];
-        /** @var Config $config */
-        $config = $app['config'];
+        $registry = $this->get('openconext_mock_entities.sp_registry');
+        /** @var MockServiceProvider $mockSp */
+        var_dump($registry);
+        $mockSp = $registry->get($spName);
+        /** @var EngineBlock $engineBlock */
+        $engineBlock = $this->get('openconext_functional_testing.service.engine_block');
 
         $factory = new AuthnRequestFactory();
         $authnRequest = $factory->createFromEntityDescriptor(
-            $spFixture->get(urldecode($spName)),
-            $config->expect('engineblock-url') . '/authentication/idp/single-sign-on'
+            $mockSp->getEntityDescriptor(),
+            $engineBlock->singleSignOnLocation()
         );
 
-        $redirect = new SAML2_HTTPRedirect();
+        $redirect = new \SAML2_HTTPRedirect();
         $url = $redirect->getRedirectURL($authnRequest);
+
         return new RedirectResponse($url);
     }
 
     /**
+     * @Route("/{spName}/login-post", name="mock_sp_login_post")
      *
+     * @param $spName
      */
-    public function triggerLoginPost()
+    public function triggerLoginPost($spName)
     {
-        /** @var SpFixture $spFixture */
-        $spFixture = $app['sp-fixture'];
-        /** @var \OpenConext\Component\EngineTestStand\Config $config */
-        $config = $app['config'];
+        /** @var EntityRegistry $mockSpRegistry */
+        $mockSpRegistry = $this->get('openconext_mock_entities.sp_registry');
+        /** @var EngineBlock $engineBlock */
+        $engineBlock = $this->get('openconext_functional_testing.service.engine_block');
 
         $factory = new AuthnRequestFactory();
         $authnRequest = $factory->createFromEntityDescriptor(
-            $spFixture->get(urldecode($spName)),
-            $config->expect('engineblock-url') . '/authentication/idp/single-sign-on'
+            $mockSpRegistry->get($spName),
+            $engineBlock->singleSignOnLocation()
         );
 
-        $redirect = new SAML2_HTTPPost();
+        $redirect = new \SAML2_HTTPPost();
         $redirect->send($authnRequest);
+
+        /** @var Container $container */
+        $container = \SAML2_Utils::getContainer();
+        return $container->getPostResponse();
     }
 
+    /**
+     * @Route("/{spName}/acs", name="mock_sp_acs")
+     *
+     * @return Response
+     * @throws \RuntimeException
+     */
     public function assertionConsumerAction()
     {
         try {
-            $httpPostBinding = new SAML2_HTTPPost();
+            $httpPostBinding = new \SAML2_HTTPPost();
             $message = $httpPostBinding->receive();
         }
-        catch (Exception $e1) {
+        catch (\Exception $e1) {
             try {
-                $httpRedirectBinding = new SAML2_HTTPRedirect();
+                $httpRedirectBinding = new \SAML2_HTTPRedirect();
                 $message = $httpRedirectBinding->receive();
             }
-            catch (Exception $e2) {
+            catch (\Exception $e2) {
                 throw new \RuntimeException(
                     'Unable to retrieve SAML message?',
                     1,
@@ -66,7 +92,7 @@ class ServiceProviderController extends Controller
             }
         }
 
-        if (!($message instanceof SAML2_Response)) {
+        if (!($message instanceof \SAML2_Response)) {
             throw new \RuntimeException('Unrecognized message type received: ' . get_class($message));
         }
 
@@ -79,23 +105,21 @@ class ServiceProviderController extends Controller
         );
     }
 
-    public function metadataAction()
+    /**
+     * @Route("/{spName}/metadata", name="mock_sp_metadata")
+     *
+     * @param $spName
+     * @return Response
+     */
+    public function metadataAction($spName)
     {
-        $entityMetadata = new SAML2_XML_md_EntityDescriptor();
-        $entityMetadata->entityID = $request->getSchemeAndHttpHost() . "sp.php/{$spName}/metadata";
+        /** @var EntityRegistry $mockSpRegistry */
+        $mockSpRegistry = $this->get('openconext_mock_entities.sp_registry');
+        /** @var MockServiceProvider $mockSp */
+        $mockSp = $mockSpRegistry->get($spName);
 
-        $acsService = new SAML2_XML_md_IndexedEndpointType();
-        $acsService->index = 0;
-        $acsService->Binding  = SAML2_Const::BINDING_HTTP_POST;
-        $acsService->Location = $request->getSchemeAndHttpHost() . "/sp.php/{$spName}/acs";
-
-        $spSsoDescriptor = new SAML2_XML_md_SPSSODescriptor();
-        $spSsoDescriptor->protocolSupportEnumeration = array(SAML2_Const::NS_SAMLP);
-        $spSsoDescriptor->AssertionConsumerService[] = $acsService;
-
-        $entityMetadata->RoleDescriptor[] = $spSsoDescriptor;
         return new Response(
-            $entityMetadata->toXML()->ownerDocument->saveXML(),
+            $mockSp->getEntityDescriptor()->toXML()->ownerDocument->saveXML(),
             200,
             array('Content-Type' => 'application/xml')
         );

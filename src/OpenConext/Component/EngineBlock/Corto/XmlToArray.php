@@ -7,7 +7,7 @@
  * and in the future it should be possible to remove this fork.
  */
 
-namespace OpenConext\Corto;
+namespace OpenConext\Component\EngineBlock\Corto;
 
 if (!class_exists('\XMLWriter')) {
     die('XMLWriter class does not exist! Please install libxml extension for php.' . PHP_EOL);

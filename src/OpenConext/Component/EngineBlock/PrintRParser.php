@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenConext\Php;
+namespace OpenConext\Component\EngineBlock;
 
 /**
  * Parses an OpenConext-EngineBlock print_r or a SAML Response.

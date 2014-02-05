@@ -2,16 +2,37 @@
 
 namespace OpenConext\Component\EngineBlock\Fixture;
 
+use OpenConext\Component\EngineBlock\DataStore\JsonDataStore;
+
 class SuperGlobalsFixture
 {
-    const SERVER = '_SERVER';
+    const SERVER = 'SERVER';
+
+    protected $fixture;
+    protected $data = array();
+
+    public function __construct(JsonDataStore $fixture)
+    {
+        $this->fixture = $fixture;
+        $this->data = $this->fixture->load();
+    }
+
+    public function get($superGlobal)
+    {
+        return $this->data[$superGlobal];
+    }
 
     public function set($superGlobal, $name, $value)
     {
-        @mkdir(self::DIR);
-        file_put_contents(
-            self::DIR . self::SUPER_GLOBAL_SERVER_FILENAME,
-            json_encode(array('HTTP_HOST' => $hostname))
-        );
+        if (!isset($this->data[$superGlobal])) {
+            $this->data[$superGlobal] = array();
+        }
+
+        $this->data[$superGlobal][$name] = $value;
+    }
+
+    public function __destruct()
+    {
+        $this->fixture->save($this->data);
     }
 }

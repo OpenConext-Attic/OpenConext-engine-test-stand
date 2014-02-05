@@ -2,8 +2,8 @@
 Feature:
   Background:
     Given an EngineBlock instance configured with JSON data
-    And an Identity Provider named "Dummy Idp" with EntityID "/dummy/idp"
-    And a Service Provider named "Dummy SP" with EntityID "/dummy/sp"
+    And an Identity Provider named "Replay Idp"
+    And a Service Provider named "Replay SP"
 
   Scenario: Replay login requests
     Given SP "Replay SP" is configured to generate a AuthnRequest like the one at "fixtures/replay/sp.request.log"

@@ -2,44 +2,45 @@
 
 namespace OpenConext\Component\EngineBlock\Fixture;
 
+use OpenConext\Component\EngineBlock\DataStore\AbstractDataStore;
+use OpenConext\Component\EngineBlock\DataStore\FileFlags;
+
 class ServiceRegistryFixture
 {
-    const DIR = '/tmp/eb-fixtures/janus/';
-    const FILENAME = 'entities';
-
     const TYPE_SP = 1;
     const TYPE_IDP = 2;
 
-    protected $entities = array();
+    protected $fixture;
+    protected $fileFlags;
+    protected $data;
 
-    public static function create()
+    public function __construct(AbstractDataStore $dataStore, FileFlags $fileFlags)
     {
-        if (!file_exists(self::DIR . self::FILENAME)) {
-            return new static();
-        }
-        return new static(json_decode(file_get_contents(self::DIR . self::FILENAME), true));
-    }
+        $this->fixture = $dataStore;
+        $this->fileFlags = $fileFlags;
 
-    protected function __construct($entities = array())
-    {
-        $this->entities = $entities;
+        $this->data = $dataStore->load();
     }
 
     public function reset()
     {
-        $this->entities = array();
+        $this->data = array();
+        return $this;
+    }
+
+    public function registerSp($entityId, $acsLocation)
+    {
+        $this->data[$entityId] = array(
+            'workflowState' => 'prodaccepted',
+            'entityId'      => $entityId,
+            'AssertionConsumerService:0:Location' => $acsLocation,
+        );
         return $this;
     }
 
     public function setEntitySsoLocation($entityId, $ssoLocation)
     {
-        $this->entities[$entityId]['SingleSignOnService:0:Location'] = $ssoLocation;
-        return $this;
-    }
-
-    public function setEntityAcsLocation($entityId, $acsLocation)
-    {
-        $this->entities[$entityId]['AssertionConsumerService:0:Location'] = $acsLocation;
+        $this->data[$entityId]['SingleSignOnService:0:Location'] = $ssoLocation;
         return $this;
     }
 
@@ -58,7 +59,14 @@ class ServiceRegistryFixture
     protected function addEntitiesFromJsonConfigExport($configExportUrl, $type = self::TYPE_SP)
     {
         echo "Downloading ServiceRegistry configuration from: '{$configExportUrl}'..." . PHP_EOL;
-        $entities = json_decode(file_get_contents($configExportUrl), true);
+        $data = file_get_contents($configExportUrl);
+        if (!$data) {
+            throw new \RuntimeException('Unable to get data from: ' . $configExportUrl);
+        }
+        $entities = json_decode($data, true);
+        if ($entities === false) {
+            throw new \RuntimeException('Unable to decode json: ' . $data);
+        }
 
         foreach ($entities as $entity) {
             $entity = $this->flattenArray($entity);
@@ -66,7 +74,7 @@ class ServiceRegistryFixture
 
             $entityId = $entity['entityid'];
 
-            $this->entities[$entityId] = $entity;
+            $this->data[$entityId] = $entity;
 
             if (!empty($entity['allowedEntities'])) {
                 $this->whitelist($entityId);
@@ -111,39 +119,34 @@ class ServiceRegistryFixture
 
     public function blacklist($entityId)
     {
-        $filename = self::DIR . 'blacklisted-' . md5($entityId);
-        file_put_contents($filename, $entityId);
+        $this->fileFlags->on('blacklisted-' . md5($entityId), $entityId);
     }
 
     public function whitelist($entityId)
     {
-        @unlink(self::DIR . 'blacklisted-' . md5($entityId));
+        $this->fileFlags->off('blacklisted-' . md5($entityId), $entityId);
     }
 
     public function allow($spEntityId, $idpEntityId)
     {
-        @unlink(self::DIR . 'connection-forbidden-' . md5($spEntityId) . '-' . md5($idpEntityId));
-        $allowedFilePath = self::DIR . 'connection-allowed-' . md5($spEntityId) . '-' . md5($idpEntityId);
-        file_put_contents($allowedFilePath, $spEntityId . ' - ' . $idpEntityId);
+        $this->fileFlags->off('connection-forbidden-' . md5($spEntityId) . '-' . md5($idpEntityId));
+        $this->fileFlags->on(
+            'connection-allowed-' . md5($spEntityId) . '-' . md5($idpEntityId),
+            $spEntityId . ' - ' . $idpEntityId
+        );
     }
 
     public function block($spEntityId, $idpEntityId)
     {
-        @unlink(self::DIR . 'connection-allowed-' . md5($spEntityId) . '-' . md5($idpEntityId));
-        $forbiddenFilePath = self::DIR . 'connection-forbidden-' . md5($spEntityId) . '-' . md5($idpEntityId);
-        file_put_contents($forbiddenFilePath, $spEntityId . ' - ' . $idpEntityId);
-    }
-
-    public function save()
-    {
-        if (!file_exists(self::DIR)) {
-            mkdir(self::DIR, 0777, true);
-        }
-        file_put_contents(self::DIR . self::FILENAME, json_encode($this->entities));
+        $this->fileFlags->off('connection-allowed-' . md5($spEntityId) . '-' . md5($idpEntityId));
+        $this->fileFlags->on(
+            'connection-forbidden-' . md5($spEntityId) . '-' . md5($idpEntityId),
+            $spEntityId . ' - ' . $idpEntityId
+        );
     }
 
     public function __destruct()
     {
-        $this->save();
+        $this->fixture->save($this->data);
     }
 }

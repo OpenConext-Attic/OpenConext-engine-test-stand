@@ -1,0 +1,27 @@
+services:
+    openconext_mock_entities.idp_factory:
+        class: OpenConext\Component\EngineTestStand\MockIdentityProviderFactory
+        arguments: ['@router']
+
+    openconext_mock_entities.sp_factory:
+        class: OpenConext\Component\EngineTestStand\MockServiceProviderFactory
+        arguments: ['@router']
+
+    openconext_mock_entities.idp_registry:
+        class: OpenConext\Component\EngineTestStand\EntityRegistry
+        arguments: ['@openconext_mock_entities.data_store.mock_idps']
+
+    openconext_mock_entities.sp_registry:
+        class: OpenConext\Component\EngineTestStand\EntityRegistry
+        arguments: ['@openconext_mock_entities.data_store.mock_sps']
+
+    openconext_mock_entities.saml_response_factory:
+        class: OpenConext\Component\EngineTestStand\Saml2\ResponseFactory
+
+    openconext_mock_entities.data_store.mock_idps:
+        class: OpenConext\Component\EngineBlock\DataStore\SerializedDataStore
+        arguments: ['%idp_fixture_file%']
+
+    openconext_mock_entities.data_store.mock_sps:
+        class: OpenConext\Component\EngineBlock\DataStore\SerializedDataStore
+        arguments: ['%sp_fixture_file%']

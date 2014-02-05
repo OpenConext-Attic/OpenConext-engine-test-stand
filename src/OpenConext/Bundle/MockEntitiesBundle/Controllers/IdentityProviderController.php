@@ -2,26 +2,29 @@
 
 namespace OpenConext\Bundle\MockEntitiesBundle\Controllers;
 
+use OpenConext\Component\EngineTestStand\MockIdentityProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use OpenConext\Component\EngineTestStand\Fixture\MockIdpsFixture;
+use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\Saml2\ResponseFactory;
 use OpenConext\Component\EngineTestStand\Saml2\Compat\Container;
+use Symfony\Component\Routing\Annotation\Route;
 
 class IdentityProviderController extends Controller
 {
     /**
-     * @Route("/{idpName}/metadata")
+     * @Route("/{idpName}/metadata", name="mock_idp_metadata")
      *
      * @param $idpName
      * @return Response
      */
     public function metadataAction($idpName)
     {
-        /** @var MockIdpsFixture $idpRegistry */
-        $idpRegistry = $this->get('fixture.idp');
-        $entityDescriptor = $idpRegistry->get($idpName);
+        $idpRegistry = $this->get('openconext_mock_entities.idp_registry');
+        /** @var MockIdentityProvider $mockIdp */
+        $mockIdp = $idpRegistry->get($idpName);
+        $entityDescriptor = $mockIdp->getEntityDescriptor();
 
         return new Response(
             $entityDescriptor->toXML()->ownerDocument->saveXML(),
@@ -31,6 +34,8 @@ class IdentityProviderController extends Controller
     }
 
     /**
+     * @Route("/{idpName}/sso", name="mock_idp_sso")
+     *
      * @param $idpName
      * @return Response
      * @throws \RuntimeException
@@ -45,16 +50,16 @@ class IdentityProviderController extends Controller
         }
         $authnRequest = $message;
 
-        /** @var MockIdpsFixture $idpRegistry */
-        $idpRegistry = $this->get('fixture.idp');
-        $entityDescriptor = $idpRegistry->get($idpName);
+        $idpRegistry = $this->get('openconext_mock_entities.idp_registry');
+        /** @var MockIdentityProvider $mockIdp */
+        $mockIdp = $idpRegistry->get($idpName);
 
         /** @var ResponseFactory $responseFactory */
-        $responseFactory = $this->get('saml2.response_factory');
-        $response = $responseFactory->createForEntityWithRequest($entityDescriptor, $authnRequest);
+        $responseFactory = $this->get('openconext_mock_entities.saml_response_factory');
+        $response = $responseFactory->createForEntityWithRequest($mockIdp->getEntityDescriptor(), $authnRequest);
 
-        $destination = (isset($entityDescriptor->Extensions['DestinationOverride']) ?
-            $entityDescriptor->Extensions['DestinationOverride'] :
+        $destination = ($mockIdp->hasDestinationOverride() ?
+            $mockIdp->getDestinationOverride() :
             ($authnRequest->getAssertionConsumerServiceURL() ?
                 $authnRequest->getAssertionConsumerServiceURL() :
                 $response->getDestination()));

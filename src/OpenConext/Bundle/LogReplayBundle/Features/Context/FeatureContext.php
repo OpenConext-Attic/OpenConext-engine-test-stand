@@ -88,11 +88,11 @@ class FeatureContext extends BehatContext implements KernelAwareInterface
     {
         $container = $this->kernel->getContainer();
 
-        $this->useContext(self::SUB_CONTEXT_MINK        , $container->get('behat.context_mink'));
-        $this->useContext(self::SUB_CONTEXT_ENGINE_BLOCK, $container->get('behat.context_engine'));
-        $this->useContext(self::SUB_CONTEXT_MOCK_IDP    , $container->get('behat.context_idp'));
-        $this->useContext(self::SUB_CONTEXT_MOCK_SP     , $container->get('behat.context_sp'));
-        $this->useContext(self::SUB_CONTEXT_REPLAY      , $container->get('behat.context_replay'));
+        $this->useContext(self::SUB_CONTEXT_MINK        , $container->get('openconext_functional_testing.behat_context.mink'));
+        $this->useContext(self::SUB_CONTEXT_ENGINE_BLOCK, $container->get('openconext_functional_testing.behat_context.engine_block'));
+        $this->useContext(self::SUB_CONTEXT_MOCK_IDP    , $container->get('openconext_functional_testing.behat_context.mock_idp'));
+        $this->useContext(self::SUB_CONTEXT_MOCK_SP     , $container->get('openconext_functional_testing.behat_context.mock_sp'));
+        $this->useContext(self::SUB_CONTEXT_REPLAY      , $container->get('openconext_functional_testing.behat_context.replay'));
     }
 
     /**

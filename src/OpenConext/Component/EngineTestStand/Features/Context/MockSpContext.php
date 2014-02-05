@@ -2,35 +2,48 @@
 
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
-use OpenConext\Component\EngineTestStand\Fixture\MockIdpsFixture;
-use OpenConext\Component\EngineTestStand\Fixture\MockSpsFixture;
+use OpenConext\Component\EngineBlock\LogChunkParser;
+use OpenConext\Component\EngineTestStand\EntityRegistry;
+use OpenConext\Component\EngineTestStand\MockServiceProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
-use OpenConext\Component\EngineTestStand\Service\LogChunkParser;
-use OpenConext\Component\EngineTestStand\Service\MockServiceProviderFactory;
+use OpenConext\Component\EngineTestStand\MockServiceProviderFactory;
 use OpenConext\Component\EngineBlock\Fixture\ServiceRegistryFixture;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
+/**
+ * Class MockSpContext
+ * @package OpenConext\Component\EngineTestStand\Features\Context
+ */
 class MockSpContext extends AbstractSubContext
 {
     protected $mockSpRegistry;
     protected $mockIdpRegistry;
     protected $serviceRegistryFixture;
-    protected $spFactory;
+    protected $mockSpFactory;
     /**
      * @var EngineBlock
      */
     protected $engineBlock;
 
+    /**
+     * @param ServiceRegistryFixture $serviceRegistryFixture
+     * @param EngineBlock $engineBlock
+     * @param MockServiceProviderFactory $mockSpFactory
+     * @param EntityRegistry $mockSpRegistry
+     * @param EntityRegistry $mockIdpRegistry
+     */
     public function __construct(
-        MockServiceProviderFactory $spFactory,
-        MockSpsFixture $spsFixture,
-        MockIdpsFixture $idpsFixture,
         ServiceRegistryFixture $serviceRegistryFixture,
-        EngineBlock $engineBlock
+        EngineBlock $engineBlock,
+        MockServiceProviderFactory $mockSpFactory,
+        EntityRegistry $mockSpRegistry,
+        EntityRegistry $mockIdpRegistry
     ) {
-        $this->spFactory = $spFactory;
-        $this->mockSpRegistry = $spsFixture;
-        $this->mockIdpRegistry = $idpsFixture;
         $this->serviceRegistryFixture = $serviceRegistryFixture;
+        $this->engineBlock = $engineBlock;
+        $this->mockSpFactory = $mockSpFactory;
+        $this->mockSpRegistry = $mockSpRegistry;
+        $this->mockIdpRegistry = $mockIdpRegistry;
     }
 
     /**
@@ -39,17 +52,17 @@ class MockSpContext extends AbstractSubContext
     public function iLogInAt($spName)
     {
         $this->getMainContext()->getMinkContext()->visit(
-            $this->spFactory->createForName($spName)
+            $this->mockSpRegistry->get($spName)
                 ->loginUrl()
         );
     }
 
     /**
-     * @Given /^a Service Provider named "([^"]*)" with EntityID "([^"]*)"$/
+     * @Given /^a Service Provider named "([^"]*)"$/
      */
-    public function aServiceProviderNamedWithEntityid($name, $entityId)
+    public function aServiceProviderNamedWithEntityid($name)
     {
-        $this->mockSpRegistry->set($name, new MockServiceProvider($name, $entityId));
+        $this->mockSpRegistry->set($name, $this->mockSpFactory->createNew($name));
     }
 
     /**
@@ -57,15 +70,17 @@ class MockSpContext extends AbstractSubContext
      */
     public function spMayOnlyAccess($spName, $idpName)
     {
-        $spEntityId = $this->mockSpRegistry->get($spName)->entityID;
+        $spEntityId = $this->mockSpRegistry->get($spName)->entityId();
 
-        $idpEntityId = $this->mockIdpRegistry->get($idpName)->entityID;
+        $idpEntityId = $this->mockIdpRegistry->get($idpName)->entityId();
 
         $this->serviceRegistryFixture->blacklist($spEntityId);
         $this->serviceRegistryFixture->allow($spEntityId, $idpEntityId);
 
         // Override the Destination for the Response
-        $this->mockIdpRegistry->overrideResponseDestination($idpName, $this->engineBlock->assertionConsumerLocation());
+        $this->mockIdpRegistry->get($idpName)->overrideResponseDestination(
+            $this->engineBlock->assertionConsumerLocation()
+        );
     }
 
     /**
@@ -80,14 +95,14 @@ class MockSpContext extends AbstractSubContext
         var_dump($authnRequest);
 
         // Write out how the SP should behave
+        /** @var MockServiceProvider $mockSp */
         $mockSp = $this->mockSpRegistry->get($spName);
-        $mockSp->configureFromAuthnRequest($authnRequest);
+        $mockSp->setAuthnRequest($authnRequest);
 
         // Determine the ACS URL for the Mock SP
-        $serviceProvider = $this->spFactory->createForName($spName);
-        $acsUrl = $serviceProvider->assertionConsumerServiceLocation();
+        $acsUrl = $mockSp->assertionConsumerServiceLocation();
 
         // Override the ACS Location for the SP used in the response to go to the Mock SP
-        $this->serviceRegistryFixture->setEntityAcsLocation($authnRequest->getIssuer(), $acsUrl);
+        $this->serviceRegistryFixture->registerSp($authnRequest->getIssuer(), $acsUrl);
     }
 }

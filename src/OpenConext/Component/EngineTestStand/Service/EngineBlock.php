@@ -48,6 +48,7 @@ class EngineBlock
 
     public function singleSignOnLocation()
     {
+        var_dump($this->baseUrl . self::SINGLE_SIGN_ON_PATH);
         return $this->baseUrl . self::SINGLE_SIGN_ON_PATH;
     }
 
@@ -64,20 +65,24 @@ class EngineBlock
     public function overrideHostname($hostname)
     {
         $this->superGlobalFixture->set(SuperGlobalsFixture::SERVER, 'HTTP_HOST', $hostname);
+        return $this;
     }
 
     public function overrideTime($time)
     {
         $this->timeFixture->set($time);
+        return $this;
     }
 
     public function setNewIdsToUse(IdFrame $idFrame)
     {
         $this->idFixture->addFrame($idFrame);
+        return $this;
     }
 
     public function clearNewIds()
     {
         $this->idFixture->clear();
+        return $this;
     }
 }

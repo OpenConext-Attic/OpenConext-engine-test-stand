@@ -1,0 +1,87 @@
+parameters:
+    openconext_functional_testing.id_data_store.file:               /tmp/eb-fixtures/saml2/id
+    openconext_functional_testing.time_data_store.file:             /tmp/eb-fixtures/saml2/time
+    openconext_functional_testing.super_globals_data_store.file:    /tmp/eb-fixtures/saml2/superglobals.json
+    openconext_functional_testing.service_registry_data_store.dir:  /tmp/eb-fixtures/janus/
+    openconext_functional_testing.service_registry_data_store.file: /tmp/eb-fixtures/janus/entities
+
+services:
+    openconext_functional_testing.service.engine_block:
+        class: OpenConext\Component\EngineTestStand\Service\EngineBlock
+        arguments:
+            - '%engineblock_url%'
+            - '@openconext_functional_testing.fixture.time'
+            - '@openconext_functional_testing.fixture.super_globals'
+            - '@openconext_functional_testing.fixture.id'
+
+    #region Behat Contexts
+    openconext_functional_testing.behat_context.mink:
+        class: OpenConext\Component\EngineTestStand\Features\Context\MinkContext
+
+    openconext_functional_testing.behat_context.engine_block:
+        class: OpenConext\Component\EngineTestStand\Features\Context\EngineBlockContext
+        arguments:
+            - '@openconext_functional_testing.fixture.service_registry'
+            - '@openconext_functional_testing.service.engine_block'
+            - '%sps_config_url%'
+            - '%idps_config_url%'
+
+    openconext_functional_testing.behat_context.mock_idp:
+        class: OpenConext\Component\EngineTestStand\Features\Context\MockIdpContext
+        arguments:
+            - '@openconext_functional_testing.fixture.service_registry'
+            - '@openconext_functional_testing.service.engine_block'
+            - '@openconext_mock_entities.idp_factory'
+            - '@openconext_mock_entities.idp_registry'
+
+    openconext_functional_testing.behat_context.mock_sp:
+        class: OpenConext\Component\EngineTestStand\Features\Context\MockSpContext
+        arguments:
+            - '@openconext_functional_testing.fixture.service_registry'
+            - '@openconext_functional_testing.service.engine_block'
+            - '@openconext_mock_entities.sp_factory'
+            - '@openconext_mock_entities.sp_registry'
+            - '@openconext_mock_entities.idp_registry'
+    #endregion Behat Contexts
+
+    #region Fixtures
+    openconext_functional_testing.fixture.service_registry:
+        class: OpenConext\Component\EngineBlock\Fixture\ServiceRegistryFixture
+        arguments:
+            - '@openconext_functional_testing.data_store.service_registry'
+            - '@openconext_functional_testing.data_store.service_registry_flags'
+
+    openconext_functional_testing.fixture.id:
+        class: OpenConext\Component\EngineBlock\Fixture\IdFixture
+        arguments: ['@openconext_functional_testing.data_store.id']
+
+    openconext_functional_testing.fixture.time:
+        class: OpenConext\Component\EngineBlock\Fixture\TimeFixture
+        arguments: ['@openconext_functional_testing.data_store.time']
+
+    openconext_functional_testing.fixture.super_globals:
+        class: OpenConext\Component\EngineBlock\Fixture\SuperGlobalsFixture
+        arguments: ['@openconext_functional_testing.data_store.super_globals']
+    #endregion Fixtures
+
+    #region Data Stores
+    openconext_functional_testing.data_store.service_registry:
+        class: OpenConext\Component\EngineBlock\DataStore\JsonDataStore
+        arguments: ['%openconext_functional_testing.service_registry_data_store.file%']
+
+    openconext_functional_testing.data_store.service_registry_flags:
+        class: OpenConext\Component\EngineBlock\DataStore\FileFlags
+        arguments: ['%openconext_functional_testing.service_registry_data_store.dir%']
+
+    openconext_functional_testing.data_store.id:
+        class: OpenConext\Component\EngineBlock\DataStore\SerializedDataStore
+        arguments: ['%openconext_functional_testing.id_data_store.file%']
+
+    openconext_functional_testing.data_store.time:
+        class: OpenConext\Component\EngineBlock\DataStore\JsonDataStore
+        arguments: ['%openconext_functional_testing.time_data_store.file%']
+
+    openconext_functional_testing.data_store.super_globals:
+        class: OpenConext\Component\EngineBlock\DataStore\JsonDataStore
+        arguments: ['%openconext_functional_testing.super_globals_data_store.file%']
+    #endregion Data Stores
