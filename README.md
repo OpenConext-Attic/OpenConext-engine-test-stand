@@ -136,3 +136,7 @@ See the LICENSE-2.0.txt file
 ## Disclaimer
 
 See the NOTICE.txt file
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/OpenConext/openconext-engine-test-stand/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
