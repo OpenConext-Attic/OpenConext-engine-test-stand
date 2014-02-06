@@ -4,6 +4,7 @@ namespace OpenConext\Component\EngineTestStand\Saml2\Compat;
 
 use Psr;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Intl\Exception\NotImplementedException;
 
 class Container extends \SAML2_Compat_AbstractContainer
 {
@@ -24,6 +25,10 @@ class Container extends \SAML2_Compat_AbstractContainer
      */
     protected $lastDebugMessage = array();
 
+    /**
+     * @param string $type
+     * @return mixed
+     */
     public function getLastDebugMessageOfType($type = self::DEBUG_TYPE_IN)
     {
         return $this->lastDebugMessage[$type];
@@ -74,7 +79,7 @@ class Container extends \SAML2_Compat_AbstractContainer
      */
     public function redirect($url, $data = array())
     {
-        header('Location: ' . $url . (empty($data) ? '' : http_build_query($data)));
+        throw new NotImplementedException('SSP/SAML2 Redirect not implemented! URL: ' . $url);
     }
 
     /**

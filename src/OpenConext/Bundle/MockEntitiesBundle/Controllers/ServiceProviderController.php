@@ -9,6 +9,7 @@ use OpenConext\Component\EngineTestStand\Saml2\Compat\Container;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,9 +19,11 @@ class ServiceProviderController extends Controller
     /**
      * @Route("/{spName}/login-redirect", name="mock_sp_login_redirect")
      *
+     * @param $spName
      * @return RedirectResponse
+     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
      */
-    public function triggerLoginRedirect($spName)
+    public function triggerLoginRedirectAction($spName)
     {
         $mockSpRegistry = $this->get('openconext_mock_entities.sp_registry');
         if (!$mockSpRegistry->has($spName)) {
@@ -49,7 +52,7 @@ class ServiceProviderController extends Controller
      *
      * @param $spName
      */
-    public function triggerLoginPost($spName)
+    public function triggerLoginPostAction($spName)
     {
         /** @var EntityRegistry $mockSpRegistry */
         $mockSpRegistry = $this->get('openconext_mock_entities.sp_registry');
@@ -83,7 +86,7 @@ class ServiceProviderController extends Controller
      * @return Response
      * @throws \RuntimeException
      */
-    public function assertionConsumerAction()
+    public function assertionConsumerAction(Request $request)
     {
         try {
             $httpPostBinding = new \SAML2_HTTPPost();
@@ -107,7 +110,7 @@ class ServiceProviderController extends Controller
             throw new \RuntimeException('Unrecognized message type received: ' . get_class($message));
         }
 
-        $message->xml = base64_decode($_POST['SAMLResponse']);
+        $message->xml = base64_decode($request->get('SAMLResponse'));
 
         return new Response(
             $message->xml,

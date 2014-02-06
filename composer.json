@@ -8,6 +8,7 @@
     },
     "require": {
         "php": ">=5.3.3",
+        "ext-xmlwriter": "*",
         "phpunit/phpunit": "3.7.*",
         "ibuildings/qa-tools": "1.1.*",
 
@@ -39,10 +40,7 @@
         "phpspec/php-diff": "1.0.*",
 
         "openconext/engineblock-fixtures": "*"
-    },
-    "require-dev": {
-        "ibuildings/qa-tools": "~1.1"
-    },
+    }
     "scripts": {
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -87,10 +85,6 @@
                     "files": ["xmlseclibs.php"]
                 }
             }
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/relaxnow/qa-tools"
         },
         {
             "type": "vcs",

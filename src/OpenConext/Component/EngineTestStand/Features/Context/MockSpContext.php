@@ -9,7 +9,6 @@ use OpenConext\Component\EngineTestStand\MockServiceProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use OpenConext\Component\EngineTestStand\MockServiceProviderFactory;
 use OpenConext\Component\EngineBlockFixtures\ServiceRegistryFixture;
-use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
  * Class MockSpContext
