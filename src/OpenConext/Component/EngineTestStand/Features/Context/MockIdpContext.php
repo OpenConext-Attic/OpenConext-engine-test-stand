@@ -6,7 +6,7 @@ use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\MockIdentityProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
-use OpenConext\Component\EngineBlock\Fixture\ServiceRegistryFixture;
+use OpenConext\Component\EngineBlockFixtures\ServiceRegistryFixture;
 use OpenConext\Component\EngineTestStand\MockIdentityProviderFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
 

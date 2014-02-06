@@ -10,6 +10,7 @@ use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ServiceProviderController extends Controller
@@ -21,10 +22,13 @@ class ServiceProviderController extends Controller
      */
     public function triggerLoginRedirect($spName)
     {
-        $registry = $this->get('openconext_mock_entities.sp_registry');
+        $mockSpRegistry = $this->get('openconext_mock_entities.sp_registry');
+        if (!$mockSpRegistry->has($spName)) {
+            throw new BadRequestHttpException('No SP found for ' . $spName);
+        }
+
         /** @var MockServiceProvider $mockSp */
-        var_dump($registry);
-        $mockSp = $registry->get($spName);
+        $mockSp = $mockSpRegistry->get($spName);
         /** @var EngineBlock $engineBlock */
         $engineBlock = $this->get('openconext_functional_testing.service.engine_block');
 
@@ -49,12 +53,19 @@ class ServiceProviderController extends Controller
     {
         /** @var EntityRegistry $mockSpRegistry */
         $mockSpRegistry = $this->get('openconext_mock_entities.sp_registry');
+        if (!$mockSpRegistry->has($spName)) {
+            throw new BadRequestHttpException('No SP found for ' . $spName);
+        }
+
+        /** @var MockServiceProvider $mockSp */
+        $mockSp = $mockSpRegistry->get($spName);
+
         /** @var EngineBlock $engineBlock */
         $engineBlock = $this->get('openconext_functional_testing.service.engine_block');
 
         $factory = new AuthnRequestFactory();
         $authnRequest = $factory->createFromEntityDescriptor(
-            $mockSpRegistry->get($spName),
+            $mockSp,
             $engineBlock->singleSignOnLocation()
         );
 

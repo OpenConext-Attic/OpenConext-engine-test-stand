@@ -2,7 +2,7 @@
 
 namespace OpenConext\Component\EngineTestStand;
 
-use OpenConext\Component\EngineBlock\DataStore\SerializedDataStore;
+use OpenConext\Component\EngineBlockFixtures\DataStore\SerializedDataStore;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**

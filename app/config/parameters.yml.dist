@@ -14,8 +14,10 @@ parameters:
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
 
+    router.request_context.host: engine-test-stand.demo.openconext.org
+    router.request_context.scheme: https
+
     engineblock_url:        https://engine-test.demo.openconext.org
-    engine_test_stand_url:  https://engine-test-stand.demo.openconext.org
 
     # Where can we find the JANUS JSON export for IDPs and SPs?
     idps_config_url:        /tmp/saml20-sp-remote.json

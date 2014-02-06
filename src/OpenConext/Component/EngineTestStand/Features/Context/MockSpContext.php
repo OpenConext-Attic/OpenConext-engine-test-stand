@@ -2,12 +2,13 @@
 
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
+use OpenConext\Component\EngineBlockFixtures\IdFrame;
 use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\MockServiceProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use OpenConext\Component\EngineTestStand\MockServiceProviderFactory;
-use OpenConext\Component\EngineBlock\Fixture\ServiceRegistryFixture;
+use OpenConext\Component\EngineBlockFixtures\ServiceRegistryFixture;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
@@ -62,7 +63,9 @@ class MockSpContext extends AbstractSubContext
      */
     public function aServiceProviderNamedWithEntityid($name)
     {
-        $this->mockSpRegistry->set($name, $this->mockSpFactory->createNew($name));
+        $mockSp = $this->mockSpFactory->createNew($name);
+        $this->mockSpRegistry->set($name, $mockSp);
+        $this->serviceRegistryFixture->registerSp($mockSp->entityId(), $mockSp->assertionConsumerServiceLocation());
     }
 
     /**
@@ -92,17 +95,36 @@ class MockSpContext extends AbstractSubContext
         $logReader = new LogChunkParser($authnRequestLogFile);
         $authnRequest = $logReader->getAuthnRequest();
 
-        var_dump($authnRequest);
+        $this->printDebug(print_r($authnRequest, true));
 
         // Write out how the SP should behave
         /** @var MockServiceProvider $mockSp */
         $mockSp = $this->mockSpRegistry->get($spName);
-        $mockSp->setAuthnRequest($authnRequest);
+
+        $oldEntityId = $mockSp->entityId();
+        $newEntityId = $authnRequest->getIssuer();
+
+        $mockSp
+            ->setEntityId($newEntityId)
+            ->setAuthnRequest($authnRequest);
 
         // Determine the ACS URL for the Mock SP
         $acsUrl = $mockSp->assertionConsumerServiceLocation();
 
         // Override the ACS Location for the SP used in the response to go to the Mock SP
-        $this->serviceRegistryFixture->registerSp($authnRequest->getIssuer(), $acsUrl);
+        $this->serviceRegistryFixture
+            ->move($oldEntityId, $newEntityId)
+            ->setEntityAcsLocation($newEntityId, $acsUrl);
+    }
+
+    /**
+     * @Given /^SP "([^"]*)" does not require consent$/
+     */
+    public function spDoesNotRequireConsent($spName)
+    {
+        /** @var MockServiceProvider $mockSp */
+        $mockSp = $this->mockSpRegistry->get($spName);
+
+        $this->serviceRegistryFixture->setEntityNoConsent($mockSp->entityId());
     }
 }

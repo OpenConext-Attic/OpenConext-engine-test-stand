@@ -39,6 +39,7 @@ class MockIdentityProvider
 
     public function setResponse(\SAML2_Response $response)
     {
+        $this->descriptor->entityID = $response->getIssuer();
         $this->descriptor->Extensions['Response'] = $response;
     }
 

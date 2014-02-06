@@ -2,10 +2,10 @@
 
 namespace OpenConext\Component\EngineTestStand\Service;
 
-use OpenConext\Component\EngineBlock\Fixture\IdFixture;
-use OpenConext\Component\EngineBlock\Fixture\IdFrame;
-use OpenConext\Component\EngineBlock\Fixture\SuperGlobalsFixture;
-use OpenConext\Component\EngineBlock\Fixture\TimeFixture;
+use OpenConext\Component\EngineBlockFixtures\IdFixture;
+use OpenConext\Component\EngineBlockFixtures\IdFrame;
+use OpenConext\Component\EngineBlockFixtures\SuperGlobalsFixture;
+use OpenConext\Component\EngineBlockFixtures\TimeFixture;
 
 /**
  * Class EngineBlock
@@ -48,7 +48,6 @@ class EngineBlock
 
     public function singleSignOnLocation()
     {
-        var_dump($this->baseUrl . self::SINGLE_SIGN_ON_PATH);
         return $this->baseUrl . self::SINGLE_SIGN_ON_PATH;
     }
 

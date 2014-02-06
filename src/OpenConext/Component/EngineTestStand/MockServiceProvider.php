@@ -45,9 +45,15 @@ class MockServiceProvider
         throw new \RuntimeException('No SPSSODescriptor for MockServiceProvider?');
     }
 
+    public function setEntityId($entityId)
+    {
+        $this->descriptor->entityID = $entityId;
+        return $this;
+    }
+
     public function setAuthnRequest(\SAML2_AuthnRequest $authnRequest)
     {
-        $this->descriptor->entityID = $authnRequest->getIssuer();
         $this->descriptor->Extensions['AuthnRequest'] = $authnRequest;
+        return $this;
     }
 }

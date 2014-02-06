@@ -19,9 +19,9 @@ services:
         class: OpenConext\Component\EngineTestStand\Saml2\ResponseFactory
 
     openconext_mock_entities.data_store.mock_idps:
-        class: OpenConext\Component\EngineBlock\DataStore\SerializedDataStore
+        class: OpenConext\Component\EngineBlockFixtures\DataStore\SerializedDataStore
         arguments: ['%idp_fixture_file%']
 
     openconext_mock_entities.data_store.mock_sps:
-        class: OpenConext\Component\EngineBlock\DataStore\SerializedDataStore
+        class: OpenConext\Component\EngineBlockFixtures\DataStore\SerializedDataStore
         arguments: ['%sp_fixture_file%']

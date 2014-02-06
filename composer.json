@@ -33,10 +33,12 @@
         "incenteev/composer-parameter-handler": "~2.0",
 
         "simplesamlphp/simplesamlphp": "dev-trunk",
-        "simplesamlphp/saml2": "0.2.0",
+        "simplesamlphp/saml2": "0.3.0",
         "openid/php-openid": "dev-master#a287b2d85e753c84b3b883ed8ee3ffe8692c8477 as 2.2.2",
 
-        "phpspec/php-diff": "1.0.*"
+        "phpspec/php-diff": "1.0.*",
+
+        "openconext/engineblock-fixtures": "*"
     },
     "require-dev": {
         "ibuildings/qa-tools": "~1.1"
@@ -89,6 +91,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/relaxnow/qa-tools"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/relaxnow/OpenConext-engineblock-fixtures"
         }
     ]
 }
