@@ -10,7 +10,6 @@
         "php": ">=5.3.3",
         "ext-xmlwriter": "*",
         "phpunit/phpunit": "3.7.*",
-        "ibuildings/qa-tools": "1.1.*",
 
         "behat/behat": "*",
         "behat/mink": "*",
@@ -40,7 +39,10 @@
         "phpspec/php-diff": "1.0.*",
 
         "openconext/engineblock-fixtures": "*"
-    }
+    },
+    "require-dev": {
+        "ibuildings/qa-tools": "*"
+    },
     "scripts": {
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -89,6 +91,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/relaxnow/OpenConext-engineblock-fixtures"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ibuildingsnl/qa-tools"
         }
     ]
 }
