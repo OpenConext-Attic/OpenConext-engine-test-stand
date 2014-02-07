@@ -172,6 +172,7 @@ EOF
                     throw new \RuntimeException('Unable to find start of log flush in 100 lines?');
                 }
             });
+
             $sessionLog->onEof(function() {
                 throw new \RuntimeException("Unable to return to where queue was flushed?");
             });
@@ -267,17 +268,20 @@ EOF
 
     protected function findFirstChunkedDumpPostfixedWith(LogStreamHelper $sessionLogStream, $postfixMessage)
     {
+        // Loop through all the lines until you find the "Received message" line.
         $sessionLogStream->foreachLine(function($line) use ($postfixMessage) {
             if (strpos($line, $postfixMessage)) {
                 return LogStreamHelper::STOP;
             }
         });
 
+        // If we reached the end then it must not have been found.
         if ($sessionLogStream->isEof()) {
             return false;
         }
+        // Otherwise we start collecting the log chunk.
 
-        $logChunk = '';
+        // Find your way back to CHUNKSTART then stop.
         $sessionLogStream->foreachLineReverse(function($line) {
             if (strpos($line, '!CHUNKSTART>')) {
                 return LogStreamHelper::STOP;
@@ -286,6 +290,9 @@ EOF
         $sessionLogStream->onEof(function() {
             throw new \RuntimeException('No CHUNKSTART');
         });
+
+        // Go forward again, collecting lines, until we find the "Received message" line.
+        $logChunk = '';
         $sessionLogStream->foreachLine(function($line) use (&$logChunk, $postfixMessage) {
             $logChunk .= $line;
             if (strpos($line, $postfixMessage)) {
