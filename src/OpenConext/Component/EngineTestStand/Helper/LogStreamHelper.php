@@ -18,8 +18,12 @@ class LogStreamHelper
 
     public function foreachLine($fn)
     {
-        while (!feof($this->stream)) {
-            if ($fn(fgets($this->stream, static::LINE_LENGTH)) === false) {
+        while (!feof($this->stream) && $line = stream_get_line($this->stream, self::LINE_LENGTH, "\n")) {
+            $line .= "\n";
+
+            $callbackResult = $fn($line);
+
+            if ($callbackResult === false) {
                 return $this;
             }
         }
