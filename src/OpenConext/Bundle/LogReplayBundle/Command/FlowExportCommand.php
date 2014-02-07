@@ -161,8 +161,32 @@ EOF
             $maxLogLines = 100;
 
             // Look back for the start of the flush, collecting all the lines in reverse.
-            $sessionLog->foreachLineReverse(function($line) use ($sessionLog, &$reversed, &$maxLogLines) {
-                $reversed .= $line;
+            $chunk = '';
+            $sessionLog->foreachLineReverse(function($line) use ($sessionLog, &$reversed, &$maxLogLines, &$chunk) {
+                // EXCEPT for chunks, which must be kept in their original order...
+
+                // And when we find a CHUNKEND we start 'Chunk mode' and append line to the chunk
+                if (strstr($line, ']!CHUNKEND>')) {
+                    $chunk = $line;
+                    return;
+                }
+
+                // So when we find a CHUNKSTART we start 'Chunk mode'
+                if (strstr($line, ']!CHUNKSTART>')) {
+                    $chunk = $line . $chunk;
+                    $reversed .= $chunk;
+                    $chunk = '';
+                    return;
+                }
+
+                // If we're not in chunk mode we can append the line though.
+                // Going in reverse order so basically reversing the line order.
+                if (!$chunk) {
+                    $reversed .= $line;
+                }
+                else {
+                    $chunk = $line . $chunk;
+                }
 
                 if (strstr($line, '[Message INFO] FLUSHING')) {
                     return LogStreamHelper::STOP;
