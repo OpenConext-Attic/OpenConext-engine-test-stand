@@ -82,7 +82,7 @@ EOF
             4 => '',
         );
         while (!feof($logStream)) {
-            $logLine = stream_get_line($logStream, 1024, "\n");
+            $logLine = stream_get_line($logStream, 2048, "\n");
 
             if (strpos($logLine, $sessionId) === false) {
                 continue;

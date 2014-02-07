@@ -4,7 +4,7 @@ namespace OpenConext\Component\EngineTestStand\Helper;
 
 class LogStreamHelper
 {
-    const LINE_LENGTH = 1024;
+    const LINE_LENGTH = 2048;
 
     const STOP = false;
 
