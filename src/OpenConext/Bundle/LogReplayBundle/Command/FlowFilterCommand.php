@@ -131,47 +131,4 @@ EOF
             }
         }
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function executeOld(InputInterface $input, OutputInterface $output)
-    {
-        $logFile = $input->getArgument('logfile');
-        if (!is_file($logFile)) {
-            $output->writeln("<error>Logfile does not exist</error>");
-            return 64;
-        }
-        $logStream = fopen($logFile, 'r');
-
-        $sessionsStream = new FileOrStdInHelper($input, $output, 'sessionFile');
-        $sessions = $sessionsStream->mapLines(function($line) { return trim($line); });
-
-        $count = 0;
-        rewind($logStream);
-
-        while (!feof($logStream)) {
-            $logLine = stream_get_line($logStream, 1024, "\n");
-            $count++;
-
-            if ($count % 10000 === 0) {
-                $output->writeln("Linecount: $count");
-            }
-
-            foreach ($sessions as $index => $sessionId) {
-                if (strpos($logLine, $sessionId) === false) {
-                    continue;
-                }
-
-                if (!preg_match("/EB\\[[\\w\\d]+\\]\\[$sessionId\\]/", $logLine)) {
-                    continue;
-                }
-
-                $output->writeln($sessionId);
-                unset($sessions[$index]);
-            }
-        }
-
-        return 0;
-    }
 }
