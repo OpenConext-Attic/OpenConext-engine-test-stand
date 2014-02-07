@@ -8,6 +8,8 @@ namespace OpenConext\Component\EngineBlock;
  */
 class PrintRParser extends AbstractSimpleParser
 {
+    const KEY_CHARACTERS = '\w\d:\\\/.-';
+
     /**
      * Parse the given content into an array.
      *
@@ -31,7 +33,7 @@ class PrintRParser extends AbstractSimpleParser
         $this->consume('\(');
         $array = array();
         $this->debug('Array START');
-        while ($this->lookAhead("\n *\\[[\\w\\d:]+\\] =>")) {
+        while ($this->lookAhead("\n *\\[[" . static::KEY_CHARACTERS . "]+\\] =>")) {
             $array = $this->arrayContent($array);
         }
         $this->debug('Array STOP');
@@ -69,7 +71,7 @@ class PrintRParser extends AbstractSimpleParser
         $this->newline();
         $this->optionalSpace();
         $this->consume('\[');
-        $key = $this->consume('[\w\d:]+');
+        $key = $this->consume('[' . static::KEY_CHARACTERS . ']+');
         $this->consume('\]');
 
         return $key;
