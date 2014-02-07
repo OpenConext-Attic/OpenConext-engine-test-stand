@@ -39,7 +39,7 @@ class LogStreamHelper
         while (fseek($this->stream, $pos, SEEK_CUR) !== -1) {
             $char = fgetc($this->stream);
 
-            if ("\n" !== $char) {
+            if ($char !== "\n") {
                 $line = $char . $line;
                 continue;
             }
