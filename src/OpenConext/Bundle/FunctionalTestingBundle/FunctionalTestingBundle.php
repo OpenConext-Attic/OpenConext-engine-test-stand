@@ -13,5 +13,5 @@ class FunctionalTestingBundle extends Bundle
 {
 }
 
-// @todo Doesn't belong here, should be moved somewhere better
+// HACK Doesn't belong here, should be moved somewhere better
 \SAML2_Compat_ContainerSingleton::setContainer(new Container());

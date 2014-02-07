@@ -2,7 +2,6 @@
 
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
-use OpenConext\Component\EngineBlockFixtures\IdFrame;
 use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\MockServiceProvider;

@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "53747c3cf4f864f1cbd06ccd29e20248",
+    "hash": "dc22280c4f5e99105ef48923547700e0",
     "packages": [
         {
             "name": "behat/behat",
@@ -437,7 +437,7 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan H. Wage",
+                    "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
                     "homepage": "http://www.jwage.com/",
                     "role": "Creator"
@@ -2250,7 +2250,7 @@
             "source": {
                 "type": "svn",
                 "url": "http://simplesamlphp.googlecode.com/svn",
-                "reference": "/trunk/@3359"
+                "reference": "/trunk/@3360"
             },
             "require": {
                 "openid/php-openid": "dev-master#ee669c6a9d4d95b58ecd9b6945627276807694fb as 2.2.2",
@@ -2294,7 +2294,7 @@
                 "sp",
                 "ws-federation"
             ],
-            "time": "2014-02-05 14:42:33"
+            "time": "2014-02-06 16:02:23"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -2769,7 +2769,7 @@
                     "email": "fabien@symfony.com"
                 },
                 {
-                    "name": "Armin Ronacher",
+                    "name": "Armin Ronacher2",
                     "email": "armin.ronacher@active-4.com"
                 }
             ],
@@ -2842,16 +2842,16 @@
         },
         {
             "name": "ibuildings/qa-tools",
-            "version": "v1.1.10.2",
+            "version": "1.1.10",
             "source": {
                 "type": "git",
-                "url": "git@github.com:ibuildingsnl/qa-tools.git",
-                "reference": "d7ecf0b2862045fba325eebf5aed113c97661095"
+                "url": "https://github.com/relaxnow/qa-tools.git",
+                "reference": "90a58d00178e7013ffe6f0c1f36e1386de8e84fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ibuildingsnl/qa-tools/zipball/d7ecf0b2862045fba325eebf5aed113c97661095",
-                "reference": "d7ecf0b2862045fba325eebf5aed113c97661095",
+                "url": "https://api.github.com/repos/relaxnow/qa-tools/zipball/90a58d00178e7013ffe6f0c1f36e1386de8e84fc",
+                "reference": "90a58d00178e7013ffe6f0c1f36e1386de8e84fc",
                 "shasum": ""
             },
             "require": {
@@ -2887,10 +2887,10 @@
             },
             "description": "Ibuildings standard QA Tools",
             "support": {
-                "source": "https://github.com/ibuildingsnl/qa-tools/tree/v1.1.10.2",
-                "issues": "https://github.com/ibuildingsnl/qa-tools/issues"
+                "source": "https://github.com/relaxnow/qa-tools/tree/1.1.10",
+                "issues": "https://github.com/relaxnow/qa-tools/issues"
             },
-            "time": "2014-01-27 09:54:15"
+            "time": "2014-02-07 13:57:58"
         },
         {
             "name": "instaclick/php-webdriver",

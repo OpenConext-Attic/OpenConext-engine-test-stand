@@ -63,7 +63,7 @@ Feature:
      And I should see "Service Provider:"
      And I should not see "Identity Provider:"
 
-  #@todo test:
+  #test:
     # - The assertion is not valid yet. This happens when the clock on the IdP is running ahead.
     # - We cannot locate the session identifier of the user. This happens when: a user is directed to another LB or we loose their session info for some other reason.
     # - The ACL does not allow a user to access the service: This happens with SPs the use our transparent (idps) metadata and send an AuthnRequest for an IdP this is not allowed access to the SP.

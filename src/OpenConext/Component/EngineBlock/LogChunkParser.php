@@ -133,7 +133,7 @@ class LogChunkParser
         $matchedChunkStartLines = preg_match("/!CHUNKSTART>.+samlp:$tagName/", $content, $chunkStartMatches);
         $matchedChunkEndLines   = preg_match('/!CHUNKEND>/', $content, $chunkEndMatches);
 
-        if ($matchedChunkStartLines === false OR $matchedChunkEndLines === false) {
+        if ($matchedChunkStartLines === false || $matchedChunkEndLines === false) {
             throw new \RuntimeException('Matching for CHUNKSTART and CHUNKEND gave an error');
         }
 

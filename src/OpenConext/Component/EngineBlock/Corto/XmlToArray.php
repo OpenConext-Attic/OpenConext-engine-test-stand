@@ -174,7 +174,7 @@ class XmlToArray
 
         xml_parser_free($parser);
         self::$_singulars = array_fill_keys(self::$_singulars, 1);
-        $return = self::_xml2array($values);
+        $return = self::xml2arrayRecursive($values);
         self::$_singulars = array_keys(self::$_singulars);
         return $return[0];
     }
@@ -191,7 +191,7 @@ class XmlToArray
 
     protected static $counter = 0;
 
-    protected static function _xml2array(&$elements, $level = 1, $namespaceMapping = array())
+    protected static function xml2arrayRecursive(&$elements, $level = 1, $namespaceMapping = array())
     {
         $newElement = array();
 
@@ -216,7 +216,7 @@ class XmlToArray
 
             $complete = array();
 
-            $tagName = self::_mapNamespacesToSaml($tagName);
+            $tagName = self::mapNamespacesToSaml($tagName);
 
             $complete[self::TAG_NAME_PFX] = $tagName;
             if ($hashedAttributes) {
@@ -226,7 +226,7 @@ class XmlToArray
                 $complete[self::VALUE_PFX] = $attributeValue;
             }
             if ($value['type'] == 'open') {
-                $cs = self::_xml2array($elements, $level + 1, $namespaceMapping);
+                $cs = self::xml2arrayRecursive($elements, $level + 1, $namespaceMapping);
                 foreach($cs as $c) {
                     $tagName = $c[self::TAG_NAME_PFX];
                     unset($c[self::TAG_NAME_PFX]);
@@ -251,7 +251,7 @@ class XmlToArray
      * @param string $tagName
      * @return string
      */
-    private static function _mapNamespacesToSaml($tagName)
+    private static function mapNamespacesToSaml($tagName)
     {
         // find prefix and elementname. Prefix is lookup of the namespace within self::_namespaces
         $fullNamespace =  substr($tagName, 0, strrpos($tagName, ':'));
@@ -296,13 +296,13 @@ class XmlToArray
             }
         }
 
-        self::_array2xml($hash, $elementName, $writer);
+        self::array2xmlRecursive($hash, $elementName, $writer);
 
         $writer->endDocument();
         return $writer->outputMemory();
     }
 
-    protected static function _array2xml($hash, $elementName, \XMLWriter $writer, $level = 0)
+    protected static function array2xmlRecursive($hash, $elementName, \XMLWriter $writer, $level = 0)
     {
         if (is_array($hash) && array_key_exists(self::COMMENT_PFX, $hash)) {
             $writer->writeComment($hash[self::COMMENT_PFX]);
@@ -324,7 +324,7 @@ class XmlToArray
         foreach((array)$hash as $key => $value) {
             if (is_int($key)) {
                 // Normal numeric index, value is probably a hash structure, recurse...
-                self::_array2xml($value, $elementName, $writer, $level + 1);
+                self::array2xmlRecursive($value, $elementName, $writer, $level + 1);
 
             } elseif ($key === self::VALUE_PFX) {
                 $writer->text($value);
@@ -336,7 +336,7 @@ class XmlToArray
                 $writer->writeAttribute(substr($key, 1), $value);
 
             } elseif (is_array($value) || $value === self::PLACEHOLDER_VALUE) {
-                self::_array2xml($value, $key, $writer, $level + 1);
+                self::array2xmlRecursive($value, $key, $writer, $level + 1);
             }
             else {
                 throw new EngineBlock_Corto_XmlToArray_Exception(

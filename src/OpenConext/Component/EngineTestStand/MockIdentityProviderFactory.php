@@ -2,7 +2,6 @@
 
 namespace OpenConext\Component\EngineTestStand;
 
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Routing\RouterInterface;
 
 /**

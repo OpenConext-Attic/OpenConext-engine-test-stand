@@ -3,10 +3,6 @@
 namespace OpenConext\Bundle\LogReplayBundle\Features\Context;
 
 use OpenConext\Component\EngineTestStand\Features\Context\MinkContext;
-use OpenConext\Component\EngineTestStand\Features\Context\EngineBlockContext;
-use OpenConext\Component\EngineTestStand\Features\Context\MockIdpContext;
-use OpenConext\Component\EngineTestStand\Features\Context\MockSpContext;
-use OpenConext\Component\EngineTestStand\Features\Context\ReplayContext;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Behat\Symfony2Extension\Context\KernelAwareInterface;
