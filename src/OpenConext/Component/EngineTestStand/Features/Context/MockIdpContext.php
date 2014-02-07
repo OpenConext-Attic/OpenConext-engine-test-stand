@@ -69,7 +69,7 @@ class MockIdpContext extends AbstractSubContext
     {
         // Parse a Response out of the log file
         $logReader = new LogChunkParser($responseLogFile);
-        $response = $logReader->getResponse();
+        $response = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_RESPONSE);
 
         $this->printDebug(print_r($response, true));
 

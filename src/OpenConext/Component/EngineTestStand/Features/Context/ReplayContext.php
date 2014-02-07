@@ -26,7 +26,7 @@ class ReplayContext extends AbstractSubContext
 
         // Parse a Response out of the log file
         $logReader = new LogChunkParser($requestLogFile);
-        $request = $logReader->getAuthnRequest();
+        $request = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_AUTHN_REQUEST);
 
         $this->printDebug(print_r($request, true));
 
@@ -51,7 +51,7 @@ class ReplayContext extends AbstractSubContext
     {
         // Parse a Response out of the log file
         $logReader = new LogChunkParser($responseLogFile);
-        $response = $logReader->getResponse();
+        $response = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_RESPONSE);
         $originalResponseXml = $this->formatXml($response->xml);
         $replayedResponseXml = $this->formatXml($this->getMainContext()->getPageContent());
 

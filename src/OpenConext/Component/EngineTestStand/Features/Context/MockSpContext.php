@@ -92,7 +92,7 @@ class MockSpContext extends AbstractSubContext
     {
         // Parse an AuthnRequest out of the log file
         $logReader = new LogChunkParser($authnRequestLogFile);
-        $authnRequest = $logReader->getAuthnRequest();
+        $authnRequest = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_AUTHN_REQUEST);
 
         $this->printDebug(print_r($authnRequest, true));
 

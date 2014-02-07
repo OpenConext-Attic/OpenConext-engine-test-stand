@@ -58,7 +58,7 @@ class EngineBlockContext extends AbstractSubContext
     {
         // Parse an AuthnRequest out of the log file
         $logReader = new LogChunkParser($authnRequestLogFile);
-        $authnRequest = $logReader->getAuthnRequest();
+        $authnRequest = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_AUTHN_REQUEST);
 
         $hostname = parse_url($authnRequest->getIssuer(), PHP_URL_HOST);
         $this->engineBlock->overrideHostname($hostname);
@@ -75,7 +75,7 @@ class EngineBlockContext extends AbstractSubContext
     {
         // Parse an AuthnRequest out of the log file
         $logReader = new LogChunkParser($responseLogFile);
-        $response = $logReader->getResponse();
+        $response = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_RESPONSE);
         $responseAssertions = $response->getAssertions();
 
         $this->engineBlock->setNewIdsToUse(new IdFrame(array(
