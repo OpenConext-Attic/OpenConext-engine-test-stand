@@ -6,24 +6,22 @@ use OpenConext\Component\EngineBlock\Corto\XmlToArray;
 
 class LogChunkParser
 {
+    const MESSAGE_TYPE_RESPONSE         = 'Response';
+    const MESSAGE_TYPE_AUTHN_REQUEST    = 'AuthnRequest';
+
+    const RESPONSE_URL_KEY      = 'SAMLResponse';
+    const RESPONSE_TAGNAME      = 'Response';
+
+    const AUTHN_REQUEST_URL_KEY = 'SAMLRequest';
+    const AUTHN_REQUEST_TAGNAME = 'AuthnRequest';
+
     protected $logFile;
 
     public function __construct($logFile)
     {
         $this->logFile = $logFile;
 
-        $this->makeAbsolute();
         $this->verifyLogFile();
-    }
-
-    protected function makeAbsolute()
-    {
-        $startsWithSlash = (substr($this->logFile, 0, 1) === '/');
-        if ($startsWithSlash) {
-            return;
-        }
-
-        $this->logFile = __DIR__ . '/../../../../' . $this->logFile;
     }
 
     protected function verifyLogFile()
@@ -35,79 +33,116 @@ class LogChunkParser
         throw new \RuntimeException("Can not find log file '{$this->logFile}'.");
     }
 
-    public function getAuthnRequest()
+    public function getMessage($messageType)
     {
-        $content = file_get_contents($this->logFile);
-
-        return $this->getAuthnRequestFromUrl($content);
-    }
-
-    protected function getAuthnRequestFromUrl($content)
-    {
-        $matches = array();
-        if (!preg_match('/SAMLRequest=([A-Za-z0-9+\/%]+)/', $content, $matches)) {
-            throw new \RuntimeException("No SAMLRequest found in logfile {$this->logFile}?");
+        if (!in_array($messageType, array(self::MESSAGE_TYPE_RESPONSE, self::MESSAGE_TYPE_AUTHN_REQUEST))) {
+            throw new \RuntimeException("Unsupported messageType: " . $messageType);
         }
 
+        $content = $this->load();
+
+        $message = $this->getMessageFromChunk($messageType, $content);
+        if ($message) {
+            return $message;
+        }
+
+        $message = $this->getMessageFromUrl($messageType, $content);
+        if ($message) {
+            return $message;
+        }
+
+        throw new \RuntimeException('Unable to get message from log chunk!');
+    }
+
+    protected function load()
+    {
+        return file_get_contents($this->logFile);
+    }
+
+    protected function getMessageFromUrl($messageType, $content)
+    {
+        $urlKey = $this->getUrlKeyForMessageType($messageType);
+
+        $matches = array();
+        if (!preg_match("/$urlKey=([A-Za-z0-9+\\/%]+)/", $content, $matches)) {
+            return false;
+        }
         $request = $matches[1];
+
         $request = urldecode($request);
+
         $request = base64_decode($request);
         if (!$request) {
             throw new \RuntimeException("Unable to base64 decode found SAMLRequest: '{$matches[1]}'");
         }
+
         $request = gzinflate($request);
         if (!$request) {
             throw new \RuntimeException("Unable to gzip inflate found SAMLRequest: '{$matches[1]}'");
         }
+
         $document = new \DOMDocument();
         $document->loadXML($request);
 
-        $authnRequest = new \SAML2_AuthnRequest($document->firstChild);
-        $authnRequest->xml = $request;
-        return $authnRequest;
+        $messageObj = $this->createObjectForMessageType($messageType, $document->firstChild);
+        $messageObj->xml = $request;
+
+        return $messageObj;
     }
 
-    public function getResponse()
+    protected function getUrlKeyForMessageType($messageType)
     {
-        $response = $this->getResponseStructure();
+        if ($messageType === static::MESSAGE_TYPE_AUTHN_REQUEST) {
+            return static::AUTHN_REQUEST_URL_KEY;
+        }
+        return static::RESPONSE_URL_KEY;
+    }
 
-        if (isset($response['__']['Raw'])) {
-            $xml = $response['__']['Raw'];
+    protected function getMessageFromChunk($messageType, $content)
+    {
+        $content = $this->getChunkContent($messageType, $content);
+        if ($content === false) {
+            return false;
+        }
+
+        $parser = new PrintRParser($content);
+        $messageArray = $parser->parse();
+
+        if (isset($messageArray['__']['Raw'])) {
+            $xml = $messageArray['__']['Raw'];
         }
         else {
-            $xml = XmlToArray::array2xml($response);
+            $xml = XmlToArray::array2xml($messageArray);
         }
 
         $document = new \DOMDocument();
         $document->loadXML($xml);
 
-        $response = new \SAML2_Response($document->firstChild);
-        $response->xml = $xml;
-        return $response;
+        $messageObj = $this->createObjectForMessageType($messageType, $document->firstChild);
+        $messageObj->xml = $xml;
+        return $messageObj;
     }
 
-    public function getResponseStructure()
+    protected function getChunkContent($messageType, $content)
     {
-        $content = $this->getContent();
-        $content = $this->cleanContent($content);
+        $tagName = $this->getTagNameForMessageType($messageType);
 
-        $parser = new PrintRParser($content);
-        $response = $parser->parse();
-
-        return $response;
-    }
-
-    protected function getContent()
-    {
-        return file_get_contents($this->logFile);
-    }
-
-    protected function cleanContent($content)
-    {
         $chunkStartMatches = array();
         $chunkEndMatches = array();
-        if (!preg_match('/!CHUNKSTART>.+samlp:Response/', $content, $chunkStartMatches) || !preg_match('/!CHUNKEND>/', $content, $chunkEndMatches)) {
-            throw new \RuntimeException('No samlp:Response found or incomplete chunk!');
+
+        $matchedChunkStartLines = preg_match("/!CHUNKSTART>.+samlp:$tagName/", $content, $chunkStartMatches);
+        $matchedChunkEndLines   = preg_match('/!CHUNKEND>/', $content, $chunkEndMatches);
+
+        if ($matchedChunkStartLines === false OR $matchedChunkEndLines === false) {
+            throw new \RuntimeException('Matching for CHUNKSTART and CHUNKEND gave an error');
+        }
+
+        if (!$matchedChunkStartLines XOR !$matchedChunkEndLines) {
+            throw new \RuntimeException('CHUNKSTART found without CHUNKEND or vice versa');
+        }
+
+        if ($matchedChunkStartLines === 0) {
+            return false;
         }
 
         // Chop off everything before the CHUNKSTART
@@ -124,5 +159,20 @@ class LogChunkParser
 
         return $content;
     }
-}
 
+    protected function getTagNameForMessageType($messageType)
+    {
+        if ($messageType === static::MESSAGE_TYPE_AUTHN_REQUEST) {
+            return static::AUTHN_REQUEST_TAGNAME;
+        }
+        return static::RESPONSE_TAGNAME;
+    }
+
+    protected function createObjectForMessageType($messageType, \DOMElement $root)
+    {
+        if ($messageType === static::MESSAGE_TYPE_AUTHN_REQUEST) {
+            return new \SAML2_AuthnRequest($root);
+        }
+        return new \SAML2_Response($root);
+    }
+}
