@@ -23,7 +23,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     protected function parseArray()
     {
-        $this->debug(__FUNCTION__);
+        $this->debug('-> ' . __FUNCTION__);
         $this->optionalSpace();
         $this->consume('Array');
         $this->newline();
@@ -48,7 +48,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     protected function arrayContent($array)
     {
-        $this->debug(__FUNCTION__);
+        $this->debug('-> ' . __FUNCTION__);
         $key = $this->arrayKey();
         $this->optionalSpace();
         $this->consume('=>');
@@ -65,7 +65,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     protected function arrayKey()
     {
-        $this->debug(__FUNCTION__);
+        $this->debug('-> ' . __FUNCTION__);
         $this->newline();
         $this->optionalSpace();
         $this->consume('\[');
@@ -80,7 +80,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     protected function arrayValue()
     {
-        $this->debug(__FUNCTION__);
+        $this->debug('-> ' . __FUNCTION__);
         $this->optionalSpace();
         if ($this->lookAhead('Array')) {
             return $this->parseArray();
@@ -98,7 +98,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     protected function multiLineString()
     {
-        $this->debug(__FUNCTION__);
+        $this->debug('-> ' . __FUNCTION__);
         $string = $this->consume("[^\n]+");
 
         $isMultiLine = false;
@@ -119,7 +119,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     protected function optionalSpace()
     {
-        $this->debug(__FUNCTION__);
+        $this->debug('-> ' . __FUNCTION__);
         return $this->consume(' *');
     }
 
@@ -128,7 +128,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     protected function requiredSpace()
     {
-        $this->debug(__FUNCTION__);
+        $this->debug('-> ' . __FUNCTION__);
         return $this->consume(' +');
     }
 
@@ -137,7 +137,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     protected function newline()
     {
-        $this->debug(__FUNCTION__);
+        $this->debug('-> ' . __FUNCTION__);
         return $this->consume("\n");
     }
 
@@ -146,7 +146,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     protected function optionalNewline()
     {
-        $this->debug(__FUNCTION__);
+        $this->debug('-> ' . __FUNCTION__);
         if ($this->lookAhead("\n")) {
             return $this->newline();
         }
