@@ -104,13 +104,29 @@ class PrintRParser extends AbstractSimpleParser
         $string = $this->consume("[^\n]+");
 
         $isMultiLine = false;
-        while(!$this->lookAhead("[\n]{1,2} *\\[[\\w\\d:]+\\] =>") && !$this->lookAhead("[\n]{1,2} *\\)\n")) {
+        while (true) {
+            $nextLineIsAttributeDefinition = $this->lookAhead("[\n]{1,2} *\\[[" . static::KEY_CHARACTERS . "]+\\] =>");
+            $nextLineIsArrayEnd = $this->lookAhead("[\n]{1,2} *\\)\n");
+
+            if (!$isMultiLine) {
+                if ($nextLineIsAttributeDefinition || $nextLineIsArrayEnd) {
+                    return $string;
+                }
+            }
+            else {
+                if ($nextLineIsArrayEnd) {
+                    $this->newline();
+                    return $string;
+                }
+                if ($nextLineIsAttributeDefinition) {
+                    return $string;
+                }
+            }
+
             $string .= $this->newline();
             $string .= $this->consume('.+');
+
             $isMultiLine = true;
-        }
-        if ($isMultiLine) {
-            $this->optionalNewline();
         }
 
         return $string;
