@@ -11,3 +11,4 @@
 /composer.phar
 build
 cache.properties
+fixtures
