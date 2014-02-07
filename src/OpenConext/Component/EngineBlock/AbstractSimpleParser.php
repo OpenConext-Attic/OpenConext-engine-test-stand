@@ -47,6 +47,7 @@ abstract class AbstractSimpleParser
      */
     protected function consume($terminal)
     {
+        $this->debug("  ->consume('$terminal')");
         $match = $this->match($terminal);
 
         // Throw a fit if we can't find what we expected.
@@ -60,7 +61,7 @@ abstract class AbstractSimpleParser
 
         // Strip the consumed bit off the beginning.
         $this->content = substr($this->content, strlen($match));
-        $this->debug('consumed: "' . str_replace("\n",'\n', $match) . '"');
+        $this->debug('  consumed: "' . str_replace("\n",'\n', $match) . '"');
 
         return $match;
     }
@@ -75,7 +76,7 @@ abstract class AbstractSimpleParser
         $this->debug(
             "lookAhead('" . str_replace("\n", '\n', $terminal) . "') " .
             ($matched ? "found: '" . str_replace("\n", '\n', $matched) . "'" : 'not found' ) .
-            " in content: '" . str_replace("\n", '\n', substr($this->content, 0, 60)) . "'"
+            " in content: '" . str_replace("\n", '\n', substr($this->content, 0, 120)) . "'"
         );
         return ($matched !== false);
     }
