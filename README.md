@@ -27,7 +27,7 @@ See **Installation - Replaying**.
 * PHP > 5.3
 
 ## Installation - Base ##
-````
+````bash
 git clone git@github.com:OpenConext/OpenConext-engine-test-stand.git &&
 cd OpenConext-engine-test-stand &&
 wget -P bin https://getcomposer.org/composer.phar &&
@@ -57,7 +57,7 @@ Example:
 ````
 
 Add the following to /etc/surfconext/engineblock.ini :
-````
+````ini
 [functional-testing : testing]
 
 functionalTesting.engineBlockUrl = "https://engine-test.demo.openconext.org"
@@ -73,7 +73,7 @@ What this does is trigger EngineBlock to use a different DI Container that allow
 ### Usage Scenario: Functional Testing ###
 
 Run the normal Functional Tests like so:
-````
+````bash
 ./bin/behat.sh
 ````
 
@@ -89,7 +89,7 @@ replay
 
 ##### Step 1: Find sessions #####
 
-````
+````bash
 [vagrant@localhost OpenConext-engine-test-stand]$ app/console replay:sessions:find --help
 Usage:
  replay:sessions:find [file]
@@ -122,7 +122,7 @@ Help:
 
 ##### Step 2: Filtering sessions for those with a flow #####
 
-````
+````bash
 [vagrant@localhost OpenConext-engine-test-stand]$ app/console replay:flow:filter --help
 Usage:
  replay:flow:filter logfile [sessionFile]
@@ -156,7 +156,7 @@ Help:
 
 ##### Step 3: Exporting flows #####
 
-````
+````bash
 [vagrant@localhost OpenConext-engine-test-stand]$ app/console replay:flow:export --help
 Usage:
  replay:flow:export logfile [outputDir] [sessionFile]
@@ -188,19 +188,19 @@ Help:
 ````
 
 #### Step 4: Selecting a flow ####
-````
+````bash
 ln -s /dir/to/eb-flow-abcdef123 fixtures/replay
 ````
 
 #### Step 5: Replaying a Flow ####
-````
+````bash
 ./bin/behat-replay.sh
 ````
 
 ### Usage: Other ###
 
 Dumping the internal state of the mock Service Registry
-```
+```bash
 php ./bin/dump_sr_state.php
 ```
 
