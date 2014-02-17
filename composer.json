@@ -38,7 +38,8 @@
 
         "phpspec/php-diff": "1.0.*",
 
-        "openconext/engineblock-fixtures": "*"
+        "openconext/engineblock-fixtures": "*",
+        "symfony/icu": "~1.0"
     },
     "require-dev": {
         "ibuildings/qa-tools": "*"
