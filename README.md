@@ -39,7 +39,7 @@ wget -P bin https://getcomposer.org/composer.phar &&
 php -d memory_limit=1G bin/composer.phar install
 ````
 
-### Installation - Replaying ###
+### Replaying ###
 
 To make functional testing work do the following:
 
