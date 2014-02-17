@@ -204,7 +204,7 @@ ln -s /dir/to/eb-flow-abcdef123 fixtures/replay
 ./bin/behat-replay.sh
 ````
 
-### 5. Usage: Other ###
+### Usage: Other ###
 
 Dumping the internal state of the mock Service Registry
 ```bash
