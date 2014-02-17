@@ -17,6 +17,7 @@ class PrintRParser extends AbstractSimpleParser
      */
     public function parse()
     {
+        $this->debug($this->content);
         return $this->parseArray();
     }
 
