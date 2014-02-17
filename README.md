@@ -21,10 +21,20 @@ It does this by:
     * ID Generation
 
 It requires that EngineBlock has been configured for the special 'functional-testing' environment.
-See **Installation**.
+See **Installation - Replaying**.
 
+## Requirements ##
+* PHP > 5.3
 
-## Installation ##
+## Installation - Base ##
+````
+git clone git@github.com:OpenConext/OpenConext-engine-test-stand.git &&
+cd OpenConext-engine-test-stand &&
+wget -P bin https://getcomposer.org/composer.phar &&
+php -d memory_limit=1G bin/composer.phar update
+````
+
+## Installation - Replaying ##
 
 To make functional testing work do the following:
 
@@ -60,57 +70,134 @@ What this does is trigger EngineBlock to use a different DI Container that allow
 * Overriding of time (make EB think it's running at some earlier time)
 * Overriding generation of IDs for SAML messages.
 
+### Usage Scenario: Functional Testing ###
 
-### Configuration ###
-
-Configure the Engine Test Stand (ETS) with a config.json, an example for the OpenConext Demo environment:
-
-    {
-        "engineblock-url"       : "https://engine-test.demo.openconext.org",
-        "engine-test-stand-url" : "https://engine-test-stand.demo.openconext.org",
-
-        "#idps-config-url"       : "https://stats.surfconext.nl/sr2/html-ssp-viewer-acc/saml20-idp-remote.json",
-        "idps-config-url"       : "/tmp/sr-dump/saml20-idp-remote.json",
-
-        "#sps-config-url"        : "https://stats.surfconext.nl/sr2/html-ssp-viewer-acc/saml20-sp-remote.json",
-        "sps-config-url"        : "/tmp/sr-dump/saml20-sp-remote.json",
-
-        "serviceregistry-fixture-file"  : "/fixtures/db/serviceregistry.state.php.serialized",
-        "idp-fixture-file"              : "/fixtures/db/idp.states.php.serialized",
-        "sp-fixture-file"               : "/fixtures/db/sp.states.php.serialized"
-    }
-
-
-* **engineblock-url**
-Base URL (protocol + '://' + hostname) where ETS can send SAML AuthnRequests to.
-
-* **engine-test-stand-url**
-Base URL (protocol + '://' + hostname) where ETS is hosted.
-Used to tell EB where it can expect SAML AuthnRequests from.
-
-* **idps-config-url**
-URL (or file) containing a JSON export of the ServiceRegistry database.
-
-* **sps-config-url**
-URL (or file) containing a JSON export of the ServiceRegistry database.
-
-* **idp-fixture-file**
-Where the ETS Mock Idp may store it's state, relative to the ETS root directory.
-
-* **sp-fixture-file**
-Where the ETS Mock Sp may store it's state, relative to the ETS root directory.
-
-### Usage ###
-
-Running the normal functional tests:
+Run the normal Functional Tests like so:
 ````
 ./bin/behat.sh
 ````
 
-Replaying a SAML Request / Response cycle:
+### Usage Scenario: SAML Replaying ###
+
+#### Exporting 'flows' ####
+````
+replay
+  replay:flow:export                    Export all flows to a directory
+  replay:flow:filter                    Find all sessions that have an attached flow
+  replay:sessions:find                  Find all sessions from log output on STDIN or for a given file
+````
+
+##### Step 1: Find sessions #####
+
+````
+[vagrant@localhost OpenConext-engine-test-stand]$ app/console replay:sessions:find --help
+Usage:
+ replay:sessions:find [file]
+
+Arguments:
+ file                  File to get sessions from.
+
+Options:
+ --help (-h)           Display this help message.
+ --quiet (-q)          Do not output any message.
+ --verbose (-v|vv|vvv) Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+ --version (-V)        Display this application version.
+ --ansi                Force ANSI output.
+ --no-ansi             Disable ANSI output.
+ --no-interaction (-n) Do not ask any interactive question.
+ --shell (-s)          Launch the shell.
+ --process-isolation   Launch commands from shell as a separate process.
+ --env (-e)            The Environment name. (default: "dev")
+ --no-debug            Switches off debug mode.
+
+Help:
+ The replay:sessions:find command finds session identifiers in log output:
+ 
+ grep "something" engineblock.log | php app/console replay:sessions:find
+ 
+ The optional argument specifies to read from a file (by default it reads from the standard input):
+ 
+ php app/console replay:sessions:find engineblock.log
+````
+
+##### Step 2: Filtering sessions for those with a flow #####
+
+````
+[vagrant@localhost OpenConext-engine-test-stand]$ app/console replay:flow:filter --help
+Usage:
+ replay:flow:filter logfile [sessionFile]
+
+Arguments:
+ logfile               File to get flows from
+ sessionFile           File to get sessions from.
+
+Options:
+ --help (-h)           Display this help message.
+ --quiet (-q)          Do not output any message.
+ --verbose (-v|vv|vvv) Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+ --version (-V)        Display this application version.
+ --ansi                Force ANSI output.
+ --no-ansi             Disable ANSI output.
+ --no-interaction (-n) Do not ask any interactive question.
+ --shell (-s)          Launch the shell.
+ --process-isolation   Launch commands from shell as a separate process.
+ --env (-e)            The Environment name. (default: "dev")
+ --no-debug            Switches off debug mode.
+
+Help:
+ The replay:flow:filter filters out the sessions with incomplete flows:
+ 
+ grep "something" engineblock.log | app/console functional-testing:sessions:find | app/console replay:flow:filter engineblock.log
+ 
+ The optional argument specifies to read from a file (by default it reads from the standard input):
+ 
+ php app/console replay:flow:filter engineblock.log engineblock.log
+````
+
+##### Step 3: Exporting flows #####
+
+````
+[vagrant@localhost OpenConext-engine-test-stand]$ app/console replay:flow:export --help
+Usage:
+ replay:flow:export logfile [outputDir] [sessionFile]
+
+Arguments:
+ logfile               File to get flows from.
+ outputDir             Directory to export flows to (defaults to the temporary directory). (default: "/tmp")
+ sessionFile           File to get sessions from (defaults to STDIN).
+
+Options:
+ --help (-h)           Display this help message.
+ --quiet (-q)          Do not output any message.
+ --verbose (-v|vv|vvv) Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+ --version (-V)        Display this application version.
+ --ansi                Force ANSI output.
+ --no-ansi             Disable ANSI output.
+ --no-interaction (-n) Do not ask any interactive question.
+ --shell (-s)          Launch the shell.
+ --process-isolation   Launch commands from shell as a separate process.
+ --env (-e)            The Environment name. (default: "dev")
+ --no-debug            Switches off debug mode.
+
+Help:
+ The replay:flow:export command exports flows to a directory, example:
+ 
+ grep "something" engineblock.log | app/console fu:sessions:find | app/console fu:flow:filter | app/console replay:flow:export engineblock.log
+ 
+ Find log lines with "something", from those get the sessions, for those sessions give only the sessions that have complete flows, for those sessions export all flows to /tmp.
+````
+
+#### Step 4: Selecting a flow ####
+````
+ln -s /dir/to/eb-flow-abcdef123 fixtures/replay
+````
+
+#### Step 5: Replaying a Flow ####
 ````
 ./bin/behat-replay.sh
 ````
+
+### Usage: Other ###
 
 Dumping the internal state of the mock Service Registry
 ```
