@@ -23,10 +23,15 @@ It does this by:
 It requires that EngineBlock has been configured for the special 'functional-testing' environment.
 See **Installation - Replaying**.
 
-## Requirements ##
+## 1. Requirements ##
 * PHP > 5.3
 
-## Installation - Base ##
+## Installation ##
+### Recommended: Base from Release (Recommended) ###
+Get the latest release from [the Releases page](https://github.com/OpenConext/OpenConext-engine-test-stand/releases) and unzip it in a directory of choice.
+
+
+### Alternative: Base from Source (For Development) ###
 ````bash
 git clone git@github.com:OpenConext/OpenConext-engine-test-stand.git &&
 cd OpenConext-engine-test-stand &&
@@ -34,11 +39,11 @@ wget -P bin https://getcomposer.org/composer.phar &&
 php -d memory_limit=1G bin/composer.phar install
 ````
 
-## Installation - Replaying ##
+### Installation - Replaying ###
 
 To make functional testing work do the following:
 
-### Host EngineBlock on 'functional-testing' environment ###
+#### Host EngineBlock on 'functional-testing' environment ####
 
 Example:
 ````
@@ -69,6 +74,8 @@ What this does is trigger EngineBlock to use a different DI Container that allow
 * Loading of ServiceRegistry data from a file on disk (fixture)
 * Overriding of time (make EB think it's running at some earlier time)
 * Overriding generation of IDs for SAML messages.
+
+## Using Engine Test Stand ##
 
 ### Usage Scenario: Functional Testing ###
 
@@ -197,7 +204,7 @@ ln -s /dir/to/eb-flow-abcdef123 fixtures/replay
 ./bin/behat-replay.sh
 ````
 
-### Usage: Other ###
+### 5. Usage: Other ###
 
 Dumping the internal state of the mock Service Registry
 ```bash
