@@ -4,10 +4,10 @@ Feature:
     Given an EngineBlock instance configured with JSON data
     And an Identity Provider named "Replay Idp"
     And a Service Provider named "Replay SP"
-    And SP "Replay SP" does not require consent
 
   Scenario: Replay login requests
     Given SP "Replay SP" is configured to generate a AuthnRequest like the one at "fixtures/replay/sp.request.log"
+    And SP "Replay SP" does not require consent
     And IdP "Replay Idp" is configured to return a Response like the one at "fixtures/replay/idp.response.log"
     And SP "Replay SP" may only access "Replay Idp"
     And EngineBlock is expected to send a AuthnRequest like the one at "fixtures/replay/eb.request.log"
