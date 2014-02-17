@@ -92,44 +92,32 @@ class PrintRParser extends AbstractSimpleParser
             return '';
         }
 
-        return $this->multiLineString();
+        $string = $this->consume("[^\n]+");
+        return $this->multiLineString($string);
     }
 
     /**
      * @return bool|string
      */
-    protected function multiLineString()
+    protected function multiLineString($string = '')
     {
         $this->debug('-> ' . __FUNCTION__);
-        $string = $this->consume("[^\n]+");
 
-        $isMultiLine = false;
-        while (true) {
-            $nextLineIsAttributeDefinition = $this->lookAhead("[\n]{1,2} *\\[[" . static::KEY_CHARACTERS . "]+\\] =>");
-            $nextLineIsArrayEnd = $this->lookAhead("[\n]{1,2} *\\)\n");
+        $doubleNewline                  = $this->lookAhead("\n\n");
+        $nextLineIsAttributeDefinition  = $this->lookAhead("[\n]{1,2} *\\[[" . static::KEY_CHARACTERS . "]+\\] =>");
+        $nextLineIsArrayEnd             = $this->lookAhead("[\n]{1,2} *\\)\n");
 
-            if (!$isMultiLine) {
-                if ($nextLineIsAttributeDefinition || $nextLineIsArrayEnd) {
-                    return $string;
-                }
+        if ($nextLineIsAttributeDefinition || $nextLineIsArrayEnd) {
+            if ($doubleNewline) {
+                $this->newline();
             }
-            else {
-                if ($nextLineIsArrayEnd) {
-                    $this->newline();
-                    return $string;
-                }
-                if ($nextLineIsAttributeDefinition) {
-                    return $string;
-                }
-            }
-
-            $string .= $this->newline();
-            $string .= $this->consume('.+');
-
-            $isMultiLine = true;
+            return $string;
         }
 
-        return $string;
+        $string .= $this->newline();
+        $string .= $this->consume('.+');
+
+        return $this->multiLineString($string);
     }
 
     /**
