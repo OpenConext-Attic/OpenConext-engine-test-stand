@@ -111,7 +111,7 @@ class MockSpContext extends AbstractSubContext
 
         // Override the ACS Location for the SP used in the response to go to the Mock SP
         $this->serviceRegistryFixture
-            ->move($oldEntityId, $newEntityId)
+            ->remove($oldEntityId)
             ->setEntityAcsLocation($newEntityId, $acsUrl);
     }
 
