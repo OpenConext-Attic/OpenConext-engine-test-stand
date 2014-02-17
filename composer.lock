@@ -7,16 +7,16 @@
     "packages": [
         {
             "name": "behat/behat",
-            "version": "v2.5.1",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Behat.git",
-                "reference": "b688e3c4bd65ef867d2ec0a0cf8e621c166e259b"
+                "reference": "a12154aae8a09248637fbca8ef3b2ef2ac71f2aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Behat/zipball/b688e3c4bd65ef867d2ec0a0cf8e621c166e259b",
-                "reference": "b688e3c4bd65ef867d2ec0a0cf8e621c166e259b",
+                "url": "https://api.github.com/repos/Behat/Behat/zipball/a12154aae8a09248637fbca8ef3b2ef2ac71f2aa",
+                "reference": "a12154aae8a09248637fbca8ef3b2ef2ac71f2aa",
                 "shasum": ""
             },
             "require": {
@@ -65,7 +65,7 @@
                 "Behat",
                 "Symfony2"
             ],
-            "time": "2013-11-24 10:17:18"
+            "time": "2014-02-12 17:03:46"
         },
         {
             "name": "behat/gherkin",
@@ -803,7 +803,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -942,16 +944,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "v2.4.1",
+            "version": "v2.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "84373d05a4198ec380918d535abf83c454c3867f"
+                "reference": "0363a5548d9263f979f9ca149decb9cfc66419ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/84373d05a4198ec380918d535abf83c454c3867f",
-                "reference": "84373d05a4198ec380918d535abf83c454c3867f",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/0363a5548d9263f979f9ca149decb9cfc66419ab",
+                "reference": "0363a5548d9263f979f9ca149decb9cfc66419ab",
                 "shasum": ""
             },
             "require": {
@@ -1014,7 +1016,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-11-12 12:40:13"
+            "time": "2014-02-08 16:35:09"
         },
         {
             "name": "fabpot/goutte",
@@ -1062,7 +1064,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "A simple PHP Web Scraper",
@@ -1512,16 +1516,16 @@
         },
         {
             "name": "openconext/engineblock-fixtures",
-            "version": "0.1.6",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/relaxnow/OpenConext-engineblock-fixtures.git",
-                "reference": "e6cefb2122ad04eaf98331c6e467147dabca27b0"
+                "reference": "b6bd6d6def684f84bcca00b7dcf02a651ee36016"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/relaxnow/OpenConext-engineblock-fixtures/zipball/e6cefb2122ad04eaf98331c6e467147dabca27b0",
-                "reference": "e6cefb2122ad04eaf98331c6e467147dabca27b0",
+                "url": "https://api.github.com/repos/relaxnow/OpenConext-engineblock-fixtures/zipball/b6bd6d6def684f84bcca00b7dcf02a651ee36016",
+                "reference": "b6bd6d6def684f84bcca00b7dcf02a651ee36016",
                 "shasum": ""
             },
             "require": {
@@ -1538,10 +1542,10 @@
             ],
             "description": "OpenConext Component for EngineBlock Fixtures",
             "support": {
-                "source": "https://github.com/relaxnow/OpenConext-engineblock-fixtures/tree/0.1.6",
+                "source": "https://github.com/relaxnow/OpenConext-engineblock-fixtures/tree/0.2.0",
                 "issues": "https://github.com/relaxnow/OpenConext-engineblock-fixtures/issues"
             },
-            "time": "2014-02-06 12:55:19"
+            "time": "2014-02-17 11:08:10"
         },
         {
             "name": "openid/php-openid",
@@ -1553,7 +1557,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openid/php-openid/zipball/654dd027437960f7e5fc261fd9ebff2a4efcaf89",
+                "url": "https://api.github.com/repos/openid/php-openid/zipball/cb53da46b73baff46ae325eb799d91703acc3780",
                 "reference": "a287b2d85e753c84b3b883ed8ee3ffe8692c8477",
                 "shasum": ""
             },
@@ -1871,16 +1875,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "3.7.30",
+            "version": "3.7.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2f33258fa5a0c330515b7deba2bc040fa5c3953b"
+                "reference": "d24e9877331039582497052cc3c4d9f465b88210"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2f33258fa5a0c330515b7deba2bc040fa5c3953b",
-                "reference": "2f33258fa5a0c330515b7deba2bc040fa5c3953b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/d24e9877331039582497052cc3c4d9f465b88210",
+                "reference": "d24e9877331039582497052cc3c4d9f465b88210",
                 "shasum": ""
             },
             "require": {
@@ -1941,7 +1945,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-01-31 08:54:33"
+            "time": "2014-02-03 07:46:27"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2081,7 +2085,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "The base bundle for the Symfony Distributions",
@@ -2188,7 +2194,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "This bundle generates code for you",
@@ -2250,7 +2258,7 @@
             "source": {
                 "type": "svn",
                 "url": "http://simplesamlphp.googlecode.com/svn",
-                "reference": "/trunk/@3360"
+                "reference": "/trunk/@3363"
             },
             "require": {
                 "openid/php-openid": "dev-master#ee669c6a9d4d95b58ecd9b6945627276807694fb as 2.2.2",
@@ -2294,7 +2302,7 @@
                 "sp",
                 "ws-federation"
             ],
-            "time": "2014-02-06 16:02:23"
+            "time": "2014-02-09 18:11:44"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -2331,7 +2339,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Chris Corbyn"
@@ -2560,7 +2570,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -2573,16 +2585,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.4.1",
+            "version": "v2.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "377a5fb23bfdc2fb616610b7b7ab7cc9a50e614d"
+                "reference": "b70633f92ff71ef490af4c17e7ca3f3bf3d0f304"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/377a5fb23bfdc2fb616610b7b7ab7cc9a50e614d",
-                "reference": "377a5fb23bfdc2fb616610b7b7ab7cc9a50e614d",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/b70633f92ff71ef490af4c17e7ca3f3bf3d0f304",
+                "reference": "b70633f92ff71ef490af4c17e7ca3f3bf3d0f304",
                 "shasum": ""
             },
             "require": {
@@ -2670,7 +2682,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -2682,7 +2696,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2014-01-05 02:12:11"
+            "time": "2014-02-12 19:27:03"
         },
         {
             "name": "twig/extensions",
@@ -2719,7 +2733,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "Common additional features for Twig that do not directly belong in core",
@@ -2733,16 +2749,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.15.0",
+            "version": "v1.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "85e4ff98000157ff753d934b9f13659a953f5666"
+                "reference": "1fb5784662f438d7d96a541e305e28b812e2eeed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/85e4ff98000157ff753d934b9f13659a953f5666",
-                "reference": "85e4ff98000157ff753d934b9f13659a953f5666",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/1fb5784662f438d7d96a541e305e28b812e2eeed",
+                "reference": "1fb5784662f438d7d96a541e305e28b812e2eeed",
                 "shasum": ""
             },
             "require": {
@@ -2766,11 +2782,19 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
-                    "name": "Armin Ronacher2",
-                    "email": "armin.ronacher@active-4.com"
+                    "name": "Armin Ronacher",
+                    "email": "armin.ronacher@active-4.com",
+                    "role": "Project Founder"
+                },
+                {
+                    "name": "Twig Team",
+                    "homepage": "https://github.com/fabpot/Twig/graphs/contributors",
+                    "role": "Contributors"
                 }
             ],
             "description": "Twig, the flexible, fast, and secure template language for PHP",
@@ -2778,7 +2802,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-12-06 07:47:10"
+            "time": "2014-02-13 10:19:29"
         }
     ],
     "packages-dev": [
@@ -3102,16 +3126,16 @@
         },
         {
             "name": "sebastian/version",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/version.git",
-                "reference": "5d879c9144bf41d5a06132f3d194c01ef6c6b3f4"
+                "reference": "b5d32aad75602e50b6b588583bd62f338f0f7a50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/version/zipball/5d879c9144bf41d5a06132f3d194c01ef6c6b3f4",
-                "reference": "5d879c9144bf41d5a06132f3d194c01ef6c6b3f4",
+                "url": "https://api.github.com/repos/sebastianbergmann/version/zipball/b5d32aad75602e50b6b588583bd62f338f0f7a50",
+                "reference": "b5d32aad75602e50b6b588583bd62f338f0f7a50",
                 "shasum": ""
             },
             "type": "library",
@@ -3133,7 +3157,7 @@
             ],
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
-            "time": "2013-05-29 10:02:00"
+            "time": "2014-02-12 16:30:13"
         },
         {
             "name": "sensiolabs/security-checker",
@@ -3283,7 +3307,7 @@
                 {
                     "name": "Arne Blankerts",
                     "email": "arne@blankerts.de",
-                    "role": "Developer"
+                    "role": "lead"
                 }
             ],
             "description": "The classes contained within this repository extend the standard DOM to use exceptions at all occasions of errors instead of PHP warnings or notices. They also add various custom methods and shortcuts for convenience and to simplify the usage of DOM.",
