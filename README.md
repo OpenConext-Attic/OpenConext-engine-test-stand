@@ -23,7 +23,7 @@ It does this by:
 It requires that EngineBlock has been configured for the special 'functional-testing' environment.
 See **Installation - Replaying**.
 
-## 1. Requirements ##
+## Requirements ##
 * PHP > 5.3
 
 ## Installation ##
