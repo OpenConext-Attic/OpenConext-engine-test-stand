@@ -8,6 +8,7 @@ Feature:
   Scenario: Replay login requests
     Given SP "Replay SP" is configured to generate a AuthnRequest like the one at "fixtures/replay/sp.request.log"
     And SP "Replay SP" does not require consent
+    And SP "Replay SP" may run in transparent mode, if indicated in "fixtures/replay/session.log"
     And IdP "Replay Idp" is configured to return a Response like the one at "fixtures/replay/idp.response.log"
     And SP "Replay SP" may only access "Replay Idp"
     And EngineBlock is expected to send a AuthnRequest like the one at "fixtures/replay/eb.request.log"

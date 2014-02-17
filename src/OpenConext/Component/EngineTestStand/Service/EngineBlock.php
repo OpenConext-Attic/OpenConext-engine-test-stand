@@ -46,6 +46,16 @@ class EngineBlock
         return $this->baseUrl . self::IDP_METADATA_PATH;
     }
 
+    public function transparentSsoLocation($idpEntityId)
+    {
+        return $this->singleSignOnLocation() . '/' . md5($idpEntityId);
+    }
+
+    public function voSsoLocation($voId)
+    {
+        return $this->singleSignOnLocation() . '/vo:' . $voId;
+    }
+
     public function singleSignOnLocation()
     {
         return $this->baseUrl . self::SINGLE_SIGN_ON_PATH;

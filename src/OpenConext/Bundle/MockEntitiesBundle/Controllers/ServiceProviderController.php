@@ -38,7 +38,7 @@ class ServiceProviderController extends Controller
         $factory = new AuthnRequestFactory();
         $authnRequest = $factory->createFromEntityDescriptor(
             $mockSp->getEntityDescriptor(),
-            $engineBlock->singleSignOnLocation()
+            $engineBlock
         );
 
         $redirect = new \SAML2_HTTPRedirect();

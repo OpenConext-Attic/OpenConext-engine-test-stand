@@ -33,6 +33,34 @@ class LogChunkParser
         throw new \RuntimeException("Can not find log file '{$this->logFile}'.");
     }
 
+    /**
+     * @return bool
+     * @throws \RuntimeException
+     */
+    public function detectTransparentRequest()
+    {
+        $contents = $this->load();
+
+        $matches = array();
+        $matched = preg_match(
+            '/\[Message INFO\] Detected pre-selection of (?P<entityId>.+) as IdP, switching to transparant mode/',
+            $contents,
+            $matches
+        );
+
+        if ($matched === false) {
+            throw new \RuntimeException(
+                "Unable to look for transparent request, regex triggered an error?" . preg_last_error()
+            );
+        }
+
+        if ($matched === 0) {
+            return false;
+        }
+
+        return $matches['entityId'];
+    }
+
     public function getMessage($messageType)
     {
         if (!in_array($messageType, array(self::MESSAGE_TYPE_RESPONSE, self::MESSAGE_TYPE_AUTHN_REQUEST))) {

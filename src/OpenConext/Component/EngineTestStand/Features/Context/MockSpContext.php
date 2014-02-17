@@ -116,6 +116,23 @@ class MockSpContext extends AbstractSubContext
     }
 
     /**
+     * @Given /^SP "([^"]*)" may run in transparent mode, if indicated in "([^"]*)"$/
+     */
+    public function spMayRunInTransparentModeIfIndicatedIn($spName, $sessionLogFIle)
+    {
+        $logReader = new LogChunkParser($sessionLogFIle);
+        $entityId = $logReader->detectTransparentRequest();
+
+        if (!$entityId) {
+            return;
+        }
+
+        /** @var MockServiceProvider $mockSp */
+        $mockSp = $this->mockSpRegistry->get($spName);
+        $mockSp->useIdpTransparently($entityId);
+    }
+
+    /**
      * @Given /^SP "([^"]*)" does not require consent$/
      */
     public function spDoesNotRequireConsent($spName)

@@ -56,4 +56,10 @@ class MockServiceProvider
         $this->descriptor->Extensions['AuthnRequest'] = $authnRequest;
         return $this;
     }
+
+    public function useIdpTransparently($entityId)
+    {
+        $this->descriptor->Extensions['TransparentIdp'] = $entityId;
+        return $this;
+    }
 }
