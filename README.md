@@ -31,7 +31,7 @@ See **Installation - Replaying**.
 git clone git@github.com:OpenConext/OpenConext-engine-test-stand.git &&
 cd OpenConext-engine-test-stand &&
 wget -P bin https://getcomposer.org/composer.phar &&
-php -d memory_limit=1G bin/composer.phar update
+php -d memory_limit=1G bin/composer.phar install
 ````
 
 ## Installation - Replaying ##
