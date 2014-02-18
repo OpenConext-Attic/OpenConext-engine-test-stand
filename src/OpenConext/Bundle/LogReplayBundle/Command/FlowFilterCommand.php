@@ -47,8 +47,12 @@ EOF
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $debug = $this->debugging = $input->getOption('debug');
-        $output->writeln('[DEBUG] Starting filtering...');
 
+        if ($debug) {
+            $output->writeln('[DEBUG] Starting filtering...');
+        }
+
+        // Open a stream to the logfile
         $logFile = $input->getArgument('logfile');
         if (!is_file($logFile)) {
             $output->writeln("<error>Logfile does not exist</error>");
@@ -56,10 +60,11 @@ EOF
         }
         $logStream = fopen($logFile, 'r');
 
+        // Open a stream to the session file / input
         $sessionsStream = new FileOrStdInHelper($input, $output, 'sessionFile');
-        $that = $this;
 
-        $output->writeln('[DEBUG] Starting looping through session file');
+        // Loop through every line for the session file / input
+        $that = $this;
         $sessionsStream->mapLines(function($line) use ($logStream, $output, $that, $debug) {
             $sessionId = trim($line);
             if (!$sessionId) {
@@ -74,6 +79,10 @@ EOF
         });
 
         fclose($logStream);
+
+        if ($debug) {
+            $output->writeln("[DEBUG] Done filtering");
+        }
 
         return 0;
     }
