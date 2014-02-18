@@ -121,6 +121,9 @@ EOF
             if (strpos($logLine, '[Message INFO] Received request') !== false) {
                 $hasSpRequest = true;
             }
+            if (strpos($logLine, "DUMP 'Unsollicited Request'")) {
+                $hasSpRequest = true;
+            }
 
             if (strpos($logLine, '[Message INFO] Redirecting to ') !== false && strpos($logLine, 'SAMLRequest') !== false) {
                 $hasEbRequest = true;

@@ -216,12 +216,19 @@ EOF
             $sessionLogStream,
             '[Message INFO] Received request'
         );
-
-        if (!$message) {
-            throw new \RuntimeException('No received request found.');
+        if ($message) {
+            return $message;
         }
 
-        return $message;
+        $message = $this->findLineWith(
+            $sessionLogStream,
+            "DUMP 'Unsollicited Request'"
+        );
+        if ($message) {
+            return $message;
+        }
+
+        throw new \RuntimeException('No received request found.');
     }
 
     protected function getEbRequestFromSessionLog(LogStreamHelper $sessionLogStream)
@@ -288,6 +295,21 @@ EOF
             $sessionLogStream,
             '[Message INFO] HTTP-Post: Sending Message'
         );
+    }
+
+    protected function findLineWith(LogStreamHelper $sessionLogStream, $needle)
+    {
+        $sessionLogStream->rewind();
+
+        // Loop through all the lines until you find the "Received message" line.
+        $result = false;
+        $sessionLogStream->foreachLine(function($line) use ($needle, &$result) {
+            if (strpos($line, $needle) !== false) {
+                $result = $line;
+                return LogStreamHelper::STOP;
+            }
+        });
+        return $result;
     }
 
     protected function findFirstChunkedDumpPostfixedWith(LogStreamHelper $sessionLogStream, $postfixMessage)
