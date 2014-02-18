@@ -5,6 +5,7 @@ namespace OpenConext\Bundle\LogReplayBundle\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use OpenConext\Component\EngineTestStand\Helper\FileOrStdInHelper;
 
@@ -14,6 +15,8 @@ use OpenConext\Component\EngineTestStand\Helper\FileOrStdInHelper;
  */
 class FlowFilterCommand extends Command
 {
+    protected $debugging = false;
+
     /**
      * {@inheritdoc}
      */
@@ -24,6 +27,7 @@ class FlowFilterCommand extends Command
             ->setDescription('Find all sessions that have an attached flow')
             ->addArgument('logfile', InputArgument::REQUIRED, 'File to get flows from')
             ->addArgument('sessionFile', InputArgument::OPTIONAL, 'File to get sessions from.')
+            ->addOption('debug', 'd', InputOption::VALUE_NONE, 'Turn on debugging information')
 
             ->setHelp(<<<EOF
 The <info>%command.name%</info> filters out the sessions with incomplete flows:
@@ -42,6 +46,9 @@ EOF
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $debug = $this->debugging = $input->getOption('debug');
+        $output->writeln('[DEBUG] Starting filtering...');
+
         $logFile = $input->getArgument('logfile');
         if (!is_file($logFile)) {
             $output->writeln("<error>Logfile does not exist</error>");
@@ -51,10 +58,16 @@ EOF
 
         $sessionsStream = new FileOrStdInHelper($input, $output, 'sessionFile');
         $that = $this;
-        $sessionsStream->mapLines(function($line) use ($logStream, $output, $that) {
+
+        $output->writeln('[DEBUG] Starting looping through session file');
+        $sessionsStream->mapLines(function($line) use ($logStream, $output, $that, $debug) {
             $sessionId = trim($line);
             if (!$sessionId) {
                 return;
+            }
+
+            if ($debug) {
+                $output->writeln("[DEBUG] Session: $sessionId");
             }
 
             $that->filterForSession($sessionId, $logStream, $output);
@@ -121,7 +134,7 @@ EOF
             }
 
             if ($hasSpRequest && $hasEbRequest && $hasIdpResponse && $hasEbResponse) {
-                $output->writeln($sessionId);
+                $output->writeln(($this->debugging ? '[DEBUG] FOUND: ' : '') . $sessionId);
                 return; // Done! Next session id
             }
 
@@ -129,6 +142,18 @@ EOF
             if (count($history) > 5) {
                 array_shift($history);
             }
+        }
+
+        if ($this->debugging) {
+            // Should output something like:
+            // SP [X]<- ->[V] EB [V]<- ->[V] IDP
+            $output->writeln(
+                '[DEBUG] ' .
+                'SP [' . ($hasEbResponse  ? '<fg=green>V</fg=green>':'<fg=red>X</fg=red>')   . ']<- ' .
+                '->['  . ($hasSpRequest   ? '<fg=green>V</fg=green>':'<fg=red>X</fg=red>') . '] '.
+                'EB [' . ($hasIdpResponse ? '<fg=green>V</fg=green>':'<fg=red>X</fg=red>') . ']<- '.
+                '->['  . ($hasEbRequest   ? '<fg=green>V</fg=green>':'<fg=red>X</fg=red>') . '] IDP '
+            );
         }
     }
 }
