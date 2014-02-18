@@ -65,7 +65,7 @@ EOF
         return 0;
     }
 
-    protected function filterForSession($sessionId, $logStream, OutputInterface $output)
+    public function filterForSession($sessionId, $logStream, OutputInterface $output)
     {
         // The four horsemen^H^H^H^H^H^H^H^H^H messages we need to reconstruct a flow.
         $hasSpRequest   = false;

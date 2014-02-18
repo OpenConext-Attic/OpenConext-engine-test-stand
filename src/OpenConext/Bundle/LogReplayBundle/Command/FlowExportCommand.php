@@ -110,7 +110,7 @@ EOF
         return true;
     }
 
-    protected function exportSession($sessionId)
+    public function exportSession($sessionId)
     {
         $sessionLog = $this->getSessionLog($sessionId);
 
