@@ -89,10 +89,14 @@ class EngineBlock
         return $this;
     }
 
-    public function setNewIdsToUse(IdFrame $idFrame)
+    public function getIdsToUse($frameName)
     {
-        $this->idFixture->addFrame($idFrame);
-        return $this;
+        if (!$this->idFixture->hasFrame($frameName)) {
+            $frame = new IdFrame();
+            $this->idFixture->addFrame($frameName, $frame);
+        }
+
+        return $this->idFixture->getFrame($frameName);
     }
 
     public function clearNewIds()

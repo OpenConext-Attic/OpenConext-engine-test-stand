@@ -2,6 +2,7 @@
 
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
+use OpenConext\Component\EngineBlockFixtures\IdFixture;
 use OpenConext\Component\EngineBlockFixtures\IdFrame;
 use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
@@ -63,9 +64,8 @@ class EngineBlockContext extends AbstractSubContext
         $hostname = parse_url($authnRequest->getIssuer(), PHP_URL_HOST);
         $this->engineBlock->overrideHostname($hostname);
 
-        $this->engineBlock->setNewIdsToUse(new IdFrame(array(
-            IdFrame::ID_USAGE_SAML2_REQUEST => $authnRequest->getId()
-        )));
+        $frame = $this->engineBlock->getIdsToUse(IdFixture::FRAME_REQUEST);
+        $frame->set(IdFrame::ID_USAGE_SAML2_REQUEST, $authnRequest->getId());
     }
 
     /**
@@ -78,9 +78,13 @@ class EngineBlockContext extends AbstractSubContext
         $response = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_RESPONSE);
         $responseAssertions = $response->getAssertions();
 
-        $this->engineBlock->setNewIdsToUse(new IdFrame(array(
-            IdFrame::ID_USAGE_SAML2_RESPONSE  => $response->getId(),
-            IdFrame::ID_USAGE_SAML2_ASSERTION => $responseAssertions[0]->getId(),
-        )));
+        $frame = $this->engineBlock->getIdsToUse(IdFixture::FRAME_RESPONSE);
+        // EB will generate internal responses, for now just let it give all Responses the same id
+        $frame->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId());
+        $frame->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId());
+        $frame->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId());
+        $frame->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId());
+        $frame->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId());
+        $frame->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId());
     }
 }
