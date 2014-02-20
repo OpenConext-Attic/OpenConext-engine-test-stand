@@ -233,6 +233,22 @@ EOF
 
     protected function getEbRequestFromSessionLog(LogStreamHelper $sessionLogStream)
     {
+        $message = $this->getEbRequestViaRedirect($sessionLogStream);
+        if ($message) {
+            return $message;
+        }
+
+        $message = $this->findMessageSentViaPostWithTag($sessionLogStream, 'AuthnRequest');
+        if ($message) {
+            return $message;
+        }
+
+
+        throw new \RuntimeException('No EB Request found?');
+    }
+
+    protected function getEbRequestViaRedirect(LogStreamHelper $sessionLogStream)
+    {
         // Starting at the beginning.
         $sessionLogStream->rewind();
 
@@ -243,11 +259,6 @@ EOF
                 return LogStreamHelper::STOP;
             }
         });
-
-        if ($found === false) {
-            throw new \RuntimeException('No EB Request found?');
-        }
-
         return $found;
     }
 
@@ -255,14 +266,27 @@ EOF
     {
         // Starting at the beginning.
         $sessionLogStream->rewind();
+
         $receivedResponse = $this->findReceivedResponse($sessionLogStream);
-        if (!$receivedResponse) {
-            throw new \RuntimeException('No idp Response found?');
+        if ($receivedResponse) {
+            return $receivedResponse;
         }
-        return $receivedResponse;
+
+        throw new \RuntimeException('No idp Response found?');
     }
 
     protected function getEbResponseFromSessionLog(LogStreamHelper $sessionLogStream)
+    {
+        $message = $this->findMessageSentViaPostWithTag($sessionLogStream, 'Response');
+        if ($message) {
+            return $message;
+        }
+
+        // If we can't find it, that's an error.
+        throw new \RuntimeException('No Response found?');
+    }
+
+    protected function findMessageSentViaPostWithTag(LogStreamHelper $sessionLogStream, $tagName)
     {
         // Starting at the beginning.
         $sessionLogStream->rewind();
@@ -271,14 +295,12 @@ EOF
         while ($postedMessage = $this->findMessageSentViaPost($sessionLogStream)) {
 
             // If the message found is NOT a response, keep looking.
-            if (!strstr($postedMessage, '[__t] => samlp:Response')) {
+            if (!strstr($postedMessage, '[__t] => samlp:' . $tagName)) {
                 continue;
             }
             // Otherwise we found it.
             return $postedMessage;
         }
-        // If we can't find it, that's an error.
-        throw new \RuntimeException('No Response found?');
     }
 
     protected function findReceivedResponse(LogStreamHelper $sessionLogStream)
