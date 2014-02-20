@@ -156,16 +156,16 @@ class XmlToArray
         $parser = xml_parser_create_ns();
         $foldingOptionSet = xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
         if (!$foldingOptionSet) {
-            throw new EngineBlock_Corto_XmlToArray_Exception(
+            throw new \RuntimeException(
                 "Unable to set XML_OPTION_CASE_FOLDING on parser object? Error message: " . xml_error_string(xml_get_error_code($parser)),
-                EngineBlock_Corto_XmlToArray_Exception::CODE_ERROR
+                \RuntimeException::CODE_ERROR
             );
         }
 
         $values = array();
         $parserResultStatus = xml_parse_into_struct($parser, $xml, $values);
         if ($parserResultStatus !== 1) {
-            throw new EngineBlock_Corto_XmlToArray_Exception(
+            throw new \RuntimeException(
                 'Error parsing incoming XML. ' . PHP_EOL .
                 'Error code: ' . xml_error_string(xml_get_error_code($parser)) . PHP_EOL .
                 'XML: ' . $xml
@@ -292,7 +292,7 @@ class XmlToArray
                 $elementName = $hash[self::TAG_NAME_PFX];
             }
             else {
-                throw new EngineBlock_Corto_XmlToArray_Exception("No top level tag provided or defined in hash!");
+                throw new \RuntimeException("No top level tag provided or defined in hash!");
             }
         }
 
@@ -309,7 +309,7 @@ class XmlToArray
         }
 
         if ($level > self::MAX_RECURSION_LEVEL) {
-            throw new EngineBlock_Corto_XmlToArray_Exception(
+            throw new \RuntimeException(
                 'Recursion threshold exceed on element: ' . $elementName . ' for hashvalue: ' . var_export($hash, true)
             );
         }
@@ -339,7 +339,7 @@ class XmlToArray
                 self::array2xmlRecursive($value, $key, $writer, $level + 1);
             }
             else {
-                throw new EngineBlock_Corto_XmlToArray_Exception(
+                throw new \RuntimeException(
                     "Value for key '$key' unrecognized (key naming error?)! Value" . print_r($value, true)
                 );
             }
@@ -354,14 +354,14 @@ class XmlToArray
      * @deprecated Use XML converter from DI container and use none static method attributesToArray() instead
      * @param array $attributes
      * @return array
-     * @throws EngineBlock_Corto_XmlToArray_Exception
+     * @throws \RuntimeException
      */
     public static function attributes2array(array $attributes)
     {
         $res = array();
         foreach($attributes as $attribute) {
             if(!isset($attribute['_Name'])) {
-                throw new EngineBlock_Corto_XmlToArray_Exception('Missing attribute name');
+                throw new \RuntimeException('Missing attribute name');
             }
 
             $res[$attribute['_Name']] = array();
@@ -370,13 +370,13 @@ class XmlToArray
             }
 
             if(!is_array($attribute['saml:AttributeValue'])) {
-                throw new EngineBlock_Corto_XmlToArray_Exception('AttributeValue collection is not an array');
+                throw new \RuntimeException('AttributeValue collection is not an array');
             }
 
             // Add each value of the collection to the result
             foreach ($attribute['saml:AttributeValue'] as $value) {
                 if(!is_array($value)) {
-                    throw new EngineBlock_Corto_XmlToArray_Exception('AttributeValue is not an array');
+                    throw new \RuntimeException('AttributeValue is not an array');
                 }
 
                 if(!isset($value[self::VALUE_PFX])) {
