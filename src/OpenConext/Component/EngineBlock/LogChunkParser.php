@@ -2,6 +2,7 @@
 
 namespace OpenConext\Component\EngineBlock;
 
+use Doctrine\Common\Annotations\PhpParser;
 use OpenConext\Component\EngineBlock\Corto\XmlToArray;
 
 class LogChunkParser
@@ -59,6 +60,37 @@ class LogChunkParser
         }
 
         return $matches['entityId'];
+    }
+
+    public function detectUnsolicitedRequest()
+    {
+        $lines = explode("\n", $this->load());
+        foreach ($lines as $line) {
+            if (!strstr($line, 'Unsollicited Request')) {
+                continue;
+            }
+
+            $matches = array();
+            $matched = preg_match('/\] (?P<printR>Array.+)/', $line, $matches);
+            if ($matched === false) {
+                throw new \RuntimeException('Unable to execute regex!');
+            }
+            if ($matched === 0) {
+                throw new \RuntimeException('No PrintR found in line with "Unsollicited Request"');
+            }
+
+            $content = preg_replace('/\\\n/', "\n", $matches['printR']);
+
+            $parser = new PrintRParser($content);
+            $request = $parser->parse();
+
+            if (!isset($request['saml:Issuer']['__v'])) {
+                throw new \RuntimeException('Unsollicited request doesnt have an issuer?');
+            }
+
+            return $request;
+        }
+        return false;
     }
 
     public function getMessage($messageType)
@@ -133,22 +165,7 @@ class LogChunkParser
             return false;
         }
 
-        $parser = new PrintRParser($content);
-        $messageArray = $parser->parse();
-
-        if (isset($messageArray['__']['Raw'])) {
-            $xml = $messageArray['__']['Raw'];
-        }
-        else {
-            $xml = XmlToArray::array2xml($messageArray);
-        }
-
-        $document = new \DOMDocument();
-        $document->loadXML($xml);
-
-        $messageObj = $this->createObjectForMessageType($messageType, $document->firstChild);
-        $messageObj->xml = $xml;
-        return $messageObj;
+        return $this->createObjectFromPrintR($messageType, $content);
     }
 
     protected function getChunkContent($messageType, $content)
@@ -194,6 +211,26 @@ class LogChunkParser
             return static::AUTHN_REQUEST_TAGNAME;
         }
         return static::RESPONSE_TAGNAME;
+    }
+
+    protected function createObjectFromPrintR($messageType, $content)
+    {
+        $parser = new PrintRParser($content);
+        $messageArray = $parser->parse();
+
+        if (isset($messageArray['__']['Raw'])) {
+            $xml = $messageArray['__']['Raw'];
+        }
+        else {
+            $xml = XmlToArray::array2xml($messageArray, 'samlp:' . $this->getTagNameForMessageType($messageType));
+        }
+
+        $document = new \DOMDocument();
+        $document->loadXML($xml);
+
+        $messageObj = $this->createObjectForMessageType($messageType, $document->firstChild);
+        $messageObj->xml = $xml;
+        return $messageObj;
     }
 
     protected function createObjectForMessageType($messageType, \DOMElement $root)

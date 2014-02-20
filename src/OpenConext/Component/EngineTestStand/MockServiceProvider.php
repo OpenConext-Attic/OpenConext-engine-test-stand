@@ -62,4 +62,15 @@ class MockServiceProvider
         $this->descriptor->Extensions['TransparentIdp'] = $entityId;
         return $this;
     }
+
+    public function useUnsolicited()
+    {
+        $this->descriptor->Extensions['Unsollicited'] = true;
+        return $this;
+    }
+
+    public function mustUseUnsolicited()
+    {
+        return isset($this->descriptor->Extensions['Unsollicited']) && $this->descriptor->Extensions['Unsollicited'];
+    }
 }

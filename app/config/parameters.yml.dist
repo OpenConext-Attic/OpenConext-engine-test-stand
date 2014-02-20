@@ -2,6 +2,25 @@ parameters:
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
 
+    database_driver:   pdo_mysql
+    database_host:     127.0.0.1
+    database_port:     ~
+    database_name:     symfony
+    database_user:     root
+    database_password: ~
+
+    database_accounts_driver:   pdo_mysql
+    database_accounts_host:     127.0.0.1
+    database_accounts_port:     ~
+    database_accounts_name:     whatever
+    database_accounts_user:     whatever
+    database_accounts_password: blablabla
+
+    mailer_transport:  smtp
+    mailer_host:       127.0.0.1
+    mailer_user:       ~
+    mailer_password:   ~
+
     router.request_context.host: engine-test-stand.demo.openconext.org
     router.request_context.scheme: https
 

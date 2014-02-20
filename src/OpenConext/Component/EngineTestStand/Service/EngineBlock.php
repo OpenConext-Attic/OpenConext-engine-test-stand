@@ -17,6 +17,7 @@ class EngineBlock
     const SP_METADATA_PATH          = '/authentication/sp/metadata';
     const SINGLE_SIGN_ON_PATH       = '/authentication/idp/single-sign-on';
     const ASSERTION_CONSUMER_PATH   = '/authentication/sp/consume-assertion';
+    const UNSOLICITED_SSO_START_PATH = '/authentication/idp/unsolicited-single-sign-on';
 
     protected $baseUrl;
     protected $timeFixture;
@@ -59,6 +60,11 @@ class EngineBlock
     public function singleSignOnLocation()
     {
         return $this->baseUrl . self::SINGLE_SIGN_ON_PATH;
+    }
+
+    public function unsolicitedLocation($entityId)
+    {
+        return $this->baseUrl . self::UNSOLICITED_SSO_START_PATH . '?sp-entity-id=' . urlencode($entityId);
     }
 
     public function spEntityId()

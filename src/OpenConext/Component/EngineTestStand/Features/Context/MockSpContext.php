@@ -3,6 +3,8 @@
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
 use OpenConext\Component\EngineBlock\LogChunkParser;
+use OpenConext\Component\EngineBlockFixtures\IdFixture;
+use OpenConext\Component\EngineBlockFixtures\IdFrame;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\MockServiceProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
@@ -45,15 +47,23 @@ class MockSpContext extends AbstractSubContext
         $this->mockIdpRegistry = $mockIdpRegistry;
     }
 
+
     /**
-     * @When /^I log in at "([^"]*)"$/
+     * @When /^I trigger the login \(either at "([^"]*)" or unsollicited at EB\)$/
      */
-    public function iLogInAt($spName)
+    public function iTriggerTheLoginEitherAtOrUnsollicitedAtEb($spName)
     {
-        $this->getMainContext()->getMinkContext()->visit(
-            $this->mockSpRegistry->get($spName)
-                ->loginUrl()
-        );
+        /** @var MockServiceProvider $mockSp */
+        $mockSp = $this->mockSpRegistry->get($spName);
+
+        if ($mockSp->mustUseUnsolicited()) {
+            $ssoStartLocation = $this->engineBlock->unsolicitedLocation($mockSp->entityId());
+        }
+        else {
+            $ssoStartLocation = $mockSp->loginUrl();
+        }
+
+        $this->getMainContext()->getMinkContext()->visit($ssoStartLocation);
     }
 
     /**
@@ -89,30 +99,40 @@ class MockSpContext extends AbstractSubContext
      */
     public function spIsConfiguredToGenerateAAuthnrequestLikeTheOneAt($spName, $authnRequestLogFile)
     {
-        // Parse an AuthnRequest out of the log file
-        $logReader = new LogChunkParser($authnRequestLogFile);
-        $authnRequest = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_AUTHN_REQUEST);
-
-        $this->printDebug(print_r($authnRequest, true));
-
-        // Write out how the SP should behave
         /** @var MockServiceProvider $mockSp */
         $mockSp = $this->mockSpRegistry->get($spName);
 
-        $oldEntityId = $mockSp->entityId();
-        $newEntityId = $authnRequest->getIssuer();
+        $mockSpDefaultEntityId = $mockSp->entityId();
+        $mockSpAcsLocation     = $mockSp->assertionConsumerServiceLocation();
 
-        $mockSp
-            ->setEntityId($newEntityId)
-            ->setAuthnRequest($authnRequest);
+        // First see if the request was even triggered by the SP, or if it was an unsolicited request
+        // by EB.
+        $logReader = new LogChunkParser($authnRequestLogFile);
+        $unsolicitedRequest = $logReader->detectUnsolicitedRequest();
+        if ($unsolicitedRequest) {
+            $this->printDebug("Unsollicited Request:" . PHP_EOL . print_r($unsolicitedRequest, true));
+            $mockSp->useUnsolicited();
 
-        // Determine the ACS URL for the Mock SP
-        $acsUrl = $mockSp->assertionConsumerServiceLocation();
+            $requestIssuer = $unsolicitedRequest['saml:Issuer']['__v'];
+
+            $frame = $this->engineBlock->getIdsToUse(IdFixture::FRAME_REQUEST);
+            $frame->set(IdFrame::ID_USAGE_SAML2_REQUEST, $unsolicitedRequest['_ID']);
+        } else {
+            // If not, then parse an AuthnRequest out of the log file
+            $authnRequest = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_AUTHN_REQUEST);
+            $mockSp->setAuthnRequest($authnRequest);
+            $this->printDebug(print_r($authnRequest, true));
+
+            $requestIssuer = $authnRequest->getIssuer();
+        }
+
+        // Listen up Mock Service Provider, you must now pretend that you are the issuer of the request.
+        $mockSp->setEntityId($requestIssuer);
 
         // Override the ACS Location for the SP used in the response to go to the Mock SP
         $this->serviceRegistryFixture
-            ->remove($oldEntityId)
-            ->setEntityAcsLocation($newEntityId, $acsUrl);
+            ->remove($mockSpDefaultEntityId)
+            ->setEntityAcsLocation($requestIssuer, $mockSpAcsLocation);
     }
 
     /**
