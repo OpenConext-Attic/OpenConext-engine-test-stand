@@ -13,11 +13,12 @@ Feature:
     And SP "Replay SP" may only access "Replay Idp"
     And EngineBlock is expected to send a AuthnRequest like the one at "fixtures/replay/eb.request.log"
     And EngineBlock is expected to send a Response like the one at "fixtures/replay/eb.response.log"
+    And I print the configured ids
     When I trigger the login (either at "Replay SP" or unsollicited at EB)
     And print last response
-    And I follow "GO"
-    Then the request should be compared with the one at "fixtures/replay/eb.request.log"
+    And I follow the EB debug screen to the IdP
     And print last response
+    Then the request should be compared with the one at "fixtures/replay/eb.request.log"
     And I press "GO"
     And print last response
     And I press "Submit"

@@ -53,6 +53,21 @@ class EngineBlockContext extends AbstractSubContext
     }
 
     /**
+     * @Given /^I follow the EB debug screen to the IdP$/
+     */
+    public function iFollowTheEbDebugScreenToTheIdp()
+    {
+        // Support for HTTP-Post
+        $hasSubmitButton = $this->getMainContext()->getMinkContext()->getSession()->getPage()->findButton('Submit');
+        if ($hasSubmitButton) {
+            return $this->getMainContext()->getMinkContext()->pressButton('submitbutton');
+        }
+
+        // Default to HTTP-Redirect
+        return $this->getMainContext()->getMinkContext()->clickLink('GO');
+    }
+
+    /**
      * @Given /^EngineBlock is expected to send a AuthnRequest like the one at "([^"]*)"$/
      */
     public function engineblockIsExpectedToSendAAuthnrequestLikeTheOneAt($authnRequestLogFile)
@@ -86,5 +101,14 @@ class EngineBlockContext extends AbstractSubContext
         $frame->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId());
         $frame->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId());
         $frame->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId());
+    }
+
+    /**
+     * @Given /^I print the configured ids$/
+     */
+    public function iPrintTheConfiguredIds()
+    {
+        $idFixture = $this->engineBlock->getIdFixture();
+        $this->printDebug(print_r($idFixture));
     }
 }

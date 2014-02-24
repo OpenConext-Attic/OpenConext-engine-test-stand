@@ -104,4 +104,9 @@ class EngineBlock
         $this->idFixture->clear();
         return $this;
     }
+
+    public function getIdFixture()
+    {
+        return $this->idFixture;
+    }
 }
