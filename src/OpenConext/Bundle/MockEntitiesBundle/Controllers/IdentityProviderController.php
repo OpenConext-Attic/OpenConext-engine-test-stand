@@ -40,10 +40,19 @@ class IdentityProviderController extends Controller
      * @return Response
      * @throws \RuntimeException
      */
-    public function singleSignOnAction($idpName)
+    public function singleSignOnAction(Request $request, $idpName)
     {
-        $redirectBinding = new \SAML2_HTTPRedirect();
-        $message = $redirectBinding->receive();
+        if ($request->isMethod('GET')) {
+            $redirectBinding = new \SAML2_HTTPRedirect();
+            $message = $redirectBinding->receive();
+        }
+        else if ($request->isMethod('POST')) {
+            $postBinding = new \SAML2_HTTPPost();
+            $message = $postBinding->receive();
+        }
+        else {
+            throw new \RuntimeException('Unsupported HTTP method');
+        }
 
         if (!$message instanceof \SAML2_AuthnRequest) {
             throw new \RuntimeException('Unknown message type: ' . get_class($message));
