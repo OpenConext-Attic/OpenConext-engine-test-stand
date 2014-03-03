@@ -80,17 +80,22 @@ class LogStreamHelper
         return $this;
     }
 
-    public function isEof()
+    public function isAtEndOfFile()
     {
         return feof($this->stream);
     }
 
-    public function onEof($fn)
+    public function onEndOfFile($fn)
     {
-        if ($this->isEof()) {
+        if ($this->isAtEndOfFile()) {
             $fn();
         }
         return $this;
+    }
+
+    public function isAtStartOfFile()
+    {
+        return ftell($this->stream) === 0;
     }
 
     public function __toString()

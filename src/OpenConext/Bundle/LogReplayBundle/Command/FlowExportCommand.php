@@ -116,9 +116,9 @@ EOF
 
         $sessionLog = $this->fixMessageOrdering($sessionLog);
 
-        //
         $directory = $this->outputDir. '/eb-flow-' . $sessionId;
         $this->createDirectory($directory);
+
         $this->writeFile($directory . '/session.log', $sessionLog);
         $this->writeFile($directory . '/sp.request.log'     , $this->getSpRequestFromSessionLog($sessionLog));
         $this->writeFile($directory . '/eb.request.log'     , $this->getEbRequestFromSessionLog($sessionLog));
@@ -147,13 +147,13 @@ EOF
     {
         $sessionLog->rewind();
 
-        while (!$sessionLog->isEof()) {
+        while (!$sessionLog->isAtEndOfFile()) {
             $sessionLog->foreachLine(function($line) {
                 if (strstr($line, '[Message INFO] END OF LOG MESSAGE QUEUE')) {
                     return LogStreamHelper::STOP;
                 }
             });
-            if ($sessionLog->isEof()) {
+            if ($sessionLog->isAtEndOfFile()) {
                 break;
             }
 
@@ -197,9 +197,13 @@ EOF
                 }
             });
 
-            $sessionLog->onEof(function() {
+            if (empty($reversed)) {
+                throw new \RuntimeException("No chunk found?");
+            }
+
+            if ($sessionLog->isAtStartOfFile()) {
                 throw new \RuntimeException("Unable to return to where queue was flushed?");
-            });
+            }
 
             $sessionLog->write($reversed);
         }
@@ -344,7 +348,7 @@ EOF
         });
 
         // If we reached the end then it must not have been found.
-        if ($sessionLogStream->isEof()) {
+        if ($sessionLogStream->isAtEndOfFile()) {
             return false;
         }
         // Otherwise we start collecting the log chunk.
@@ -355,7 +359,7 @@ EOF
                 return LogStreamHelper::STOP;
             }
         });
-        $sessionLogStream->onEof(function() {
+        $sessionLogStream->onEndOfFile(function() {
             throw new \RuntimeException('No CHUNKSTART');
         });
 
@@ -367,7 +371,7 @@ EOF
                 return LogStreamHelper::STOP;
             }
         });
-        $sessionLogStream->onEof(function() use ($postfixMessage) {
+        $sessionLogStream->onEndOfFile(function() use ($postfixMessage) {
             throw new \RuntimeException("Unable to find our way back to '$postfixMessage'");
         });
 
