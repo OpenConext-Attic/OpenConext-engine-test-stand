@@ -1,6 +1,6 @@
-# OpenConext Engine Test Stand #
+# OpenConext Engine Test Stand
 
-
+![](http://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Multicoupling-Docking-System.jpg/220px-Multicoupling-Docking-System.jpg)
 > An engine test stand is a facility used to develop, characterize and test engines.
 > The facility, often offered as a product to automotive OEMs,
 > allows engine operation in different operating regimes and offers measurement of
