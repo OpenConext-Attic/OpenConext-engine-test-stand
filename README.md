@@ -1,6 +1,6 @@
 # OpenConext Engine Test Stand
 
-![](http://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Multicoupling-Docking-System.jpg/220px-Multicoupling-Docking-System.jpg)
+![](http://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Multicoupling-Docking-System.jpg/640px-Multicoupling-Docking-System.jpg)
 > An engine test stand is a facility used to develop, characterize and test engines.
 > The facility, often offered as a product to automotive OEMs,
 > allows engine operation in different operating regimes and offers measurement of
@@ -43,29 +43,11 @@ php -d memory_limit=1G bin/composer.phar install
 
 To make functional testing work do the following:
 
-#### Host EngineBlock on 'functional-testing' environment ####
+#### Configure EngineBlock (> 4.3.0) to run with Functional Testing services ####
 
-Example:
-````
-    <VirtualHost *:443>
-        DocumentRoot /opt/www/engineblock/www/authentication
-        ServerName   engine-test.demo.openconext.org
-        SetEnv ENGINEBLOCK_ENV functional-testing
-
-        ...
-
-    </VirtualHost>
-````
-
-````
-192.168.56.101 engine-test.demo.openconext.org
-````
-
-Add the following to /etc/surfconext/engineblock.ini :
+Add the following to /etc/openconext/engineblock.ini :
 ````ini
-[functional-testing : testing]
-
-functionalTesting.engineBlockUrl = "https://engine-test.demo.openconext.org"
+functionalTesting = true
 ````
 
 What this does is trigger EngineBlock to use a different DI Container that allows:
