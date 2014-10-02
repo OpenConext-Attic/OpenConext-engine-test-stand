@@ -63,7 +63,7 @@ What this does is trigger EngineBlock to use a different DI Container that allow
 
 Run the normal Functional Tests like so:
 ````bash
-./bin/behat.sh
+./bin/behat
 ````
 
 ### Usage Scenario: SAML Replaying ###
