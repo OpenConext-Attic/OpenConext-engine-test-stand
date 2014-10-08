@@ -7,42 +7,41 @@
         "psr-0": { "": "src/" }
     },
     "require": {
-        "php": ">=5.3.3",
-        "ext-xmlwriter": "*",
-        "phpunit/phpunit": "3.7.*",
+        "php"                                   : ">=5.3.3",
+        "ext-xmlwriter"                         : "*",
 
-        "behat/behat": "*",
-        "behat/mink": "*",
-        "behat/mink-extension": "*",
-        "behat/mink-goutte-driver": "*",
-        "behat/symfony2-extension": "*",
+        "phpunit/phpunit"                       : "~4.2",
 
-        "doctrine/orm": "~2.2,>=2.2.3",
-        "doctrine/doctrine-bundle": "~1.2",
-        "twig/extensions": "~1.0",
+        "behat/behat"                           : "~2.5",
+        "behat/mink"                            : "~1.5",
+        "behat/mink-extension"                  : "~1.3",
+        "behat/mink-goutte-driver"              : "~1.0",
+        "behat/symfony2-extension"              : "~1.1",
 
-        "symfony/symfony": "~2.4",
-        "symfony/assetic-bundle": "~2.3",
-        "symfony/swiftmailer-bundle": "~2.3",
-        "symfony/monolog-bundle": "~2.4",
+        "doctrine/orm"                          : "~2.4",
+        "doctrine/doctrine-bundle"              : "~1.2",
+        "twig/extensions"                       : "~1.1",
 
-        "sensio/distribution-bundle": "~2.3",
-        "sensio/framework-extra-bundle": "~3.0",
-        "sensio/generator-bundle": "~2.3",
+        "symfony/symfony"                       : "~2.5",
+        "symfony/assetic-bundle"                : "~2.3",
+        "symfony/swiftmailer-bundle"            : "~2.3",
+        "symfony/monolog-bundle"                : "~2.6",
 
-        "incenteev/composer-parameter-handler": "~2.0",
+        "sensio/distribution-bundle"            : "~3.0",
+        "sensio/framework-extra-bundle"         : "~3.0",
+        "sensio/generator-bundle"               : "~2.4",
 
-        "simplesamlphp/simplesamlphp": "dev-trunk",
-        "simplesamlphp/saml2": "0.3.0",
-        "openid/php-openid": "dev-master#a287b2d85e753c84b3b883ed8ee3ffe8692c8477 as 2.2.2",
+        "incenteev/composer-parameter-handler"  : "~2.1",
 
-        "phpspec/php-diff": "1.0.*",
+        "simplesamlphp/saml2"                   : "~0.5",
 
-        "openconext/engineblock-fixtures": "*",
-        "symfony/icu": "~1.0"
+        "phpspec/php-diff"                      : "~1.0",
+
+        "openconext/engineblock-fixtures"       : "~0.3",
+        "symfony/icu"                           : "~1.0"
     },
     "require-dev": {
-        "ibuildings/qa-tools": "*"
+        "ibuildings/qa-tools"                   : "~1.1"
     },
     "scripts": {
         "post-install-cmd": [
@@ -72,30 +71,5 @@
         "branch-alias": {
             "dev-master": "2.4-dev"
         }
-    },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "robrichards/xmlseclibs",
-                "version": "1.3.1",
-                "source": {
-                    "type": "svn",
-                    "url": "http://xmlseclibs.googlecode.com/svn",
-                    "reference": "trunk@50"
-                },
-                "autoload": {
-                    "files": ["xmlseclibs.php"]
-                }
-            }
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/OpenConext/OpenConext-engineblock-fixtures"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/relaxnow/qa-tools"
-        }
-    ]
+    }
 }
