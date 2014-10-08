@@ -190,7 +190,7 @@ ln -s /dir/to/eb-flow-abcdef123 fixtures/replay
 
 Dumping the internal state of the mock Service Registry
 ```bash
-php ./bin/dump_sr_state.php
+php ./app/console dump:sr
 ```
 
 ## About OpenConext
