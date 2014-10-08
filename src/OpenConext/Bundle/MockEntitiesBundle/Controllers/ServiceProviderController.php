@@ -25,6 +25,7 @@ class ServiceProviderController extends Controller
      */
     public function triggerLoginRedirectAction($spName)
     {
+        /** @var EntityRegistry $mockSpRegistry */
         $mockSpRegistry = $this->get('openconext_mock_entities.sp_registry');
         if (!$mockSpRegistry->has($spName)) {
             throw new BadRequestHttpException('No SP found for ' . $spName);
@@ -51,6 +52,8 @@ class ServiceProviderController extends Controller
      * @Route("/{spName}/login-post", name="mock_sp_login_post")
      *
      * @param $spName
+     * @return Response
+     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
      */
     public function triggerLoginPostAction($spName)
     {
@@ -83,6 +86,7 @@ class ServiceProviderController extends Controller
     /**
      * @Route("/{spName}/acs", name="mock_sp_acs")
      *
+     * @param Request $request
      * @return Response
      * @throws \RuntimeException
      */

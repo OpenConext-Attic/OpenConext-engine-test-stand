@@ -27,7 +27,7 @@ class MockIdpContext extends AbstractSubContext
     protected $engineBlock;
 
     /**
-     * @var ParameterBag
+     * @var EntityRegistry
      */
     protected $mockIdpRegistry;
 

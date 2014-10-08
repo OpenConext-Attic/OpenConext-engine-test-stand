@@ -31,6 +31,7 @@ class MockIdentityProviderFactory
 
     /**
      * @param string $idpName
+     * @return \SAML2_XML_md_EntityDescriptor
      */
     protected function generateDefaultEntityMetadata($idpName)
     {

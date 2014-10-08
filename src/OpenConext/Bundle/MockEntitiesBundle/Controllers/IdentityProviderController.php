@@ -36,6 +36,7 @@ class IdentityProviderController extends Controller
     /**
      * @Route("/{idpName}/sso", name="mock_idp_sso")
      *
+     * @param Request $request
      * @param $idpName
      * @return Response
      * @throws \RuntimeException
