@@ -3,20 +3,32 @@ Feature:
   As an IdP or SP
   I want to send SAML Requests  / Responses in a variety of ways
 
+  Background:
+    Given an EngineBlock instance on "demo.openconext.org"
+      And an Identity Provider named "Dummy Idp"
+      And a Service Provider named "Dummy SP"
+
   Scenario: EngineBlock accepts AuthnRequests using HTTP-POST binding
-    Given Dummy Sp is configured to use the "PostRequest" testcase
-     When I go to engine-test "/dummy/sp"
-      And I press "Continue"
-     Then I should see "Dummy Idp"
+    Given the Sp uses the HTTP POST Binding
+     When I log in at "Dummy SP"
+      And I press "Submit"
+      And I press "GO"
+      And I press "Submit"
+     Then the url should match "Dummy%20SP/acs"
 
   Scenario: EngineBlock accepts AuthnRequests using HTTP-Redirect binding
-    Given Dummy Idp is configured to use the "RedirectResponse" testcase
-     When I go to engine-test "/dummy/sp"
-      And I press "Dummy Idp"
-     Then the url should match "consume-assertion"
+    Given the Sp uses the HTTP Redirect Binding
+     When I log in at "Dummy SP"
+      And I press "Submit"
+      And I press "GO"
+      And I press "Submit"
+     Then the url should match "Dummy%20SP/acs"
 
   Scenario: EngineBlock accepts Signed AuthnRequests using HTTP-POST binding
-    Given Dummy Sp is configured to use the "SignedPostRequest" testcase
-     When I go to engine-test "/dummy/sp"
-      And I press "Continue"
-     Then I should see "Dummy Idp"
+    Given the Sp uses the HTTP POST Binding
+      And the Sp signs it's requests
+     When I log in at "Dummy SP"
+      And I press "Submit"
+      And I press "GO"
+      And I press "Submit"
+     Then the url should match "Dummy%20SP/acs"

@@ -66,7 +66,7 @@ class IdentityProviderController extends Controller
 
         /** @var ResponseFactory $responseFactory */
         $responseFactory = $this->get('openconext_mock_entities.saml_response_factory');
-        $response = $responseFactory->createForEntityWithRequest($mockIdp->getEntityDescriptor(), $authnRequest);
+        $response = $responseFactory->createForEntityWithRequest($mockIdp, $authnRequest);
 
         $destination = ($mockIdp->hasDestinationOverride() ?
             $mockIdp->getDestinationOverride() :

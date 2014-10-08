@@ -71,9 +71,18 @@ class MockSpContext extends AbstractSubContext
      */
     public function aServiceProviderNamedWithEntityid($name)
     {
+        $mockSp = $this->anUnregisteredServiceProviderNamed($name);
+        $this->serviceRegistryFixture->registerSp($mockSp->entityId(), $mockSp->assertionConsumerServiceLocation());
+    }
+
+    /**
+     * @Given /^an unregistered Service Provider named "([^"]*)"$/
+     */
+    public function anUnregisteredServiceProviderNamed($name)
+    {
         $mockSp = $this->mockSpFactory->createNew($name);
         $this->mockSpRegistry->set($name, $mockSp);
-        $this->serviceRegistryFixture->registerSp($mockSp->entityId(), $mockSp->assertionConsumerServiceLocation());
+        return $mockSp;
     }
 
     /**
@@ -161,5 +170,44 @@ class MockSpContext extends AbstractSubContext
         $mockSp = $this->mockSpRegistry->get($spName);
 
         $this->serviceRegistryFixture->setEntityNoConsent($mockSp->entityId());
+    }
+
+    /**
+     * @When /^I log in at "([^"]*)"$/
+     */
+    public function iLogInAt($spName)
+    {
+        $this->iTriggerTheLoginEitherAtOrUnsollicitedAtEb($spName);
+    }
+
+    /**
+     * @Given /^the Sp signs it\'s requests$/
+     */
+    public function theSpSignsItSRequests()
+    {
+        $sp = $this->mockSpRegistry->getOnly();
+        /** @var \SAML2_XML_md_SPSSODescriptor $role */
+        $role = $sp->getEntityDescriptor()->RoleDescriptor[0];
+        $role->AuthnRequestsSigned = true;
+    }
+
+    /**
+     * @Given /^Sp "([^"]*)" uses a blacklist of access control$/
+     */
+    public function spUsesABlacklistOfAccessControl($spName)
+    {
+        /** @var MockServiceProvider $sp */
+        $sp = $this->mockSpRegistry->get($spName);
+        $this->serviceRegistryFixture->blacklist($sp->entityId());
+    }
+
+    /**
+     * @Given /^Sp "([^"]*)" uses a whitelist for access control$/
+     */
+    public function spUsesAWhitelistForAccessControl($spName)
+    {
+        /** @var MockServiceProvider $sp */
+        $sp = $this->mockSpRegistry->get($spName);
+        $this->serviceRegistryFixture->whitelist($sp->entityId());
     }
 }

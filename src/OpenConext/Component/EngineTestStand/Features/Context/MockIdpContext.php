@@ -2,6 +2,7 @@
 
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
+use Behat\Behat\Exception\PendingException;
 use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\MockIdentityProvider;
@@ -57,9 +58,15 @@ class MockIdpContext extends AbstractSubContext
     /**
      * @Given /^an Identity Provider named "([^"]*)"$/
      */
-    public function anIdentityProviderNamedWithEntityid($name)
+    public function anIdentityProviderNamed($name)
     {
-        $this->mockIdpRegistry->set($name, $this->mockIdpFactory->createNew($name));
+        $mockIdp = $this->mockIdpFactory->createNew($name);
+        $this->mockIdpRegistry->set($name, $mockIdp);
+        $this->serviceRegistryFixture->registerIdp(
+            $mockIdp->entityId(),
+            $mockIdp->singleSignOnLocation(),
+            $mockIdp->publicKeyCertData()
+        );
     }
 
     /**
@@ -84,5 +91,53 @@ class MockIdpContext extends AbstractSubContext
         $this->serviceRegistryFixture->setEntitySsoLocation($response->getIssuer(), $ssoUrl);
 
         $this->engineBlock->overrideTime($response->getIssueInstant());
+    }
+
+    /**
+     * @Given /^the IdP uses a blacklist for access control$/
+     */
+    public function theIdpUsesABlacklistForAccessControl()
+    {
+        $this->serviceRegistryFixture->blacklist($this->mockIdpRegistry->getOnly()->entityId());
+    }
+
+    /**
+     * @Given /^the IdP is configured to always return Responses with StatusCode (\w+)\/(\w+)$/
+     */
+    public function theIdpIsConfiguredToAlwaysReturnResponsesWithStatuscode($topStatusCode, $secondStatusCode)
+    {
+        /** @var MockIdentityProvider $idp */
+        $idp = $this->mockIdpRegistry->getOnly();
+        $idp->setStatusCode($topStatusCode, $secondStatusCode);
+    }
+
+    /**
+     * @Given /^the IdP is configured to always return Responses with StatusMessage "([^"]*)"$/
+     */
+    public function theIdpIsConfiguredToAlwaysReturnResponsesWithStatusmessage($statusMessage)
+    {
+        /** @var MockIdentityProvider $idp */
+        $idp = $this->mockIdpRegistry->getOnly();
+        $idp->setStatusMessage($statusMessage);
+    }
+
+    /**
+     * @Given /^the IdP uses the private key at "([^"]*)"$/
+     */
+    public function theIdpUsesThePrivateKeyAt($privateKeyFile)
+    {
+        /** @var MockIdentityProvider $idp */
+        $idp = $this->mockIdpRegistry->getOnly();
+        $idp->setPrivateKey($privateKeyFile);
+    }
+
+    /**
+     * @Given /^the IdP uses the certificate at "([^"]*)"$/
+     */
+    public function theIdpUsesTheCertificateAt($publicKeyFile)
+    {
+        /** @var MockIdentityProvider $idp */
+        $idp = $this->mockIdpRegistry->getOnly();
+        $idp->setCertificate($publicKeyFile);
     }
 }

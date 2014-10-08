@@ -40,6 +40,25 @@ class EngineBlockContext extends AbstractSubContext
     }
 
     /**
+     * @Given /^an EngineBlock instance on "([^"]*)"$/
+     */
+    public function anEngineBlockInstanceOn($domain)
+    {
+        // Add all known IdPs
+        $this->serviceRegistryFixture
+            ->reset()
+            ->registerSp(
+                "https://engine.$domain/authentication/sp/metadata",
+                "https://engine.$domain/authentication/sp/consume-assertion"
+            )
+            ->registerIdp(
+                "https://engine.$domain/authentication/idp/metadata",
+                "https://engine.$domain/authentication/idp/single-sign-on"
+            );
+        $this->engineBlock->clearNewIds();
+    }
+
+    /**
      * @Given /^an EngineBlock instance configured with JSON data$/
      */
     public function anEngineblockInstanceConfiguredWithJsonData()

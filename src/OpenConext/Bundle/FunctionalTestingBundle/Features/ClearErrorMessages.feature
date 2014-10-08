@@ -4,21 +4,20 @@ Feature:
   I need to see useful error information when something goes wrong
 
   Background:
-    Given an Identity Provider named "Dummy Idp" with EntityID "/dummy/idp"
-      And Idp "Dummy Idp" uses a blacklist for access control
-      And a Service Provider named "Connected SP" with EntityID "/dummy/sp"
+    Given an Identity Provider named "Dummy Idp"
+      And the IdP uses a blacklist for access control
+      And a Service Provider named "Connected SP"
       And Sp "Connected SP" uses a blacklist of access control
-      And a Service Provider named "Unconnected SP" with EntityID "/dummy/sp?nr=2"
+      And a Service Provider named "Unconnected SP"
       And Sp "Unconnected SP" uses a whitelist for access control
-      And an unregistered Service Provider with EntityID "/dummy/sp?nr=3"
+      And an unregistered Service Provider named "Unregistered SP"
 
   Scenario: I log in at my Identity Provider, but something goes wrong and it returns an error response.
-    Given the IdP is configured to always return Responses with StatusCode "InvalidNameIDPolicy"
+    Given the IdP is configured to always return Responses with StatusCode Requester/InvalidNameIDPolicy
       And the IdP is configured to always return Responses with StatusMessage "NameIdPolicy is invalid"
-
-     When I log in at "/dummy/sp"
-      And I press "Dummy Idp"
-      And I press "Continue"
+     When I log in at "Dummy SP"
+      And I press "Submit"
+      And I press "GO"
      Then I should see "Idp error"
       And I should see "Status Code: urn:oasis:names:tc:SAML:2.0:status:InvalidNameIDPolicy"
       And I should see "Status Message: NameIdPolicy is invalid"
@@ -30,11 +29,12 @@ Feature:
       And I should see "Identity Provider:"
 
   Scenario: I log in at my Identity Provider, but it has changed (private/public) keys without notifying OpenConext
-    Given the IdP uses the private key at "modules/Dummy/Keys/private-key-rolled-over.pem"
-      And the IdP uses the public key at "modules/Dummy/Keys/certificate-rolled-over.crt"
-     When I go log in at "/dummy/sp"
-      And I press "Dummy Idp"
-      And I press "Continue"
+    Given the IdP uses the private key at "Resources/keys/rolled-over.key"
+      And the IdP uses the certificate at "Resources/keys/rolled-over.crt"
+     When I log in at "Dummy SP"
+      And I press "Submit"
+      And I press "GO"
+      And I press "Submit"
      Then I should see "Invalid Idp response"
       And I should see "Timestamp:"
       And I should see "Unique Request Id:"
