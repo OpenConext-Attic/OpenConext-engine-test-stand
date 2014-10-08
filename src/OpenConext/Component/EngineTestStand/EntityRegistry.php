@@ -23,6 +23,25 @@ class EntityRegistry extends ParameterBag
         $this->parameters = $dataStore->load();
     }
 
+    /**
+     * @return MockIdentityProvider|MockServiceProvider
+     * @throws \RuntimeException
+     */
+    public function getOnly()
+    {
+        $count = $this->count();
+
+        if ($count === 0) {
+            throw new \RuntimeException("No entities registered yet (use before definition)");
+        }
+
+        if ($count !== 1) {
+            throw new \RuntimeException("More than 1 entities registered, unable to get a single entity");
+        }
+
+        return $this->getIterator()->current();
+    }
+
     public function __destruct()
     {
         $this->dataStore->save($this->parameters);
