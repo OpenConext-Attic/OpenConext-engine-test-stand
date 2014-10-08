@@ -8,7 +8,7 @@ use Symfony\Component\Routing\RouterInterface;
  * Class MockIdentityProviderFactory
  * @package OpenConext\Component\EngineTestStand\Service
  */
-class MockIdentityProviderFactory
+class MockIdentityProviderFactory extends AbstractMockEntityFactory
 {
     protected $router;
 
@@ -54,6 +54,8 @@ class MockIdentityProviderFactory
         $idpSsoDescriptor = new \SAML2_XML_md_IDPSSODescriptor();
         $idpSsoDescriptor->protocolSupportEnumeration = array(\SAML2_Const::NS_SAMLP);
         $idpSsoDescriptor->SingleSignOnService[] = $acsService;
+
+        $idpSsoDescriptor->KeyDescriptor[] = $this->generateDefaultSigningKeyPair();
 
         $entityMetadata->RoleDescriptor[] = $idpSsoDescriptor;
 

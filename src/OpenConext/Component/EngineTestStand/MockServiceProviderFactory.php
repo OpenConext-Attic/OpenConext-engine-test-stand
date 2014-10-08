@@ -8,7 +8,7 @@ use Symfony\Component\Routing\RouterInterface;
  * Class MockServiceProviderFactory
  * @package OpenConext\Component\EngineTestStand\Service
  */
-class MockServiceProviderFactory
+class MockServiceProviderFactory extends AbstractMockEntityFactory
 {
     protected $router;
 
@@ -47,6 +47,8 @@ class MockServiceProviderFactory
         $spSsoDescriptor = new \SAML2_XML_md_SPSSODescriptor();
         $spSsoDescriptor->protocolSupportEnumeration = array(\SAML2_Const::NS_SAMLP);
         $spSsoDescriptor->AssertionConsumerService[] = $acsService;
+
+        $spSsoDescriptor->KeyDescriptor[] = $this->generateDefaultSigningKeyPair();
 
         $descriptor->RoleDescriptor[] = $spSsoDescriptor;
 
