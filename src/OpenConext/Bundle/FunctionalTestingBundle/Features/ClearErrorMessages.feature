@@ -81,7 +81,7 @@ Feature:
       And I should see "https://wrong.example.edu/metadata"
 
   Scenario: An Identity Provider tries to send a response over HTTP-Redirect, violating the spec
-    Given IdP Sp uses the HTTP Redirect Binding
+    Given the IdP uses the HTTP Redirect Binding
      When I log in at "Dummy SP"
       And I pass through EngineBlock
      Then I should see "Invalid ACS Binding Type"
@@ -100,14 +100,14 @@ Feature:
 #  Scenario: I try an unsolicited login (at EB) but mess up by not specifying a binding
 #  Scenario: I try an unsolicited login (at EB) but mess up by not specifying an invalid index
 #
-#  Scenario: An SP sends a AuthnRequest transparently for a IdP that doesn't exist
+#  Scenario: An SP sends a AuthnRequest transparently for an IdP that doesn't exist
 #
 #  Scenario: I don't give consent to release my attributes to a Service Provider
 #
-#  Scenario: I visit the SSO location without a SAMLRequest
-#  Scenario: I visit the ACS location without a SAMLResponse
-#  Scenario: I visit the SSO location with a bad SAMLRequest
-#  Scenario: I visit the ACS location with a bad SAMLResponse
+#  Scenario: I visit the EngineBlock SSO location without a SAMLRequest
+#  Scenario: I visit the EngineBlock ACS location without a SAMLResponse
+#  Scenario: I visit the EngineBlock SSO location with a bad SAMLRequest
+#  Scenario: I visit the EngineBlock ACS location with a bad SAMLResponse
 #
 #  Scenario: I lose my 'main' session cookie.
 #
