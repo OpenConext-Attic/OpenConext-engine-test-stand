@@ -160,6 +160,19 @@ class MockIdpContext extends AbstractSubContext
     }
 
     /**
+     * @Given /^IdP Sp uses the HTTP Redirect Binding$/
+     */
+    public function idpSpUsesTheHttpRedirectBinding()
+    {
+        /** @var MockIdentityProvider $idp */
+        $idp = $this->mockIdpRegistry->getOnly();
+
+        $idp->useHttpRedirect();
+
+        $this->mockIdpRegistry->save();
+    }
+
+    /**
      * @Given /^no registered Idps/
      */
     public function noRegisteredIdentityProviders()

@@ -4,6 +4,7 @@ namespace OpenConext\Bundle\MockEntitiesBundle\Controllers;
 
 use OpenConext\Component\EngineTestStand\MockIdentityProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
@@ -74,9 +75,17 @@ class IdentityProviderController extends Controller
                 $authnRequest->getAssertionConsumerServiceURL() :
                 $response->getDestination()));
 
+        if ($mockIdp->mustUseHttpRedirect()) {
+            $redirect = new \SAML2_HTTPRedirect();
+            $redirect->setDestination($destination);
+            $url = $redirect->getRedirectURL($response);
+            return new RedirectResponse($url);
+        }
+
         /** @var Container $container */
         $container = \SAML2_Utils::getContainer();
         $authnRequestXml = $container->getLastDebugMessageOfType(Container::DEBUG_TYPE_IN);
+
         $container->postRedirect(
             $destination,
             array(

@@ -80,8 +80,19 @@ Feature:
       And I should see "Identity Provider:"
       And I should see "https://wrong.example.edu/metadata"
 
+  Scenario: An Identity Provider tries to send a response over HTTP-Redirect, violating the spec
+    Given IdP Sp uses the HTTP Redirect Binding
+     When I log in at "Dummy SP"
+      And I pass through EngineBlock
+     Then I should see "Invalid ACS Binding Type"
+      And I should see "Timestamp:"
+      And I should see "Unique Request Id:"
+      And I should see "User Agent:"
+      And I should see "IP Address:"
+      And I should see "Service Provider:"
+      And I should see "Identity Provider:"
 
-#  Scenario: An Identity Provider tries to send a response over HTTP-Redirect, violating the spec
+
 #  Scenario: An Identity Provider sends a response without a SHO
 #  Scenario: An Identity Provider sends a response without a uid
 #

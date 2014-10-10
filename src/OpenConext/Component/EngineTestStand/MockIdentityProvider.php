@@ -115,6 +115,17 @@ class MockIdentityProvider extends AbstractMockEntityRole
         return $role->Extensions['StatusMessage'];
     }
 
+    public function useHttpRedirect()
+    {
+        $this->descriptor->Extensions['UseRedirect'] = true;
+        return $this;
+    }
+
+    public function mustUseHttpRedirect()
+    {
+        return isset($this->descriptor->Extensions['UseRedirect']) && $this->descriptor->Extensions['UseRedirect'];
+    }
+
     protected function getRoleClass()
     {
         return '\SAML2_XML_md_IDPSSODescriptor';
