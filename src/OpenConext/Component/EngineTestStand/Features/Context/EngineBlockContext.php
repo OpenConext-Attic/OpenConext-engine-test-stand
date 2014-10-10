@@ -79,11 +79,12 @@ class EngineBlockContext extends AbstractSubContext
         // Support for HTTP-Post
         $hasSubmitButton = $this->getMainContext()->getMinkContext()->getSession()->getPage()->findButton('Submit');
         if ($hasSubmitButton) {
-            return $this->getMainContext()->getMinkContext()->pressButton('submitbutton');
+            $this->getMainContext()->getMinkContext()->pressButton('submitbutton');
+            return;
         }
 
         // Default to HTTP-Redirect
-        return $this->getMainContext()->getMinkContext()->clickLink('GO');
+        $this->getMainContext()->getMinkContext()->clickLink('GO');
     }
 
     /**
