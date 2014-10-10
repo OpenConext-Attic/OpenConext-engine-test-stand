@@ -2,12 +2,15 @@
 
 namespace OpenConext\Component\EngineTestStand\Saml2;
 
+use OpenConext\Component\EngineTestStand\MockServiceProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 
 class AuthnRequestFactory
 {
-    public function createFromEntityDescriptor(\SAML2_XML_md_EntityDescriptor $descriptor, EngineBlock $engineBlock)
+    public function createForRequestFromTo(MockServiceProvider $mockSp, EngineBlock $engineBlock)
     {
+        $descriptor = $mockSp->getEntityDescriptor();
+
         // Create the AuthnRequest (or retrieve a stored AuthNRequest)
         if (isset($descriptor->Extensions['AuthnRequest'])) {
             $authnRequest = $descriptor->Extensions['AuthnRequest'];

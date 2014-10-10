@@ -37,8 +37,8 @@ class ServiceProviderController extends Controller
         $engineBlock = $this->get('openconext_functional_testing.service.engine_block');
 
         $factory = new AuthnRequestFactory();
-        $authnRequest = $factory->createFromEntityDescriptor(
-            $mockSp->getEntityDescriptor(),
+        $authnRequest = $factory->createForRequestFromTo(
+            $mockSp,
             $engineBlock
         );
 
@@ -70,9 +70,9 @@ class ServiceProviderController extends Controller
         $engineBlock = $this->get('openconext_functional_testing.service.engine_block');
 
         $factory = new AuthnRequestFactory();
-        $authnRequest = $factory->createFromEntityDescriptor(
+        $authnRequest = $factory->createForRequestFromTo(
             $mockSp,
-            $engineBlock->singleSignOnLocation()
+            $engineBlock
         );
 
         $redirect = new \SAML2_HTTPPost();
