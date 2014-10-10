@@ -97,6 +97,26 @@ class Container extends \SAML2_Compat_AbstractContainer
             $formData .= "            <input name=\"$name\" type=\"text\" value=\"$value\" />" . PHP_EOL;
         }
 
+        if (isset($data['SAMLRequest'])) {
+            $requestXml = base64_decode($data['SAMLRequest']);
+
+            $requestXml = $this->formatXml($requestXml);
+
+            $data['authnRequestXml'] = $requestXml;
+        }
+        if (!isset($data['authnRequestXml'])) {
+            $data['authnRequestXml'] = 'N/A';
+        }
+
+        $responseDebug = '';
+        if (isset($data['SAMLResponse'])) {
+            $responseXml = base64_decode($data['SAMLResponse']);
+
+            $responseXml = $this->formatXml($responseXml);
+
+            $responseDebug = '<pre id="responseDebug">' . htmlentities($responseXml, ENT_QUOTES, 'utf-8')  . '</pre>';
+        }
+
         $this->response = new Response(
 <<<HTML
 <html>
@@ -105,6 +125,7 @@ class Container extends \SAML2_Compat_AbstractContainer
     </head>
     <body>
         <pre id="authnRequestXml">{$data['authnRequestXml']}</pre>
+        $responseDebug
         <form id="postform" action="{$url}" method="post">
             $formData
 
@@ -121,5 +142,19 @@ HTML
     public function getPostResponse()
     {
         return $this->response;
+    }
+
+    /**
+     * @param $xml
+     * @return string
+     */
+    private function formatXml($xml)
+    {
+        $dom = new \DOMDocument;
+        $dom->preserveWhiteSpace = FALSE;
+        $dom->loadXML($xml);
+        $dom->formatOutput = TRUE;
+        $xml = $dom->saveXml();
+        return $xml;
     }
 }
