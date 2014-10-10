@@ -66,11 +66,21 @@ Feature:
      And I should see "Service Provider:"
      And I should not see "Identity Provider:"
 
-#  Scenario: An Identity Provider misrepresents it's entityId and is thus not recognized by EB
-#    Given the IdP thinks it's EntityID is "https://wrong.example.edu/metadata"
-#     When I log in at "Dummy SP"
-#
-#
+  Scenario: An Identity Provider misrepresents it's entityId and is thus not recognized by EB
+    Given the IdP thinks it's EntityID is "https://wrong.example.edu/metadata"
+     When I log in at "Dummy SP"
+      And I pass through EngineBlock
+      And I pass through the IdP
+     Then I should see "Unknown application"
+      And I should see "Timestamp:"
+      And I should see "Unique Request Id:"
+      And I should see "User Agent:"
+      And I should see "IP Address:"
+      And I should see "Service Provider:"
+      And I should see "Identity Provider:"
+      And I should see "https://wrong.example.edu/metadata"
+
+
 #  Scenario: An Identity Provider tries to send a response over HTTP-Redirect, violating the spec
 #  Scenario: An Identity Provider sends a response without a SHO
 #  Scenario: An Identity Provider sends a response without a uid

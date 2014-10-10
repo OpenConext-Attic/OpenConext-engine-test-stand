@@ -149,6 +149,17 @@ class MockIdpContext extends AbstractSubContext
     }
 
     /**
+     * @Given /^the IdP thinks it\'s EntityID is "([^"]*)"$/
+     */
+    public function theIdpThinksItSEntityidIs($entityId)
+    {
+        /** @var MockIdentityProvider $idp */
+        $idp = $this->mockIdpRegistry->getOnly();
+        $idp->setEntityId($entityId);
+        $this->mockIdpRegistry->save();
+    }
+
+    /**
      * @Given /^no registered Idps/
      */
     public function noRegisteredIdentityProviders()
