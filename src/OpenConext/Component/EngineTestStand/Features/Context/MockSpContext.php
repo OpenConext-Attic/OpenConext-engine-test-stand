@@ -75,7 +75,11 @@ class MockSpContext extends AbstractSubContext
     public function aServiceProviderNamedWithEntityid($name)
     {
         $mockSp = $this->anUnregisteredServiceProviderNamed($name);
-        $this->serviceRegistryFixture->registerSp($mockSp->entityId(), $mockSp->assertionConsumerServiceLocation());
+        $this->serviceRegistryFixture->registerSp(
+            $mockSp->entityId(),
+            $mockSp->assertionConsumerServiceLocation(),
+            $mockSp->publicKeyCertData()
+        );
     }
 
     /**
@@ -196,9 +200,7 @@ class MockSpContext extends AbstractSubContext
     {
         /** @var MockServiceProvider $sp */
         $sp = $this->mockSpRegistry->getOnly();
-        /** @var \SAML2_XML_md_SPSSODescriptor $role */
-        $role = $sp->getEntityDescriptor()->RoleDescriptor[0];
-        $role->AuthnRequestsSigned = true;
+        $sp->signAuthnRequests();
 
         $this->mockSpRegistry->save();
     }

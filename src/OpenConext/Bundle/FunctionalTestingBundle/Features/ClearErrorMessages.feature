@@ -4,8 +4,12 @@ Feature:
   I need to see useful error information when something goes wrong
 
   Background:
-    Given an Identity Provider named "Dummy Idp"
+    Given an EngineBlock instance on "demo.openconext.org"
+      And no registered Sps
+      And no registered Idps
+      And an Identity Provider named "Dummy Idp"
       And the IdP uses a blacklist for access control
+      And a Service Provider named "Dummy SP"
       And a Service Provider named "Connected SP"
       And Sp "Connected SP" uses a blacklist of access control
       And a Service Provider named "Unconnected SP"
@@ -19,8 +23,8 @@ Feature:
       And I pass through EngineBlock
       And I pass through the IdP
      Then I should see "Idp error"
-      And I should see "Status Code: urn:oasis:names:tc:SAML:2.0:status:InvalidNameIDPolicy"
-      And I should see "Status Message: NameIdPolicy is invalid"
+      And I should see "InvalidNameIDPolicy"
+      And I should see "NameIdPolicy is invalid"
       And I should see "Timestamp:"
       And I should see "Unique Request Id:"
       And I should see "User Agent:"
@@ -29,8 +33,8 @@ Feature:
       And I should see "Identity Provider:"
 
   Scenario: I log in at my Identity Provider, but it has changed (private/public) keys without notifying OpenConext
-    Given the IdP uses the private key at "Resources/keys/rolled-over.key"
-      And the IdP uses the certificate at "Resources/keys/rolled-over.crt"
+    Given the IdP uses the private key at "src/OpenConext/Component/EngineTestStand/Resources/keys/rolled-over.key"
+      And the IdP uses the certificate at "src/OpenConext/Component/EngineTestStand/Resources/keys/rolled-over.crt"
      When I log in at "Dummy SP"
       And I pass through EngineBlock
       And I pass through the IdP
