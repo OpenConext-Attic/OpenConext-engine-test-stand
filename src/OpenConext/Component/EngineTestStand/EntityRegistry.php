@@ -42,8 +42,20 @@ class EntityRegistry extends ParameterBag
         return $this->getIterator()->current();
     }
 
-    public function __destruct()
+    public function clear()
+    {
+        $this->parameters = array();
+        return $this;
+    }
+
+    public function save()
     {
         $this->dataStore->save($this->parameters);
+        return $this;
+    }
+
+    public function __destruct()
+    {
+        $this->save();
     }
 }

@@ -67,6 +67,8 @@ class MockIdpContext extends AbstractSubContext
             $mockIdp->singleSignOnLocation(),
             $mockIdp->publicKeyCertData()
         );
+
+        $this->mockIdpRegistry->save();
     }
 
     /**
@@ -84,6 +86,7 @@ class MockIdpContext extends AbstractSubContext
         /** @var MockIdentityProvider $mockIdp */
         $mockIdp = $this->mockIdpRegistry->get($idpName);
         $mockIdp->setResponse($response);
+        $this->mockIdpRegistry->save();
 
         $ssoUrl = $mockIdp->singleSignOnLocation();
 
@@ -109,6 +112,7 @@ class MockIdpContext extends AbstractSubContext
         /** @var MockIdentityProvider $idp */
         $idp = $this->mockIdpRegistry->getOnly();
         $idp->setStatusCode($topStatusCode, $secondStatusCode);
+        $this->mockIdpRegistry->save();
     }
 
     /**
@@ -119,6 +123,7 @@ class MockIdpContext extends AbstractSubContext
         /** @var MockIdentityProvider $idp */
         $idp = $this->mockIdpRegistry->getOnly();
         $idp->setStatusMessage($statusMessage);
+        $this->mockIdpRegistry->save();
     }
 
     /**
@@ -129,6 +134,7 @@ class MockIdpContext extends AbstractSubContext
         /** @var MockIdentityProvider $idp */
         $idp = $this->mockIdpRegistry->getOnly();
         $idp->setPrivateKey($privateKeyFile);
+        $this->mockIdpRegistry->save();
     }
 
     /**
@@ -139,6 +145,8 @@ class MockIdpContext extends AbstractSubContext
         /** @var MockIdentityProvider $idp */
         $idp = $this->mockIdpRegistry->getOnly();
         $idp->setCertificate($publicKeyFile);
+        $this->mockIdpRegistry->save();
+    }
 
     /**
      * @Given /^no registered Idps/

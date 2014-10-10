@@ -82,6 +82,7 @@ class MockSpContext extends AbstractSubContext
     {
         $mockSp = $this->mockSpFactory->createNew($name);
         $this->mockSpRegistry->set($name, $mockSp);
+        $this->mockSpRegistry->save();
         return $mockSp;
     }
 
@@ -101,6 +102,7 @@ class MockSpContext extends AbstractSubContext
         $this->mockIdpRegistry->get($idpName)->overrideResponseDestination(
             $this->engineBlock->assertionConsumerLocation()
         );
+        $this->mockIdpRegistry->save();
     }
 
     /**
@@ -138,6 +140,8 @@ class MockSpContext extends AbstractSubContext
         // Listen up Mock Service Provider, you must now pretend that you are the issuer of the request.
         $mockSp->setEntityId($requestIssuer);
 
+        $this->mockSpRegistry->save();
+
         // Override the ACS Location for the SP used in the response to go to the Mock SP
         $this->serviceRegistryFixture
             ->remove($mockSpDefaultEntityId)
@@ -159,6 +163,8 @@ class MockSpContext extends AbstractSubContext
         /** @var MockServiceProvider $mockSp */
         $mockSp = $this->mockSpRegistry->get($spName);
         $mockSp->useIdpTransparently($entityId);
+
+        $this->mockSpRegistry->save();
     }
 
     /**
@@ -189,6 +195,8 @@ class MockSpContext extends AbstractSubContext
         /** @var \SAML2_XML_md_SPSSODescriptor $role */
         $role = $sp->getEntityDescriptor()->RoleDescriptor[0];
         $role->AuthnRequestsSigned = true;
+
+        $this->mockSpRegistry->save();
     }
 
     /**
