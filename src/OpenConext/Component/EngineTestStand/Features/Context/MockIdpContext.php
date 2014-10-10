@@ -141,6 +141,14 @@ class MockIdpContext extends AbstractSubContext
         $idp->setCertificate($publicKeyFile);
 
     /**
+     * @Given /^no registered Idps/
+     */
+    public function noRegisteredIdentityProviders()
+    {
+        $this->mockIdpRegistry->clear()->save();
+    }
+
+    /**
      * @Given /^I pass through the IdP$/
      */
     public function iPassThroughTheIdp()

@@ -5,6 +5,8 @@ Feature:
 
   Background:
     Given an EngineBlock instance on "demo.openconext.org"
+      And no registered Sps
+      And no registered Idps
       And an Identity Provider named "Dummy Idp"
       And a Service Provider named "Dummy SP"
 

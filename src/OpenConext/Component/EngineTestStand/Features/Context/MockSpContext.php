@@ -212,6 +212,14 @@ class MockSpContext extends AbstractSubContext
     }
 
     /**
+     * @Given /^no registered Sps/
+     */
+    public function noRegisteredServiceProviders()
+    {
+        $this->mockSpRegistry->clear()->save();
+    }
+
+    /**
      * @Given /^I pass through the Sp$/
      */
     public function iPassThroughTheSp()
