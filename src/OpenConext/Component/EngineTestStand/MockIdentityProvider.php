@@ -6,25 +6,11 @@ namespace OpenConext\Component\EngineTestStand;
  * Class MockIdentityProvider
  * @package OpenConext\Component\EngineTestStand
  */
-class MockIdentityProvider
+class MockIdentityProvider extends AbstractMockEntityRole
 {
-    protected $name;
-    protected $descriptor;
-
-    public function __construct($name, \SAML2_XML_md_EntityDescriptor $descriptor)
-    {
-        $this->name = $name;
-        $this->descriptor = $descriptor;
-    }
-
-    public function entityId()
-    {
-        return $this->descriptor->entityID;
-    }
-
     public function singleSignOnLocation()
     {
-        return $this->getIdpSsoRole()->SingleSignOnService[0]->Location;
+        return $this->getSsoRole()->SingleSignOnService[0]->Location;
     }
 
     public function setResponse(\SAML2_Response $response)
@@ -48,100 +34,16 @@ class MockIdentityProvider
         return $this->descriptor->Extensions['DestinationOverride'];
     }
 
-    public function getEntityDescriptor()
-    {
-        return $this->descriptor;
-    }
-
-    public function publicKeyCertData()
-    {
-        $role = $this->getIdpSsoRole();
-
-        foreach ($role->KeyDescriptor[0]->KeyInfo->info as $info) {
-            if (!$info instanceof \SAML2_XML_ds_X509Data) {
-                continue;
-            }
-
-            foreach ($info->data as $data) {
-                if (!$data instanceof \SAML2_XML_ds_X509Certificate) {
-                    continue;
-                }
-
-                return $data->certificate;
-            }
-        }
-        throw new \RuntimeException("MockIdp does not have KeyInfo with an X509Certificate");
-    }
-
-    /**
-     * @return \SAML2_XML_md_IDPSSODescriptor
-     * @throws \RuntimeException
-     */
-    private function getIdpSsoRole()
-    {
-        foreach ($this->descriptor->RoleDescriptor as $role) {
-            if (!$role instanceof \SAML2_XML_md_IDPSSODescriptor) {
-                continue;
-            }
-
-            return $role;
-        }
-        throw new \RuntimeException('No IDPSSODescriptor for MockIdentityProvider?');
-    }
-
-    public function setCertificate($certificateFile)
-    {
-        $certData = str_replace(
-            array("-----BEGIN CERTIFICATE-----","-----END CERTIFICATE-----", "\n"),
-            '',
-            $this->getFileContents($certificateFile)
-        );
-
-        $role = $this->getIdpSsoRole();
-
-        foreach ($role->KeyDescriptor[0]->KeyInfo->info as $info) {
-            if (!$info instanceof \SAML2_XML_ds_X509Data) {
-                continue;
-            }
-
-            foreach ($info->data as $data) {
-                if (!$data instanceof \SAML2_XML_ds_X509Certificate) {
-                    continue;
-                }
-
-                $data->certificate = $certData;
-            }
-        }
-        throw new \RuntimeException("MockIdp does not have KeyInfo with an X509Certificate");
-    }
-
-    public function setPrivateKey($privateKeyFile)
-    {
-        $role = $this->getIdpSsoRole();
-
-        foreach ($role->KeyDescriptor[0]->KeyInfo->info as $info) {
-            if (!$info instanceof \SAML2_XML_Chunk) {
-                continue;
-            }
-
-            if ($info->localName !== 'PrivateKey') {
-                continue;
-            }
-
-            $info->xml->nodeValue = $this->getFileContents($privateKeyFile);
-        }
-    }
-
     public function setStatusMessage($statusMessage)
     {
-        $role = $this->getIdpSsoRole();
+        $role = $this->getSsoRole();
 
         $role->Extensions['StatusMessage'] = $statusMessage;
     }
 
     public function setStatusCode($topLevelStatusCode, $secondLevelStatusCode = '')
     {
-        $role = $this->getIdpSsoRole();
+        $role = $this->getSsoRole();
 
         $role->Extensions['StatusCodeTop'] = $this->getFullyQualifiedStatusCode($topLevelStatusCode);
 
@@ -169,22 +71,6 @@ class MockIdentityProvider
         throw new \RuntimeException("'$shortStatusCode' is not a valid status code");
     }
 
-    public function getPrivateKeyPem()
-    {
-        /** @var \SAML2_XML_md_SPSSODescriptor $spssoRole */
-        $idpSsoRole = $this->getIdpSsoRole();
-
-        /** @var \SAML2_XML_Chunk $certificate */
-        $certificate = array_reduce(
-            $idpSsoRole->KeyDescriptor[0]->KeyInfo->info,
-            function($carry, $info) {
-                return $carry ? $carry : $info instanceof \SAML2_XML_Chunk ? $info : false;
-            }
-        );
-
-        return $certificate->xml->textContent;
-    }
-
     public function getFixedResponse()
     {
         return array_reduce(
@@ -198,7 +84,7 @@ class MockIdentityProvider
 
     public function getStatusCodeTop()
     {
-        $role = $this->getIdpSsoRole();
+        $role = $this->getSsoRole();
 
         if (!isset($role->Extensions['StatusCodeTop'])) {
             return \SAML2_Const::STATUS_SUCCESS;
@@ -209,7 +95,7 @@ class MockIdentityProvider
 
     public function getStatusCodeSecond()
     {
-        $role = $this->getIdpSsoRole();
+        $role = $this->getSsoRole();
 
         if (!isset($role->Extensions['StatusCodeSecond'])) {
             return '';
@@ -220,7 +106,7 @@ class MockIdentityProvider
 
     public function getStatusMessage()
     {
-        $role = $this->getIdpSsoRole();
+        $role = $this->getSsoRole();
 
         if (!isset($role->Extensions['StatusMessage'])) {
             return '';
@@ -229,18 +115,8 @@ class MockIdentityProvider
         return $role->Extensions['StatusMessage'];
     }
 
-    private function getFileContents($filePath)
+    protected function getRoleClass()
     {
-        if (file_exists($filePath)) {
-            return file_get_contents($filePath);
-        }
-
-        $componentPath = __DIR__ . '/../../';
-        $fullFilePath = $componentPath . $filePath;
-        if (file_exists($fullFilePath)) {
-            return file_get_contents($fullFilePath);
-        }
-
-        throw new \RuntimeException('Unable to find file: ' . $filePath);
+        return '\SAML2_XML_md_IDPSSODescriptor';
     }
 }

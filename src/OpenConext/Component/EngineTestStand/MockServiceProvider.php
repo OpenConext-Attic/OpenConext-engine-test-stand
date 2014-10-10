@@ -2,24 +2,8 @@
 
 namespace OpenConext\Component\EngineTestStand;
 
-class MockServiceProvider
+class MockServiceProvider extends AbstractMockEntityRole
 {
-    protected $name;
-    protected $descriptor;
-
-    public function __construct(
-        $name,
-        \SAML2_XML_md_EntityDescriptor $descriptor
-    ) {
-        $this->name = $name;
-        $this->descriptor = $descriptor;
-    }
-
-    public function entityId()
-    {
-        return $this->descriptor->entityID;
-    }
-
     public function getEntityDescriptor()
     {
         return $this->descriptor;
