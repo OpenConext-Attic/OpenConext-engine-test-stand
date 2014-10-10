@@ -11,24 +11,26 @@ Feature:
   Scenario: EngineBlock accepts AuthnRequests using HTTP-POST binding
     Given the Sp uses the HTTP POST Binding
      When I log in at "Dummy SP"
-      And I press "Submit"
-      And I press "GO"
-      And I press "Submit"
+      And I pass through the Sp
+      And I pass through EngineBlock
+      And I pass through the IdP
+      And I pass through EngineBlock
      Then the url should match "Dummy%20SP/acs"
 
   Scenario: EngineBlock accepts AuthnRequests using HTTP-Redirect binding
     Given the Sp uses the HTTP Redirect Binding
      When I log in at "Dummy SP"
-      And I press "Submit"
-      And I press "GO"
-      And I press "Submit"
+      And I pass through EngineBlock
+      And I pass through the IdP
+      And I pass through EngineBlock
      Then the url should match "Dummy%20SP/acs"
 
   Scenario: EngineBlock accepts Signed AuthnRequests using HTTP-POST binding
     Given the Sp uses the HTTP POST Binding
       And the Sp signs it's requests
      When I log in at "Dummy SP"
-      And I press "Submit"
-      And I press "GO"
-      And I press "Submit"
+      And I pass through the Sp
+      And I pass through EngineBlock
+      And I pass through the IdP
+      And I pass through EngineBlock
      Then the url should match "Dummy%20SP/acs"

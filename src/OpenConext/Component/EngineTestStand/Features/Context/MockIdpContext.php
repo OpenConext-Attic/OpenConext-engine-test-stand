@@ -139,5 +139,13 @@ class MockIdpContext extends AbstractSubContext
         /** @var MockIdentityProvider $idp */
         $idp = $this->mockIdpRegistry->getOnly();
         $idp->setCertificate($publicKeyFile);
+
+    /**
+     * @Given /^I pass through the IdP$/
+     */
+    public function iPassThroughTheIdp()
+    {
+        $mink = $this->getMainContext()->getMinkContext();
+        $mink->pressButton('GO');
     }
 }

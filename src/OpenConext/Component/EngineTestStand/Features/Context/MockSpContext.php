@@ -210,4 +210,13 @@ class MockSpContext extends AbstractSubContext
         $sp = $this->mockSpRegistry->get($spName);
         $this->serviceRegistryFixture->whitelist($sp->entityId());
     }
+
+    /**
+     * @Given /^I pass through the Sp$/
+     */
+    public function iPassThroughTheSp()
+    {
+        $mink = $this->getMainContext()->getMinkContext();
+        $mink->pressButton('GO');
+    }
 }

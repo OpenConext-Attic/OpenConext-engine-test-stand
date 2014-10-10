@@ -130,4 +130,13 @@ class EngineBlockContext extends AbstractSubContext
         $idFixture = $this->engineBlock->getIdFixture();
         $this->printDebug(print_r($idFixture));
     }
+
+    /**
+     * @Given /^I pass through EngineBlock$/
+     */
+    public function iPassThroughEngineblock()
+    {
+        $mink = $this->getMainContext()->getMinkContext();
+        $mink->pressButton('Submit');
+    }
 }

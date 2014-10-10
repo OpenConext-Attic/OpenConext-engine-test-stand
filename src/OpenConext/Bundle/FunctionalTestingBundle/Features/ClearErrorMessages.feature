@@ -16,8 +16,8 @@ Feature:
     Given the IdP is configured to always return Responses with StatusCode Requester/InvalidNameIDPolicy
       And the IdP is configured to always return Responses with StatusMessage "NameIdPolicy is invalid"
      When I log in at "Dummy SP"
-      And I press "Submit"
-      And I press "GO"
+      And I pass through EngineBlock
+      And I pass through the IdP
      Then I should see "Idp error"
       And I should see "Status Code: urn:oasis:names:tc:SAML:2.0:status:InvalidNameIDPolicy"
       And I should see "Status Message: NameIdPolicy is invalid"
@@ -32,10 +32,9 @@ Feature:
     Given the IdP uses the private key at "Resources/keys/rolled-over.key"
       And the IdP uses the certificate at "Resources/keys/rolled-over.crt"
      When I log in at "Dummy SP"
-      And I press "Submit"
-      And I press "GO"
-      And I press "Submit"
-     Then I should see "Invalid Idp response"
+      And I pass through EngineBlock
+      And I pass through the IdP
+     Then I should see "Invalid signature on Idp response"
       And I should see "Timestamp:"
       And I should see "Unique Request Id:"
       And I should see "User Agent:"
