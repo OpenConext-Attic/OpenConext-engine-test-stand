@@ -194,6 +194,7 @@ class MockSpContext extends AbstractSubContext
      */
     public function theSpSignsItSRequests()
     {
+        /** @var MockServiceProvider $sp */
         $sp = $this->mockSpRegistry->getOnly();
         /** @var \SAML2_XML_md_SPSSODescriptor $role */
         $role = $sp->getEntityDescriptor()->RoleDescriptor[0];
@@ -222,7 +223,7 @@ class MockSpContext extends AbstractSubContext
         $this->serviceRegistryFixture->whitelist($sp->entityId());
     }
 
-    /**
+    /**And I pass through the Sp
      * @Given /^the Sp uses the HTTP POST Binding$/
      */
     public function theSpUsesTheHttpPostBinding()
