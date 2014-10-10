@@ -59,8 +59,11 @@ class MockSpContext extends AbstractSubContext
         if ($mockSp->mustUseUnsolicited()) {
             $ssoStartLocation = $this->engineBlock->unsolicitedLocation($mockSp->entityId());
         }
+        else if ($mockSp->mustUsePost()) {
+            $ssoStartLocation = $mockSp->loginUrlPost();
+        }
         else {
-            $ssoStartLocation = $mockSp->loginUrl();
+            $ssoStartLocation = $mockSp->loginUrlRedirect();
         }
 
         $this->getMainContext()->getMinkContext()->visit($ssoStartLocation);
@@ -217,6 +220,30 @@ class MockSpContext extends AbstractSubContext
         /** @var MockServiceProvider $sp */
         $sp = $this->mockSpRegistry->get($spName);
         $this->serviceRegistryFixture->whitelist($sp->entityId());
+    }
+
+    /**
+     * @Given /^the Sp uses the HTTP POST Binding$/
+     */
+    public function theSpUsesTheHttpPostBinding()
+    {
+        $sp = $this->mockSpRegistry->getOnly();
+
+        $sp->useHttpPost();
+
+        $this->mockSpRegistry->save();
+    }
+
+    /**
+     * @Given /^the Sp uses the HTTP Redirect Binding$/
+     */
+    public function theSpUsesTheHttpRedirectBinding()
+    {
+        $sp = $this->mockSpRegistry->getOnly();
+
+        $sp->useHttpRedirect();
+
+        $this->mockSpRegistry->save();
     }
 
     /**

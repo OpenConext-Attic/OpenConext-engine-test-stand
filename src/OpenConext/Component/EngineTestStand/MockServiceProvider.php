@@ -4,35 +4,26 @@ namespace OpenConext\Component\EngineTestStand;
 
 class MockServiceProvider extends AbstractMockEntityRole
 {
-    public function getEntityDescriptor()
+    public function loginUrl()
     {
-        return $this->descriptor;
+        return $this->loginUrlRedirect();
     }
 
-    public function loginUrl()
+    public function loginUrlRedirect()
     {
         return $this->descriptor->Extensions['LoginRedirectUrl'];
     }
 
-    public function assertionConsumerServiceLocation()
+    public function loginUrlPost()
     {
-        foreach ($this->descriptor->RoleDescriptor as $role) {
-            if (!$role instanceof \SAML2_XML_md_SPSSODescriptor) {
-                continue;
-            }
-
-            $acsService = $role->AssertionConsumerService[0];
-
-            return $acsService->Location;
-        }
-
-        throw new \RuntimeException('No SPSSODescriptor for MockServiceProvider?');
+        return $this->descriptor->Extensions['LoginPostUrl'];
     }
 
-    public function setEntityId($entityId)
+    public function assertionConsumerServiceLocation()
     {
-        $this->descriptor->entityID = $entityId;
-        return $this;
+        /** @var \SAML2_XML_md_SPSSODescriptor $role */
+        $role = $this->getSsoRole();
+        return $role->AssertionConsumerService[0]->Location;
     }
 
     public function setAuthnRequest(\SAML2_AuthnRequest $authnRequest)
