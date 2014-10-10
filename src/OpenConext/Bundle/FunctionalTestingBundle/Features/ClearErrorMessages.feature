@@ -66,8 +66,31 @@ Feature:
      And I should see "Service Provider:"
      And I should not see "Identity Provider:"
 
-  #test:
-    # - The assertion is not valid yet. This happens when the clock on the IdP is running ahead.
-    # - We cannot locate the session identifier of the user. This happens when: a user is directed to another LB or we loose their session info for some other reason.
-    # - The ACL does not allow a user to access the service: This happens with SPs the use our transparent (idps) metadata and send an AuthnRequest for an IdP this is not allowed access to the SP.
-    # - The user sent us a SAML assertion, but did not send the session cookie (so we cannot locate their session). This happens e.g. with login in an iframe with third party cookies disabled or other situations where the security settings in a browser prevent a cookie from being sent.
+#  Scenario: An Identity Provider misrepresents it's entityId and is thus not recognized by EB
+#    Given the IdP thinks it's EntityID is "https://wrong.example.edu/metadata"
+#     When I log in at "Dummy SP"
+#
+#
+#  Scenario: An Identity Provider tries to send a response over HTTP-Redirect, violating the spec
+#  Scenario: An Identity Provider sends a response without a SHO
+#  Scenario: An Identity Provider sends a response without a uid
+#
+#  Scenario: I try an unsolicited login (at EB) but mess up by not specifying a location
+#  Scenario: I try an unsolicited login (at EB) but mess up by not specifying a binding
+#  Scenario: I try an unsolicited login (at EB) but mess up by not specifying an invalid index
+#
+#  Scenario: An SP sends a AuthnRequest transparently for a IdP that doesn't exist
+#
+#  Scenario: I don't give consent to release my attributes to a Service Provider
+#
+#  Scenario: I visit the SSO location without a SAMLRequest
+#  Scenario: I visit the ACS location without a SAMLResponse
+#  Scenario: I visit the SSO location with a bad SAMLRequest
+#  Scenario: I visit the ACS location with a bad SAMLResponse
+#
+#  Scenario: I lose my 'main' session cookie.
+#
+#  Scenario: An attribute manipulation determines that a user may not continue
+#
+#  Scenario: An Identity Provider dates it's Assertions in the future.
+#  Scenario: I want to log in to a service but am not a member of the appropriate VO
