@@ -5,15 +5,15 @@ Feature:
 
   Background:
     Given an EngineBlock instance on "demo.openconext.org"
-      And no registered Sps
+      And no registered SPs
       And no registered Idps
       And an Identity Provider named "Dummy Idp"
       And the IdP uses a blacklist for access control
       And a Service Provider named "Dummy SP"
       And a Service Provider named "Connected SP"
-      And Sp "Connected SP" uses a blacklist of access control
+      And SP "Connected SP" uses a blacklist of access control
       And a Service Provider named "Unconnected SP"
-      And Sp "Unconnected SP" uses a whitelist for access control
+      And SP "Unconnected SP" uses a whitelist for access control
       And an unregistered Service Provider named "Unregistered SP"
 
   Scenario: I log in at my Identity Provider, but something goes wrong and it returns an error response.

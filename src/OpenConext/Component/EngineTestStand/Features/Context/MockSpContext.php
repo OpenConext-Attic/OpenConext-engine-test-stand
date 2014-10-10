@@ -194,7 +194,7 @@ class MockSpContext extends AbstractSubContext
     }
 
     /**
-     * @Given /^the Sp signs it\'s requests$/
+     * @Given /^the SP signs it\'s requests$/
      */
     public function theSpSignsItSRequests()
     {
@@ -206,7 +206,7 @@ class MockSpContext extends AbstractSubContext
     }
 
     /**
-     * @Given /^Sp "([^"]*)" uses a blacklist of access control$/
+     * @Given /^SP "([^"]*)" uses a blacklist of access control$/
      */
     public function spUsesABlacklistOfAccessControl($spName)
     {
@@ -216,7 +216,7 @@ class MockSpContext extends AbstractSubContext
     }
 
     /**
-     * @Given /^Sp "([^"]*)" uses a whitelist for access control$/
+     * @Given /^SP "([^"]*)" uses a whitelist for access control$/
      */
     public function spUsesAWhitelistForAccessControl($spName)
     {
@@ -225,8 +225,8 @@ class MockSpContext extends AbstractSubContext
         $this->serviceRegistryFixture->whitelist($sp->entityId());
     }
 
-    /**And I pass through the Sp
-     * @Given /^the Sp uses the HTTP POST Binding$/
+    /**
+     * @Given /^the SP uses the HTTP POST Binding$/
      */
     public function theSpUsesTheHttpPostBinding()
     {
@@ -238,7 +238,7 @@ class MockSpContext extends AbstractSubContext
     }
 
     /**
-     * @Given /^the Sp uses the HTTP Redirect Binding$/
+     * @Given /^the SP uses the HTTP Redirect Binding$/
      */
     public function theSpUsesTheHttpRedirectBinding()
     {
@@ -258,7 +258,7 @@ class MockSpContext extends AbstractSubContext
     }
 
     /**
-     * @Given /^I pass through the Sp$/
+     * @Given /^I pass through the SP$/
      */
     public function iPassThroughTheSp()
     {

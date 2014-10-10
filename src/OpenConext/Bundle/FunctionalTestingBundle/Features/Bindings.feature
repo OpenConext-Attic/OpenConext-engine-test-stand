@@ -5,22 +5,22 @@ Feature:
 
   Background:
     Given an EngineBlock instance on "demo.openconext.org"
-      And no registered Sps
+      And no registered SPs
       And no registered Idps
       And an Identity Provider named "Dummy Idp"
       And a Service Provider named "Dummy SP"
 
   Scenario: EngineBlock accepts AuthnRequests using HTTP-POST binding
-    Given the Sp uses the HTTP POST Binding
+    Given the SP uses the HTTP POST Binding
      When I log in at "Dummy SP"
-      And I pass through the Sp
+      And I pass through the SP
       And I pass through EngineBlock
       And I pass through the IdP
       And I pass through EngineBlock
      Then the url should match "Dummy%20SP/acs"
 
   Scenario: EngineBlock accepts AuthnRequests using HTTP-Redirect binding
-    Given the Sp uses the HTTP Redirect Binding
+    Given the SP uses the HTTP Redirect Binding
      When I log in at "Dummy SP"
       And I pass through EngineBlock
       And I pass through the IdP
@@ -28,10 +28,10 @@ Feature:
      Then the url should match "Dummy%20SP/acs"
 
   Scenario: EngineBlock accepts Signed AuthnRequests using HTTP-POST binding
-    Given the Sp uses the HTTP POST Binding
-      And the Sp signs it's requests
+    Given the SP uses the HTTP POST Binding
+      And the SP signs it's requests
      When I log in at "Dummy SP"
-      And I pass through the Sp
+      And I pass through the SP
       And I pass through EngineBlock
       And I pass through the IdP
       And I pass through EngineBlock
