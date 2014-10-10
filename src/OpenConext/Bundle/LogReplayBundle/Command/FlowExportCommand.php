@@ -226,7 +226,7 @@ EOF
 
         $message = $this->findLineWith(
             $sessionLogStream,
-            "DUMP 'Unsollicited Request'"
+            "DUMP 'Unsolicited Request'"
         );
         if ($message) {
             return $message;

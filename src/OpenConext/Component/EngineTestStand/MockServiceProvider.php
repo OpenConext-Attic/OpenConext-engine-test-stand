@@ -40,13 +40,13 @@ class MockServiceProvider extends AbstractMockEntityRole
 
     public function useUnsolicited()
     {
-        $this->descriptor->Extensions['Unsollicited'] = true;
+        $this->descriptor->Extensions['Unsolicited'] = true;
         return $this;
     }
 
     public function mustUseUnsolicited()
     {
-        return isset($this->descriptor->Extensions['Unsollicited']) && $this->descriptor->Extensions['Unsollicited'];
+        return isset($this->descriptor->Extensions['Unsolicited']) && $this->descriptor->Extensions['Unsolicited'];
     }
 
     public function signAuthnRequests()

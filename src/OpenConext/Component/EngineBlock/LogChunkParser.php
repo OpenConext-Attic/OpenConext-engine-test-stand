@@ -66,7 +66,7 @@ class LogChunkParser
     {
         $lines = explode("\n", $this->load());
         foreach ($lines as $line) {
-            if (!strstr($line, 'Unsollicited Request')) {
+            if (!strstr($line, 'Unsolicited Request')) {
                 continue;
             }
 
@@ -76,7 +76,7 @@ class LogChunkParser
                 throw new \RuntimeException('Unable to execute regex!');
             }
             if ($matched === 0) {
-                throw new \RuntimeException('No PrintR found in line with "Unsollicited Request"');
+                throw new \RuntimeException('No PrintR found in line with "Unsolicited Request"');
             }
 
             $content = preg_replace('/\\\n/', "\n", $matches['printR']);
@@ -85,7 +85,7 @@ class LogChunkParser
             $request = $parser->parse();
 
             if (!isset($request['saml:Issuer']['__v'])) {
-                throw new \RuntimeException('Unsollicited request doesnt have an issuer?');
+                throw new \RuntimeException('Unsolicited request doesnt have an issuer?');
             }
 
             return $request;

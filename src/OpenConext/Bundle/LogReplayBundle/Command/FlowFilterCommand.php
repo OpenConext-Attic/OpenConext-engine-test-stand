@@ -121,7 +121,7 @@ EOF
             if (strpos($logLine, '[Message INFO] Received request') !== false) {
                 $hasSpRequest = true;
             }
-            if (strpos($logLine, "DUMP 'Unsollicited Request'")) {
+            if (strpos($logLine, "DUMP 'Unsolicited Request'")) {
                 $hasSpRequest = true;
             }
 

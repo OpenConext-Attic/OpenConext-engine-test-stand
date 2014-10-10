@@ -49,9 +49,9 @@ class MockSpContext extends AbstractSubContext
 
 
     /**
-     * @When /^I trigger the login \(either at "([^"]*)" or unsollicited at EB\)$/
+     * @When /^I trigger the login \(either at "([^"]*)" or unsolicited at EB\)$/
      */
-    public function iTriggerTheLoginEitherAtOrUnsollicitedAtEb($spName)
+    public function iTriggerTheLoginEitherAtOrUnsolicitedAtEb($spName)
     {
         /** @var MockServiceProvider $mockSp */
         $mockSp = $this->mockSpRegistry->get($spName);
@@ -128,7 +128,7 @@ class MockSpContext extends AbstractSubContext
         $logReader = new LogChunkParser($authnRequestLogFile);
         $unsolicitedRequest = $logReader->detectUnsolicitedRequest();
         if ($unsolicitedRequest) {
-            $this->printDebug("Unsollicited Request:" . PHP_EOL . print_r($unsolicitedRequest, true));
+            $this->printDebug("Unsolicited Request:" . PHP_EOL . print_r($unsolicitedRequest, true));
             $mockSp->useUnsolicited();
 
             $requestIssuer = $unsolicitedRequest['saml:Issuer']['__v'];
@@ -190,7 +190,7 @@ class MockSpContext extends AbstractSubContext
      */
     public function iLogInAt($spName)
     {
-        $this->iTriggerTheLoginEitherAtOrUnsollicitedAtEb($spName);
+        $this->iTriggerTheLoginEitherAtOrUnsolicitedAtEb($spName);
     }
 
     /**
