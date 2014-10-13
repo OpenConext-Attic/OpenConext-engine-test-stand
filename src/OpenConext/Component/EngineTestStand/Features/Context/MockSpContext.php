@@ -17,10 +17,26 @@ use OpenConext\Component\EngineBlockFixtures\ServiceRegistryFixture;
  */
 class MockSpContext extends AbstractSubContext
 {
+    /**
+     * @var EntityRegistry
+     */
     protected $mockSpRegistry;
+
+    /**
+     * @var EntityRegistry
+     */
     protected $mockIdpRegistry;
+
+    /**
+     * @var ServiceRegistryFixture
+     */
     protected $serviceRegistryFixture;
+
+    /**
+     * @var MockServiceProviderFactory
+     */
     protected $mockSpFactory;
+
     /**
      * @var EngineBlock
      */
@@ -129,6 +145,7 @@ class MockSpContext extends AbstractSubContext
         $unsolicitedRequest = $logReader->detectUnsolicitedRequest();
         if ($unsolicitedRequest) {
             $this->printDebug("Unsolicited Request:" . PHP_EOL . print_r($unsolicitedRequest, true));
+
             $mockSp->useUnsolicited();
 
             $requestIssuer = $unsolicitedRequest['saml:Issuer']['__v'];
