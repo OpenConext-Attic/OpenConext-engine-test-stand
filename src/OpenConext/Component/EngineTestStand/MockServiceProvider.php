@@ -80,15 +80,15 @@ class MockServiceProvider extends AbstractMockEntityRole
         return $this;
     }
 
+    public function mustUsePost()
+    {
+        return isset($this->descriptor->Extensions['UsePost']);
+    }
+
     public function useHttpRedirect()
     {
         unset($this->descriptor->Extensions['UsePost']);
         return $this;
-    }
-
-    public function mustUsePost()
-    {
-        return isset($this->descriptor->Extensions['UsePost']);
     }
 
     protected function getRoleClass()
