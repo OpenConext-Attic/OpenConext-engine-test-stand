@@ -48,6 +48,13 @@ class MockServiceProvider extends AbstractMockEntityRole
         return $this;
     }
 
+    public function getTransparentIdp()
+    {
+        return isset($this->descriptor->Extensions['TransparentIdp']) ?
+            $this->descriptor->Extensions['TransparentIdp'] :
+            '';
+    }
+
     public function useUnsolicited()
     {
         $this->descriptor->Extensions['Unsolicited'] = true;
