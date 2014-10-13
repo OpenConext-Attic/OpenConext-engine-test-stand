@@ -98,10 +98,8 @@ Feature:
      When I log in at "Dummy SP"
       And I pass through EngineBlock
       And I pass through the IdP
-      And print last response
      Then I should see "Missing required fields"
       And I should see "UID"
-      And I should not see "schacHomeOrganization"
       And I should see "Timestamp:"
       And I should see "Unique Request Id:"
       And I should see "User Agent:"
@@ -115,6 +113,7 @@ Feature:
       And I pass through EngineBlock
       And I pass through the IdP
      Then I should see "Missing required fields"
+      And I should see "schacHomeOrganization"
       And I should see "Timestamp:"
       And I should see "Unique Request Id:"
       And I should see "User Agent:"
