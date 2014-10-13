@@ -267,7 +267,7 @@ class MockSpContext extends AbstractSubContext
     }
 
     /**
-     * @Given /^no registered Sps/
+     * @Given /^no registered SPs/
      */
     public function noRegisteredServiceProviders()
     {
