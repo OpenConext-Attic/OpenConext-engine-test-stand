@@ -93,8 +93,35 @@ Feature:
       And I should see "Identity Provider:"
 
 
-#  Scenario: An Identity Provider sends a response without a SHO
-#  Scenario: An Identity Provider sends a response without a uid
+  Scenario: An Identity Provider sends a response without a SHO
+    Given the IdP does not send the attribute named "urn:mace:terena.org:attribute-def:schacHomeOrganization"
+     When I log in at "Dummy SP"
+      And I pass through EngineBlock
+      And I pass through the IdP
+      And print last response
+     Then I should see "Missing required fields"
+      And I should see "UID"
+      And I should not see "schacHomeOrganization"
+      And I should see "Timestamp:"
+      And I should see "Unique Request Id:"
+      And I should see "User Agent:"
+      And I should see "IP Address:"
+      And I should see "Service Provider:"
+      And I should see "Identity Provider:"
+
+  Scenario: An Identity Provider sends a response without a uid
+    Given the IdP does not send the attribute named "urn:mace:dir:attribute-def:uid"
+     When I log in at "Dummy SP"
+      And I pass through EngineBlock
+      And I pass through the IdP
+     Then I should see "Missing required fields"
+      And I should see "Timestamp:"
+      And I should see "Unique Request Id:"
+      And I should see "User Agent:"
+      And I should see "IP Address:"
+      And I should see "Service Provider:"
+      And I should see "Identity Provider:"
+
 #
 #  Scenario: I try an unsolicited login (at EB) but mess up by not specifying a location
 #  Scenario: I try an unsolicited login (at EB) but mess up by not specifying a binding

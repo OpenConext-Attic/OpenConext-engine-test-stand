@@ -130,6 +130,28 @@ class MockIdentityProvider extends AbstractMockEntityRole
         return isset($this->descriptor->Extensions['UseRedirect']) && $this->descriptor->Extensions['UseRedirect'];
     }
 
+    public function removeAttribute($forbiddenAttributeName)
+    {
+        $role = $this->getSsoRole();
+
+        /** @var Response $response */
+        $response = $role->Extensions['SAMLResponse'];
+        $assertions = $response->getAssertions();
+
+        $newAttributes = array();
+
+        $attributes = $assertions[0]->getAttributes();
+        foreach ($attributes as $attributeName => $attributeValues) {
+            if ($attributeName === $forbiddenAttributeName) {
+                continue;
+            }
+
+            $newAttributes[$attributeName] = $attributeValues;
+        }
+
+        $assertions[0]->setAttributes($newAttributes);
+    }
+
     protected function getRoleClass()
     {
         return '\SAML2_XML_md_IDPSSODescriptor';

@@ -173,6 +173,19 @@ class MockIdpContext extends AbstractSubContext
     }
 
     /**
+     * @Given /^the IdP does not send the attribute named "([^"]*)"$/
+     */
+    public function theIdpDoesNotSendTheAttributeNamed($attributeName)
+    {
+        /** @var MockIdentityProvider $idp */
+        $idp = $this->mockIdpRegistry->getOnly();
+
+        $idp->removeAttribute($attributeName);
+
+        $this->mockIdpRegistry->save();
+    }
+
+    /**
      * @Given /^no registered Idps/
      */
     public function noRegisteredIdentityProviders()
