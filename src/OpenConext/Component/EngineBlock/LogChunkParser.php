@@ -4,6 +4,8 @@ namespace OpenConext\Component\EngineBlock;
 
 use Doctrine\Common\Annotations\PhpParser;
 use OpenConext\Component\EngineBlock\Corto\XmlToArray;
+use OpenConext\Component\EngineTestStand\Saml2\AuthnRequest;
+use OpenConext\Component\EngineTestStand\Saml2\Response;
 
 class LogChunkParser
 {
@@ -145,7 +147,7 @@ class LogChunkParser
         $document->loadXML($request);
 
         $messageObj = $this->createObjectForMessageType($messageType, $document->firstChild);
-        $messageObj->xml = $request;
+        $messageObj->setXml($request);
 
         return $messageObj;
     }
@@ -236,8 +238,9 @@ class LogChunkParser
     protected function createObjectForMessageType($messageType, \DOMElement $root)
     {
         if ($messageType === static::MESSAGE_TYPE_AUTHN_REQUEST) {
-            return new \SAML2_AuthnRequest($root);
+            return new AuthnRequest($root);
         }
-        return new \SAML2_Response($root);
+
+        return new Response($root);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace OpenConext\Component\EngineTestStand;
 
+use OpenConext\Component\EngineTestStand\Saml2\AuthnRequest;
+
 class MockServiceProvider extends AbstractMockEntityRole
 {
     public function loginUrl()

@@ -90,7 +90,7 @@ class IdentityProviderController extends Controller
             $destination,
             array(
                 'authnRequestXml'=> htmlentities($authnRequestXml),
-                'SAMLResponse' => base64_encode($response->xml),
+                'SAMLResponse' => base64_encode($response->toXml()),
             )
         );
         return $container->getPostResponse();
