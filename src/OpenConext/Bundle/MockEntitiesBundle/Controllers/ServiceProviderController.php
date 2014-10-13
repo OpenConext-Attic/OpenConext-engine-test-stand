@@ -110,14 +110,14 @@ class ServiceProviderController extends Controller
             }
         }
 
-        if (!($message instanceof \SAML2_Response)) {
+        if (!$message instanceof \SAML2_Response) {
             throw new \RuntimeException('Unrecognized message type received: ' . get_class($message));
         }
 
-        $message->xml = base64_decode($request->get('SAMLResponse'));
+        $xml = base64_decode($request->get('SAMLResponse'));
 
         return new Response(
-            $message->xml,
+            $xml,
             200,
             array('Content-Type' => 'application/xml')
         );
