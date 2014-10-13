@@ -1,6 +1,8 @@
 <?php
 
 namespace OpenConext\Component\EngineTestStand;
+use DOMElement;
+use OpenConext\Component\EngineTestStand\Saml2\Response;
 
 /**
  * Class MockIdentityProvider
@@ -13,10 +15,13 @@ class MockIdentityProvider extends AbstractMockEntityRole
         return $this->getSsoRole()->SingleSignOnService[0]->Location;
     }
 
-    public function setResponse(\SAML2_Response $response)
+    public function setResponse(Response $response)
     {
-        $this->descriptor->entityID = $response->getIssuer();
-        $this->descriptor->Extensions['Response'] = $response;
+        /** @var \SAML2_XML_md_IDPSSODescriptor $role */
+        $role = $this->getSsoRole();
+        $role->Extensions['SAMLResponse'] = $response;
+
+        return $this;
     }
 
     public function overrideResponseDestination($acsUrl)
@@ -71,15 +76,14 @@ class MockIdentityProvider extends AbstractMockEntityRole
         throw new \RuntimeException("'$shortStatusCode' is not a valid status code");
     }
 
-    public function getFixedResponse()
+    /**
+     * @return Response
+     */
+    public function getResponse()
     {
-        return array_reduce(
-            $this->getEntityDescriptor()->Extensions,
-            function (&$result, $item) {
-                return ($item instanceof \SAML2_Response ? $item : $result);
-            },
-            false
-        );
+        /** @var \SAML2_XML_md_IDPSSODescriptor $role */
+        $role = $this->getSsoRole();
+        return $role->Extensions['SAMLResponse'];
     }
 
     public function getStatusCodeTop()

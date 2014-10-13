@@ -28,9 +28,17 @@ class MockServiceProvider extends AbstractMockEntityRole
         return $role->AssertionConsumerService[0]->Location;
     }
 
+    /**
+     * @return AuthnRequest
+     */
+    public function getAuthnRequest()
+    {
+        return $this->descriptor->Extensions['SAMLRequest'];
+    }
+
     public function setAuthnRequest(\SAML2_AuthnRequest $authnRequest)
     {
-        $this->descriptor->Extensions['AuthnRequest'] = $authnRequest;
+        $this->descriptor->Extensions['SAMLRequest'] = $authnRequest;
         return $this;
     }
 

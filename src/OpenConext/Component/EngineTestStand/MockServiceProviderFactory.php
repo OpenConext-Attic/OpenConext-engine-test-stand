@@ -23,7 +23,11 @@ class MockServiceProviderFactory extends AbstractMockEntityFactory
     {
         $descriptor = $this->generateDefaultEntityMetadata($spName);
 
-        return new MockServiceProvider($spName, $descriptor);
+        $mockSp = new MockServiceProvider($spName, $descriptor);
+
+        $mockSp->setAuthnRequest($this->generateDefaultAuthnRequest($mockSp));
+
+        return $mockSp;
     }
 
     protected function generateDefaultEntityMetadata($spName)
@@ -63,5 +67,12 @@ class MockServiceProviderFactory extends AbstractMockEntityFactory
             RouterInterface::ABSOLUTE_URL
         );
         return $descriptor;
+    }
+
+    private function generateDefaultAuthnRequest(MockServiceProvider $mockSp)
+    {
+        $request = new \SAML2_AuthnRequest();
+        $request->setIssuer($mockSp->entityId());
+        return $request;
     }
 }

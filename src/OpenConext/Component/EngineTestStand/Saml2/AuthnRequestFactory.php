@@ -9,27 +9,18 @@ class AuthnRequestFactory
 {
     public function createForRequestFromTo(MockServiceProvider $mockSp, EngineBlock $engineBlock)
     {
-        $descriptor = $mockSp->getEntityDescriptor();
-
-        // Create the AuthnRequest (or retrieve a stored AuthNRequest)
-        if (isset($descriptor->Extensions['AuthnRequest'])) {
-            $authnRequest = $descriptor->Extensions['AuthnRequest'];
-        }
-        else {
-            $authnRequest = new \SAML2_AuthnRequest();
-            $authnRequest->setIssuer($descriptor->entityID);
-        }
+        $request = $mockSp->getAuthnRequest();
 
         // Set / override the Destination
-        if (isset($descriptor->Extensions['TransparentIdp'])) {
-            $destination = $engineBlock->transparentSsoLocation($descriptor->Extensions['TransparentIdp']);
+        $transparentIdp = $mockSp->getTransparentIdp();
+        if (!empty($transparentIdp)) {
+            $destination = $engineBlock->transparentSsoLocation($transparentIdp);
         }
         else {
             $destination = $engineBlock->singleSignOnLocation();
         }
-        $authnRequest->setDestination($destination);
+        $request->setDestination($destination);
 
-        // Done
-        return $authnRequest;
+        return $request;
     }
 }
