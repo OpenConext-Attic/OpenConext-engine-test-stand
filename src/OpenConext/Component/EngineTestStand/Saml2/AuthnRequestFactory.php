@@ -4,6 +4,7 @@ namespace OpenConext\Component\EngineTestStand\Saml2;
 
 use OpenConext\Component\EngineTestStand\MockServiceProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
+use XMLSecurityKey;
 
 class AuthnRequestFactory
 {
@@ -20,6 +21,12 @@ class AuthnRequestFactory
             $destination = $engineBlock->singleSignOnLocation();
         }
         $request->setDestination($destination);
+
+        if ($mockSp->mustSignAuthnRequests()) {
+            $key = new XMLSecurityKey(XMLSecurityKey::RSA_SHA256, array('type' => 'private'));
+            $key->loadKey($mockSp->getPrivateKeyPem());
+            $request->setSignatureKey($key);
+        }
 
         return $request;
     }

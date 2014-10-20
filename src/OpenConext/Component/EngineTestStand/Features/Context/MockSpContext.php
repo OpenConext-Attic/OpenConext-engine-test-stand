@@ -222,9 +222,28 @@ class MockSpContext extends AbstractSubContext
     {
         /** @var MockServiceProvider $sp */
         $sp = $this->mockSpRegistry->getOnly();
+        $this->_spSignsItsRequests($sp);
+    }
+
+    /**
+     * @Given /^SP "([^"]*)" signs it\'s requests$/
+     */
+    public function spSignsItSRequests($spName)
+    {
+        /** @var MockServiceProvider $sp */
+        $sp = $this->mockSpRegistry->get($spName);
+        $this->_spSignsItsRequests($sp);
+    }
+
+    private function _spSignsItsRequests(MockServiceProvider $sp)
+    {
         $sp->signAuthnRequests();
 
         $this->mockSpRegistry->save();
+
+        $this->serviceRegistryFixture
+            ->setEntityWantsSignature($sp->entityId())
+            ->save();
     }
 
     /**
