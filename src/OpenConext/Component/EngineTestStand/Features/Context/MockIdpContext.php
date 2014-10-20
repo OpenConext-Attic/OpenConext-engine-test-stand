@@ -61,14 +61,12 @@ class MockIdpContext extends AbstractSubContext
     public function anIdentityProviderNamed($name)
     {
         $mockIdp = $this->mockIdpFactory->createNew($name);
-        $this->mockIdpRegistry->set($name, $mockIdp);
+        $this->mockIdpRegistry->set($name, $mockIdp)->save();
         $this->serviceRegistryFixture->registerIdp(
             $mockIdp->entityId(),
             $mockIdp->singleSignOnLocation(),
             $mockIdp->publicKeyCertData()
-        );
-
-        $this->mockIdpRegistry->save();
+        )->save();
     }
 
     /**
@@ -91,7 +89,9 @@ class MockIdpContext extends AbstractSubContext
         $ssoUrl = $mockIdp->singleSignOnLocation();
 
         // Override the SSO Location for the IDP used in the response to go to the Mock Idp
-        $this->serviceRegistryFixture->setEntitySsoLocation($response->getIssuer(), $ssoUrl);
+        $this->serviceRegistryFixture
+            ->setEntitySsoLocation($response->getIssuer(), $ssoUrl)
+            ->save();
 
         $this->engineBlock->overrideTime($response->getIssueInstant());
     }
@@ -101,7 +101,9 @@ class MockIdpContext extends AbstractSubContext
      */
     public function theIdpUsesABlacklistForAccessControl()
     {
-        $this->serviceRegistryFixture->blacklist($this->mockIdpRegistry->getOnly()->entityId());
+        $this->serviceRegistryFixture
+            ->blacklist($this->mockIdpRegistry->getOnly()->entityId())
+            ->save();
     }
 
     /**

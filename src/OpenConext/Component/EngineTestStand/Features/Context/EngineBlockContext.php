@@ -54,7 +54,8 @@ class EngineBlockContext extends AbstractSubContext
             ->registerIdp(
                 "https://engine.$domain/authentication/idp/metadata",
                 "https://engine.$domain/authentication/idp/single-sign-on"
-            );
+            )
+            ->save();
         $this->engineBlock->clearNewIds();
     }
 

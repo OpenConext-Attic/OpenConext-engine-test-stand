@@ -95,7 +95,7 @@ class MockSpContext extends AbstractSubContext
             $mockSp->entityId(),
             $mockSp->assertionConsumerServiceLocation(),
             $mockSp->publicKeyCertData()
-        );
+        )->save();
     }
 
     /**
@@ -118,8 +118,10 @@ class MockSpContext extends AbstractSubContext
 
         $idpEntityId = $this->mockIdpRegistry->get($idpName)->entityId();
 
-        $this->serviceRegistryFixture->blacklist($spEntityId);
-        $this->serviceRegistryFixture->allow($spEntityId, $idpEntityId);
+        $this->serviceRegistryFixture
+            ->blacklist($spEntityId)
+            ->allow($spEntityId, $idpEntityId)
+            ->save();
 
         // Override the Destination for the Response
         $this->mockIdpRegistry->get($idpName)->overrideResponseDestination(
@@ -169,7 +171,8 @@ class MockSpContext extends AbstractSubContext
         // Override the ACS Location for the SP used in the response to go to the Mock SP
         $this->serviceRegistryFixture
             ->remove($mockSpDefaultEntityId)
-            ->setEntityAcsLocation($requestIssuer, $mockSpAcsLocation);
+            ->setEntityAcsLocation($requestIssuer, $mockSpAcsLocation)
+            ->save();
     }
 
     /**
@@ -229,7 +232,9 @@ class MockSpContext extends AbstractSubContext
     {
         /** @var MockServiceProvider $sp */
         $sp = $this->mockSpRegistry->get($spName);
-        $this->serviceRegistryFixture->blacklist($sp->entityId());
+        $this->serviceRegistryFixture
+            ->blacklist($sp->entityId())
+            ->save();
     }
 
     /**
@@ -239,7 +244,9 @@ class MockSpContext extends AbstractSubContext
     {
         /** @var MockServiceProvider $sp */
         $sp = $this->mockSpRegistry->get($spName);
-        $this->serviceRegistryFixture->whitelist($sp->entityId());
+        $this->serviceRegistryFixture
+            ->whitelist($sp->entityId())
+            ->save();
     }
 
     /**
