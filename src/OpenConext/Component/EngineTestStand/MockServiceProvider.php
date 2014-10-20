@@ -91,6 +91,17 @@ class MockServiceProvider extends AbstractMockEntityRole
         return $this;
     }
 
+    public function isTrustedProxy()
+    {
+        return isset($this->descriptor->Extensions['TrustedProxy']) && $this->descriptor->Extensions['TrustedProxy'];
+    }
+
+    public function trustedProxy()
+    {
+        $this->descriptor->Extensions['TrustedProxy'] = true;
+        return $this;
+    }
+
     protected function getRoleClass()
     {
         return '\SAML2_XML_md_SPSSODescriptor';
