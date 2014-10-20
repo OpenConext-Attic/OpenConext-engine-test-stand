@@ -6,6 +6,7 @@ use Behat\Behat\Exception\PendingException;
 use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\MockIdentityProvider;
+use OpenConext\Component\EngineTestStand\MockServiceProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use OpenConext\Component\EngineBlockFixtures\ServiceRegistryFixture;
 use OpenConext\Component\EngineTestStand\MockIdentityProviderFactory;
@@ -28,31 +29,39 @@ class MockIdpContext extends AbstractSubContext
     protected $engineBlock;
 
     /**
-     * @var EntityRegistry
-     */
-    protected $mockIdpRegistry;
-
-    /**
      * @var MockIdentityProviderFactory
      */
     protected $mockIdpFactory;
 
     /**
+     * @var EntityRegistry
+     */
+    protected $mockIdpRegistry;
+
+    /**
+     * @var \OpenConext\Component\EngineTestStand\EntityRegistry
+     */
+    protected $mockSpRegistry;
+
+    /**
      * @param ServiceRegistryFixture $serviceRegistryFixture
      * @param EngineBlock $engineBlock
-     * @param EntityRegistry $mockIdpRegistry
      * @param MockIdentityProviderFactory $idpFactory
+     * @param EntityRegistry $mockIdpRegistry
+     * @param EntityRegistry $mockSpRegistry
      */
     public function __construct(
         ServiceRegistryFixture $serviceRegistryFixture,
         EngineBlock $engineBlock,
         MockIdentityProviderFactory $idpFactory,
-        EntityRegistry $mockIdpRegistry
+        EntityRegistry $mockIdpRegistry,
+        EntityRegistry $mockSpRegistry
     ) {
         $this->serviceRegistryFixture = $serviceRegistryFixture;
         $this->engineBlock = $engineBlock;
         $this->mockIdpFactory = $idpFactory;
         $this->mockIdpRegistry = $mockIdpRegistry;
+        $this->mockSpRegistry = $mockSpRegistry;
     }
 
     /**
@@ -203,5 +212,46 @@ class MockIdpContext extends AbstractSubContext
     {
         $mink = $this->getMainContext()->getMinkContext();
         $mink->pressButton('GO');
+    }
+
+    /**
+     * @Given /^IdP "([^"]*)" uses a blacklist$/
+     */
+    public function idpUsesABlacklist($idpName)
+    {
+        /** @var MockIdentityProvider $mockIdp */
+        $mockIdp = $this->mockIdpRegistry->get($idpName);
+
+        $this->serviceRegistryFixture->blacklist($mockIdp->entityId());
+
+        $this->serviceRegistryFixture->save();
+    }
+
+    /**
+     * @Given /^IdP "([^"]*)" uses a whitelist$/
+     */
+    public function idpUsesAWhitelist($idpName)
+    {
+        /** @var MockIdentityProvider $mockIdp */
+        $mockIdp = $this->mockIdpRegistry->get($idpName);
+
+        $this->serviceRegistryFixture->whitelist($mockIdp->entityId());
+
+        $this->serviceRegistryFixture->save();
+    }
+
+    /**
+     * @Given /^IdP "([^"]*)" whitelists SP "([^"]*)"$/
+     */
+    public function idpWhitelistsSp($idpName, $spName)
+    {
+        /** @var MockIdentityProvider $mockIdp */
+        $mockIdp = $this->mockIdpRegistry->get($idpName);
+        /** @var MockServiceProvider $mockSp */
+        $mockSp  = $this->mockSpRegistry->get($spName);
+
+        $this->serviceRegistryFixture->allow($mockSp->entityid(), $mockIdp->entityId());
+
+        $this->serviceRegistryFixture->save();
     }
 }

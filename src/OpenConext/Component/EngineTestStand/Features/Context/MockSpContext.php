@@ -6,6 +6,7 @@ use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineBlockFixtures\IdFixture;
 use OpenConext\Component\EngineBlockFixtures\IdFrame;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
+use OpenConext\Component\EngineTestStand\MockIdentityProvider;
 use OpenConext\Component\EngineTestStand\MockServiceProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use OpenConext\Component\EngineTestStand\MockServiceProviderFactory;
@@ -248,6 +249,21 @@ class MockSpContext extends AbstractSubContext
         $this->serviceRegistryFixture
             ->whitelist($sp->entityId())
             ->save();
+    }
+
+    /**
+     * @Given /^SP "([^"]*)" whitelists IdP "([^"]*)"$/
+     */
+    public function spWhitelistsIdp($spName, $idpName)
+    {
+        /** @var MockIdentityProvider $mockIdp */
+        $mockIdp = $this->mockIdpRegistry->get($idpName);
+        /** @var MockServiceProvider $mockSp */
+        $mockSp  = $this->mockSpRegistry->get($spName);
+
+        $this->serviceRegistryFixture->allow($mockSp->entityid(), $mockIdp->entityId());
+
+        $this->serviceRegistryFixture->save();
     }
 
     /**

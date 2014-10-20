@@ -33,6 +33,7 @@ services:
             - '@openconext_functional_testing.service.engine_block'
             - '@openconext_mock_entities.idp_factory'
             - '@openconext_mock_entities.idp_registry'
+            - '@openconext_mock_entities.sp_registry'
 
     openconext_functional_testing.behat_context.mock_sp:
         class: OpenConext\Component\EngineTestStand\Features\Context\MockSpContext
