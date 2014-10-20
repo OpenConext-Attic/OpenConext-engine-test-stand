@@ -120,7 +120,7 @@ abstract class AbstractMockEntityRole
     }
 
     /**
-     * @return \SAML2_XML_md_IDPSSODescriptor
+     * @return \SAML2_XML_md_SSODescriptorType
      * @throws \RuntimeException
      */
     protected function getSsoRole()
