@@ -204,7 +204,9 @@ class MockSpContext extends AbstractSubContext
         /** @var MockServiceProvider $mockSp */
         $mockSp = $this->mockSpRegistry->get($spName);
 
-        $this->serviceRegistryFixture->setEntityNoConsent($mockSp->entityId());
+        $this->serviceRegistryFixture
+            ->setEntityNoConsent($mockSp->entityId())
+            ->save();
     }
 
     /**
@@ -244,6 +246,17 @@ class MockSpContext extends AbstractSubContext
         $this->serviceRegistryFixture
             ->setEntityWantsSignature($sp->entityId())
             ->save();
+    }
+
+    /**
+     * @Given /^SP "([^"]*)" is a trusted proxy$/
+     */
+    public function spIsATrustedProxy($spName)
+    {
+        $this->serviceRegistryFixture->setEntityTrustedProxy(
+            $this->mockSpRegistry->get($spName)->entityid()
+        );
+        $this->serviceRegistryFixture->save();
     }
 
     /**
@@ -315,6 +328,34 @@ class MockSpContext extends AbstractSubContext
     public function noRegisteredServiceProviders()
     {
         $this->mockSpRegistry->clear()->save();
+    }
+
+    /**
+     * @Given /^SP "([^"]*)" is authenticating for SP "([^"]*)"$/
+     */
+    public function spIsAuthenticatingForSp($spName, $spNameDestination)
+    {
+        /** @var MockServiceProvider $sp */
+        $sp = $this->mockSpRegistry->get($spName);
+        /** @var MockServiceProvider $spDestination */
+        $spDestination = $this->mockSpRegistry->get($spNameDestination);
+
+        $sp->getAuthnRequest()->setRequesterID(array($spDestination->entityId()));
+
+        $this->mockSpRegistry->save();
+    }
+
+    /**
+     * @Given /^SP "([^"]*)" is authenticating and uses RequesterID "([^"]*)"$/
+     */
+    public function spIsAuthenticatingAndUsesRequesterid($spName, $requesterEntityId)
+    {
+        /** @var MockServiceProvider $sp */
+        $sp = $this->mockSpRegistry->get($spName);
+
+        $sp->getAuthnRequest()->setRequesterID(array($requesterEntityId));
+
+        $this->mockSpRegistry->save();
     }
 
     /**
