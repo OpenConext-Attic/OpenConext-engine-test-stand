@@ -2,7 +2,7 @@
 
 namespace OpenConext\Component\EngineTestStand\Saml2;
 
-class AuthnRequest extends \SAML2_Response
+class AuthnRequest extends \SAML2_AuthnRequest
 {
     public function setXml($xml)
     {
