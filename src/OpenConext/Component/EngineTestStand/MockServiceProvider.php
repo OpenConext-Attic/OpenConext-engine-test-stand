@@ -74,6 +74,13 @@ class MockServiceProvider extends AbstractMockEntityRole
         return $this;
     }
 
+    public function mustSignAuthnRequests()
+    {
+        /** @var \SAML2_XML_md_SPSSODescriptor $role */
+        $role = $this->getSsoRole();
+        return $role->AuthnRequestsSigned;
+    }
+
     public function useHttpPost()
     {
         $this->descriptor->Extensions['UsePost'] = true;
