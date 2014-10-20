@@ -76,7 +76,7 @@ class MockIdentityProviderFactory extends AbstractMockEntityFactory
         $now        = gmdate('Y-m-d\TH:i:s\Z');
         $tomorrow   = gmdate('Y-m-d\TH:i:s\Z', time() + (24 * 60 * 60));
 
-        $uid                    = 'test';
+        $uid                    = 'test' . time() . rand(10000,99999);
         $schacHomeOrganization  = 'engine-test-stand.openconext.org';
         $nameId = 'ETS-MOCK-IDP-' . time();
 
