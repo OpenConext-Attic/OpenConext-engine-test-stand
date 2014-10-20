@@ -142,4 +142,15 @@ class EngineBlockContext extends AbstractSubContext
         $mink = $this->getMainContext()->getMinkContext();
         $mink->pressButton('Submit');
     }
+
+    /**
+     * @Given /^I give my consent$/
+     */
+    public function iGiveMyConsent()
+    {
+        $mink = $this->getMainContext()->getMinkContext();
+        if (strstr($mink->getSession()->getPage()->getHtml(), 'accept_terms_button')) {
+            $mink->pressButton('accept_terms_button');
+        }
+    }
 }

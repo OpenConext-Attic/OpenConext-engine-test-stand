@@ -16,6 +16,7 @@ Feature:
       And I pass through the SP
       And I pass through EngineBlock
       And I pass through the IdP
+      And I give my consent
       And I pass through EngineBlock
      Then the url should match "Dummy%20SP/acs"
 
@@ -24,6 +25,7 @@ Feature:
      When I log in at "Dummy SP"
       And I pass through EngineBlock
       And I pass through the IdP
+      And I give my consent
       And I pass through EngineBlock
      Then the url should match "Dummy%20SP/acs"
 
@@ -34,5 +36,6 @@ Feature:
       And I pass through the SP
       And I pass through EngineBlock
       And I pass through the IdP
+      And I give my consent
       And I pass through EngineBlock
      Then the url should match "Dummy%20SP/acs"
