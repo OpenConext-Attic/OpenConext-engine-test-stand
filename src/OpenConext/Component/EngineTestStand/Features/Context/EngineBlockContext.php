@@ -64,9 +64,11 @@ class EngineBlockContext extends AbstractSubContext
     public function anEngineblockInstanceConfiguredWithJsonData()
     {
         // Add all known IdPs
-        $this->serviceRegistryFixture->reset();
-        $this->serviceRegistryFixture->addSpsFromJsonExport($this->spsConfigUrl);
-        $this->serviceRegistryFixture->addIdpsFromJsonExport($this->idpsConfigUrl);
+        $this->serviceRegistryFixture
+            ->reset()
+            ->addSpsFromJsonExport($this->spsConfigUrl)
+            ->addIdpsFromJsonExport($this->idpsConfigUrl)
+            ->save();
 
         $this->engineBlock->clearNewIds();
     }
@@ -113,14 +115,14 @@ class EngineBlockContext extends AbstractSubContext
         $response = $logReader->getMessage(LogChunkParser::MESSAGE_TYPE_RESPONSE);
         $responseAssertions = $response->getAssertions();
 
-        $frame = $this->engineBlock->getIdsToUse(IdFixture::FRAME_RESPONSE);
+        $this->engineBlock->getIdsToUse(IdFixture::FRAME_RESPONSE)
         // EB will generate internal responses, for now just let it give all Responses the same id
-        $frame->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId());
-        $frame->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId());
-        $frame->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId());
-        $frame->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId());
-        $frame->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId());
-        $frame->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId());
+            ->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId())
+            ->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId())
+            ->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId())
+            ->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId())
+            ->set(IdFrame::ID_USAGE_SAML2_RESPONSE, $response->getId())
+            ->set(IdFrame::ID_USAGE_SAML2_ASSERTION, $responseAssertions[0]->getId());
     }
 
     /**
