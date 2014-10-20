@@ -92,6 +92,7 @@ class MockSpContext extends AbstractSubContext
     {
         $mockSp = $this->anUnregisteredServiceProviderNamed($name);
         $this->serviceRegistryFixture->registerSp(
+            $name,
             $mockSp->entityId(),
             $mockSp->assertionConsumerServiceLocation(),
             $mockSp->publicKeyCertData()
