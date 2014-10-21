@@ -13,12 +13,13 @@ Feature:
       And an Identity Provider named "CombinedAuth"
       And a Service Provider named "Step Up"
       And a Service Provider named "Loa SP"
-      And IdP "AlwaysAuth" uses a blacklist
-      And IdP "StepUpOnlyAuth" uses a whitelist
+      And a Service Provider named "Far SP"
+      And IdP "AlwaysAuth" uses a blacklist for access control
+      And IdP "StepUpOnlyAuth" uses a whitelist for access control
       And IdP "StepUpOnlyAuth" whitelists SP "Step Up"
-      And IdP "LoaOnlyAuth" uses a whitelist
+      And IdP "LoaOnlyAuth" uses a whitelist for access control
       And IdP "LoaOnlyAuth" whitelists SP "Loa SP"
-      And IdP "CombinedAuth" uses a whitelist
+      And IdP "CombinedAuth" uses a whitelist for access control
       And IdP "CombinedAuth" whitelists SP "Step Up"
       And IdP "CombinedAuth" whitelists SP "Loa SP"
       And SP "Step Up" uses a whitelist for access control
@@ -29,6 +30,7 @@ Feature:
       And SP "Loa SP" whitelists IdP "AlwaysAuth"
       And SP "Loa SP" whitelists IdP "LoaOnlyAuth"
       And SP "Loa SP" whitelists IdP "CombinedAuth"
+      And SP "Far SP" uses a blacklist for access control
 
   Scenario: User logs in to the SP without a proxy and wayf shows relevant Identity Providers
     When I log in at "Loa SP"
@@ -105,10 +107,84 @@ Feature:
       And I should see "Loa SP"
       And I should not see "Step Up"
 
-#  Scenario: User logs in via a proxy proxy and sees consent for the proxy proxy, but not the destination (only 1 level)
-#  Scenario: User logs in via trusted proxy without consent and sees no consent
-#  Scenario: User logs in via trusted proxy for destination without consent and sees no consent
-#  Scenario: User logs in via trusted proxy and attribute manipulation for proxy and destination are executed
-#  Scenario: User logs in via trusted proxy and attribute release policy for proxy and destination are executed
+  Scenario: User logs in via trusted proxy proxy and sees consent for the proxy proxy (only 1 level)
+    Given SP "Step Up" is authenticating for SP "Far SP"
+      And SP "Step Up" is authenticating for SP "Loa SP"
+      And SP "Step Up" is a trusted proxy
+      And SP "Step Up" signs it's requests
+     When I log in at "Step Up"
+      And I pass through EngineBlock
+      And I pass through the IdP
+     Then I should see "we must share the following information"
+      And I should not see "Far SP"
+      And I should not see "Step Up"
+      And I should see "Loa SP"
+
+  Scenario: User logs in via trusted proxy and sees no consent as the destination has it disabled
+    Given SP "Step Up" is authenticating for SP "Loa SP"
+      And SP "Step Up" is a trusted proxy
+      And SP "Step Up" signs it's requests
+      And SP "Loa SP" does not require consent
+     When I log in at "Step Up"
+      And I press "AlwaysAuth"
+      And I pass through EngineBlock
+      And I pass through the IdP
+     Then I should not see "we must share the following information"
+
+  Scenario: User logs in via trusted proxy and sees no consent as the destination has it disabled
+    Given SP "Step Up" is authenticating for SP "Loa SP"
+      And SP "Step Up" is a trusted proxy
+      And SP "Step Up" signs it's requests
+      And SP "Step Up" does not require consent
+     When I log in at "Step Up"
+      And I press "AlwaysAuth"
+      And I pass through EngineBlock
+      And I pass through the IdP
+     Then I should not see "we must share the following information"
+
+  Scenario: User logs in via trusted proxy and attribute manipulation for proxy and destination are executed
+    Given SP "Step Up" is authenticating for SP "Loa SP"
+      And SP "Step Up" is a trusted proxy
+      And SP "Step Up" signs it's requests
+      And SP "Step Up" does not require consent
+      And SP "Step Up" has the following Attribute Manipulation:
+      """
+      $attributes['nl:surf:test:step-up'] = array("your game son");
+      """
+      And SP "Loa SP" has the following Attribute Manipulation:
+      """
+      $attributes['nl:surf:test:loa-sp'] = array("the only assurance is that there are no assurances");
+      """
+     When I log in at "Step Up"
+      And I press "AlwaysAuth"
+      And I pass through EngineBlock
+      And I pass through the IdP
+      And I pass through EngineBlock
+     Then the response should contain "nl:surf:test:step-up"
+      And the response should contain "nl:surf:test:loa-sp"
+
+  Scenario: User logs in via trusted proxy and attribute release policy for proxy and destination are executed
+    Given SP "Loa SP" allows an attribute named "urn:mace:terena.org:attribute-def:schacHomeOrganization"
+      And SP "Step Up" does not require consent
+     When I log in at "Step Up"
+      And I press "AlwaysAuth"
+      And I pass through EngineBlock
+      And I pass through the IdP
+      And I pass through EngineBlock
+     Then the response should not contain "urn:mace:dir:attribute-def:uid"
+      And the response should contain "urn:mace:terena.org:attribute-def:schacHomeOrganization"
+
+  Scenario: User logs in via trusted proxy and attribute release policy for proxy and destination are executed
+    Given SP "Step Up" allows an attribute named "urn:mace:dir:attribute-def:uid"
+      And SP "Loa SP" allows an attribute named "urn:mace:terena.org:attribute-def:schacHomeOrganization"
+      And SP "Step Up" does not require consent
+     When I log in at "Step Up"
+      And I press "AlwaysAuth"
+      And I pass through EngineBlock
+      And I pass through the IdP
+      And I pass through EngineBlock
+     Then the response should contain "urn:mace:dir:attribute-def:uid"
+      And the response should contain "urn:mace:terena.org:attribute-def:schacHomeOrganization"
+
 #  Scenario: User logs in via trusted proxy and I don't see arp disallowed attributes in consent
 #  Scenario: User logs in via trusted proxy and I get a NameID for the destination

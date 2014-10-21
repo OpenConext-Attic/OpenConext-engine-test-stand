@@ -2,6 +2,7 @@
 
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
+use Behat\Gherkin\Node\PyStringNode;
 use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineBlockFixtures\IdFixture;
 use OpenConext\Component\EngineBlockFixtures\IdFrame;
@@ -260,7 +261,7 @@ class MockSpContext extends AbstractSubContext
     }
 
     /**
-     * @Given /^SP "([^"]*)" uses a blacklist of access control$/
+     * @Given /^SP "([^"]*)" uses a blacklist for access control$/
      */
     public function spUsesABlacklistOfAccessControl($spName)
     {
@@ -333,14 +334,17 @@ class MockSpContext extends AbstractSubContext
     /**
      * @Given /^SP "([^"]*)" is authenticating for SP "([^"]*)"$/
      */
-    public function spIsAuthenticatingForSp($spName, $spNameDestination)
+    public function spIsAuthenticatingForSp($spName, $spDestinationName)
     {
         /** @var MockServiceProvider $sp */
         $sp = $this->mockSpRegistry->get($spName);
         /** @var MockServiceProvider $spDestination */
-        $spDestination = $this->mockSpRegistry->get($spNameDestination);
+        $spDestination = $this->mockSpRegistry->get($spDestinationName);
 
-        $sp->getAuthnRequest()->setRequesterID(array($spDestination->entityId()));
+        $authNRequest = $sp->getAuthnRequest();
+        $requesterIds = $authNRequest->getRequesterID();
+        $requesterIds[] = $spDestination->entityId();
+        $authNRequest->setRequesterID($requesterIds);
 
         $this->mockSpRegistry->save();
     }
@@ -365,5 +369,31 @@ class MockSpContext extends AbstractSubContext
     {
         $mink = $this->getMainContext()->getMinkContext();
         $mink->pressButton('GO');
+    }
+
+    /**
+     * @Given /^SP "([^"]*)" has the following Attribute Manipulation:$/
+     */
+    public function spHasTheFollowingAttributeManipulation($spName, PyStringNode $manipulation)
+    {
+        /** @var MockServiceProvider $sp */
+        $sp = $this->mockSpRegistry->get($spName);
+
+        $this->serviceRegistryFixture
+            ->setEntityManipulation($sp->entityId(), $manipulation->getRaw())
+            ->save();
+    }
+
+    /**
+     * @Given /^SP "([^"]*)" allows an attribute named "([^"]*)"$/
+     */
+    public function spAllowsAnAttributeNamed($spName, $arpAttribute)
+    {
+        /** @var MockServiceProvider $sp */
+        $sp = $this->mockSpRegistry->get($spName);
+
+        $this->serviceRegistryFixture
+            ->allowAttributeValue($sp->entityId(), $arpAttribute, "*")
+            ->save();
     }
 }
