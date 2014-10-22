@@ -164,8 +164,11 @@ Feature:
       And the response should contain "nl:surf:test:loa-sp"
 
   Scenario: User logs in via trusted proxy and attribute release policy for proxy and destination are executed
-    Given SP "Loa SP" allows an attribute named "urn:mace:terena.org:attribute-def:schacHomeOrganization"
+    Given SP "Step Up" is authenticating for SP "Loa SP"
+      And SP "Step Up" is a trusted proxy
+      And SP "Step Up" signs it's requests
       And SP "Step Up" does not require consent
+      And SP "Loa SP" allows an attribute named "urn:mace:terena.org:attribute-def:schacHomeOrganization"
      When I log in at "Step Up"
       And I press "AlwaysAuth"
       And I pass through EngineBlock
@@ -175,16 +178,19 @@ Feature:
       And the response should contain "urn:mace:terena.org:attribute-def:schacHomeOrganization"
 
   Scenario: User logs in via trusted proxy and attribute release policy for proxy and destination are executed
-    Given SP "Step Up" allows an attribute named "urn:mace:dir:attribute-def:uid"
-      And SP "Loa SP" allows an attribute named "urn:mace:terena.org:attribute-def:schacHomeOrganization"
+    Given SP "Step Up" is authenticating for SP "Loa SP"
+      And SP "Step Up" is a trusted proxy
+      And SP "Step Up" signs it's requests
       And SP "Step Up" does not require consent
+      And SP "Step Up" allows an attribute named "urn:mace:dir:attribute-def:uid"
+      And SP "Loa SP" allows an attribute named "urn:mace:terena.org:attribute-def:schacHomeOrganization"
      When I log in at "Step Up"
       And I press "AlwaysAuth"
       And I pass through EngineBlock
       And I pass through the IdP
       And I pass through EngineBlock
-     Then the response should contain "urn:mace:dir:attribute-def:uid"
-      And the response should contain "urn:mace:terena.org:attribute-def:schacHomeOrganization"
+     Then the response should not contain "urn:mace:dir:attribute-def:uid"
+      And the response should not contain "urn:mace:terena.org:attribute-def:schacHomeOrganization"
 
 #  Scenario: User logs in via trusted proxy and I don't see arp disallowed attributes in consent
 #  Scenario: User logs in via trusted proxy and I get a NameID for the destination
