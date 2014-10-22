@@ -2,6 +2,7 @@
 
 namespace OpenConext\Bundle\MockEntitiesBundle\Controllers;
 
+use DOMDocument;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\MockServiceProvider;
 use OpenConext\Component\EngineTestStand\Saml2\AuthnRequestFactory;
@@ -115,6 +116,13 @@ class ServiceProviderController extends Controller
         }
 
         $xml = base64_decode($request->get('SAMLResponse'));
+
+        // Format the XML
+        $doc = new DomDocument('1.0');
+        $doc->preserveWhiteSpace = false;
+        $doc->formatOutput = true;
+        $doc->loadXML($xml);
+        $xml = $doc->saveXML();
 
         return new Response(
             $xml,
