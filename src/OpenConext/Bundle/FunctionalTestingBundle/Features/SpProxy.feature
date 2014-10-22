@@ -192,5 +192,16 @@ Feature:
      Then the response should not contain "urn:mace:dir:attribute-def:uid"
       And the response should not contain "urn:mace:terena.org:attribute-def:schacHomeOrganization"
 
-#  Scenario: User logs in via trusted proxy and I don't see arp disallowed attributes in consent
-#  Scenario: User logs in via trusted proxy and I get a NameID for the destination
+  Scenario: User logs in via trusted proxy and I get a NameID for the SP and eduPersonTargettedID for the destination
+    Given SP "Step Up" is authenticating for SP "Loa SP"
+      And SP "Step Up" is a trusted proxy
+      And SP "Step Up" signs it's requests
+      And SP "Step Up" does not require consent
+      And SP "Step Up" uses the Unspecified NameID format
+     When I log in at "Step Up"
+      And I press "AlwaysAuth"
+      And I pass through EngineBlock
+      And I pass through the IdP
+      And I pass through EngineBlock
+     Then the response should match xpath '/samlp:Response/saml:Assertion/saml:Subject/saml:NameID[@Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"]'
+      And the response should match xpath '/samlp:Response/saml:Assertion/saml:AttributeStatement/saml:Attribute[@Name="urn:mace:dir:attribute-def:eduPersonTargetedID"]/saml:AttributeValue/saml:NameID[@Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"]'

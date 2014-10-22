@@ -396,4 +396,17 @@ class MockSpContext extends AbstractSubContext
             ->allowAttributeValue($sp->entityId(), $arpAttribute, "*")
             ->save();
     }
+
+    /**
+     * @Given /^SP "([^"]*)" uses the Unspecified NameID format$/
+     */
+    public function spUsesTheUnspecifiedNameidFormat($spName)
+    {
+        /** @var MockServiceProvider $sp */
+        $sp = $this->mockSpRegistry->get($spName);
+
+        $this->serviceRegistryFixture
+            ->setEntityNameIdFormatUnspecified($sp->entityId())
+            ->save();
+    }
 }
