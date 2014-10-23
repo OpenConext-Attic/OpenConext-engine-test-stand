@@ -11,7 +11,7 @@ Feature:
       And the IdP uses a blacklist for access control
       And a Service Provider named "Dummy SP"
       And a Service Provider named "Connected SP"
-      And SP "Connected SP" uses a blacklist of access control
+      And SP "Connected SP" uses a blacklist for access control
       And a Service Provider named "Unconnected SP"
       And SP "Unconnected SP" uses a whitelist for access control
       And an unregistered Service Provider named "Unregistered SP"
@@ -25,6 +25,21 @@ Feature:
      Then I should see "Idp error"
       And I should see "InvalidNameIDPolicy"
       And I should see "NameIdPolicy is invalid"
+      And I should see "Timestamp:"
+      And I should see "Unique Request Id:"
+      And I should see "User Agent:"
+      And I should see "IP Address:"
+      And I should see "Service Provider:"
+      And I should see "Identity Provider:"
+
+    Scenario: I log in at my Identity Provider, but the IdP decides the user does not have access.
+    Given the IdP is configured to always return Responses with StatusCode Responder/RequestDenied
+      And the IdP is configured to always return Responses with StatusMessage "Invalid IP range"
+     When I log in at "Dummy SP"
+      And I pass through EngineBlock
+      And I pass through the IdP
+     Then I should see "Idp error"
+      And I should see "RequestDenied"
       And I should see "Timestamp:"
       And I should see "Unique Request Id:"
       And I should see "User Agent:"
