@@ -37,7 +37,7 @@
 
         "phpspec/php-diff"                      : "~1.0",
 
-        "openconext/engineblock-fixtures"       : "~0.3",
+        "openconext/engineblock-fixtures"       : "~0.4",
         "symfony/icu"                           : "~1.0"
     },
     "require-dev": {
