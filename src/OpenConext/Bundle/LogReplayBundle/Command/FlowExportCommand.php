@@ -12,6 +12,7 @@ use OpenConext\Component\EngineTestStand\Helper\LogStreamHelper;
 /**
  * Export the first flow in a session a directory.
  * @package OpenConext\Bundle\LogReplayBundle\Command
+ * @SuppressWarnings("PMD")
  */
 class FlowExportCommand extends Command
 {
@@ -40,16 +41,28 @@ class FlowExportCommand extends Command
         $this
             ->setName('replay:flow:export')
             ->setDescription('Export all flows to a directory')
-            ->addArgument('logfile', InputArgument::REQUIRED, 'File to get flows from.')
-            ->addArgument('outputDir', InputArgument::OPTIONAL, 'Directory to export flows to (defaults to the temporary directory).', sys_get_temp_dir())
-            ->addArgument('sessionFile', InputArgument::OPTIONAL, 'File to get sessions from (defaults to STDIN).')
-            ->setHelp(<<<EOF
-The <info>%command.name%</info> command exports flows to a directory, example:
-
-<info>grep "something" engineblock.log | app/console fu:sessions:find | app/console fu:flow:filter | %command.full_name% engineblock.log</info>
-
-Find log lines with "something", from those get the sessions, for those sessions give only the sessions that have complete flows, for those sessions export all flows to /tmp.
-EOF
+            ->addArgument(
+                'logfile',
+                InputArgument::REQUIRED,
+                'File to get flows from.'
+            )
+            ->addArgument(
+                'outputDir',
+                InputArgument::OPTIONAL,
+                'Directory to export flows to (defaults to the temporary directory).',
+                sys_get_temp_dir()
+            )
+            ->addArgument(
+                'sessionFile',
+                InputArgument::OPTIONAL,
+                'File to get sessions from (defaults to STDIN).'
+            )
+            ->setHelp(
+                'The <info>%command.name%</info> command exports flows to a directory, example:' . PHP_EOL
+                . '<info>grep "something" engineblock.log | app/console fu:sessions:find |  '. PHP_EOL
+                . 'app/console fu:flow:filter | %command.full_name% engineblock.log</info>' . PHP_EOL . PHP_EOL
+                . 'Find log lines with "something", from those get the sessions, for those sessions '
+                . 'give only the sessions that have complete flows, for those sessions export all flows to /tmp.'
             );
     }
 
@@ -73,7 +86,7 @@ EOF
          * @var $that
          */
         $that = $this;
-        $sessionsStream->mapLines(function($line) use ($input, $output, $that) {
+        $sessionsStream->mapLines(function ($line) use ($input, $output, $that) {
             $sessionId = trim($line);
             if (!$sessionId) {
                 return;
@@ -86,6 +99,11 @@ EOF
         return 0;
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return bool
+     */
     protected function setLogFile(InputInterface $input, OutputInterface $output)
     {
         $logFile = $input->getArgument('logfile');
@@ -98,6 +116,11 @@ EOF
         return true;
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return bool
+     */
     protected function setOutputDir(InputInterface $input, OutputInterface $output)
     {
         $outputDir = $input->getArgument('outputDir');
@@ -110,6 +133,10 @@ EOF
         return true;
     }
 
+    /**
+     * @param $sessionId
+     * @return string
+     */
     public function exportSession($sessionId)
     {
         $sessionLog = $this->getSessionLog($sessionId);
@@ -120,19 +147,23 @@ EOF
         $this->createDirectory($directory);
 
         $this->writeFile($directory . '/session.log', $sessionLog);
-        $this->writeFile($directory . '/sp.request.log'     , $this->getSpRequestFromSessionLog($sessionLog));
-        $this->writeFile($directory . '/eb.request.log'     , $this->getEbRequestFromSessionLog($sessionLog));
-        $this->writeFile($directory . '/idp.response.log'   , $this->getIdpResponseFromSessionLog($sessionLog));
-        $this->writeFile($directory . '/eb.response.log'    , $this->getEbResponseFromSessionLog($sessionLog));
+        $this->writeFile($directory . '/sp.request.log', $this->getSpRequestFromSessionLog($sessionLog));
+        $this->writeFile($directory . '/eb.request.log', $this->getEbRequestFromSessionLog($sessionLog));
+        $this->writeFile($directory . '/idp.response.log', $this->getIdpResponseFromSessionLog($sessionLog));
+        $this->writeFile($directory . '/eb.response.log', $this->getEbResponseFromSessionLog($sessionLog));
         return $directory;
     }
 
+    /**
+     * @param $sessionId
+     * @return LogStreamHelper
+     */
     protected function getSessionLog($sessionId)
     {
         // Look through the logfile for all loglines for this session.
         $logStream = new LogStreamHelper(fopen($this->logFile, 'r'));
-        $sessionLogStream = new LogStreamHelper(fopen('php://temp','r+'));
-        $logStream->foreachLine(function($line) use ($sessionLogStream, $sessionId) {
+        $sessionLogStream = new LogStreamHelper(fopen('php://temp', 'r+'));
+        $logStream->foreachLine(function ($line) use ($sessionLogStream, $sessionId) {
             if (strpos($line, "EB[$sessionId]") === false) {
                 return;
             }
@@ -143,15 +174,20 @@ EOF
     }
 
     // [Message INFO] FLUSHING ... [Message INFO] END OF LOG MESSAGE QUEUE
+    /**
+     * @param LogStreamHelper $sessionLog
+     * @return LogStreamHelper
+     */
     protected function fixMessageOrdering(LogStreamHelper $sessionLog)
     {
         $sessionLog->rewind();
 
         while (!$sessionLog->isAtEndOfFile()) {
-            $sessionLog->foreachLine(function($line) {
+            $sessionLog->foreachLine(function ($line) {
                 if (strstr($line, '[Message INFO] END OF LOG MESSAGE QUEUE')) {
                     return LogStreamHelper::STOP;
                 }
+                return null;
             });
             if ($sessionLog->isAtEndOfFile()) {
                 break;
@@ -162,13 +198,13 @@ EOF
 
             // Look back for the start of the flush, collecting all the lines in reverse.
             $chunk = '';
-            $sessionLog->foreachLineReverse(function($line) use ($sessionLog, &$reversed, &$maxLogLines, &$chunk) {
+            $sessionLog->foreachLineReverse(function ($line) use ($sessionLog, &$reversed, &$maxLogLines, &$chunk) {
                 // EXCEPT for chunks, which must be kept in their original order...
 
                 // And when we find a CHUNKEND we start 'Chunk mode' and append line to the chunk
                 if (strstr($line, ']!CHUNKEND>')) {
                     $chunk = $line;
-                    return;
+                    return null;
                 }
 
                 // So when we find a CHUNKSTART we start 'Chunk mode'
@@ -176,15 +212,14 @@ EOF
                     $chunk = $line . $chunk;
                     $reversed .= $chunk;
                     $chunk = '';
-                    return;
+                    return null;
                 }
 
                 // If we're not in chunk mode we can append the line though.
                 // Going in reverse order so basically reversing the line order.
                 if (!$chunk) {
                     $reversed .= $line;
-                }
-                else {
+                } else {
                     $chunk = $line . $chunk;
                 }
 
@@ -195,6 +230,7 @@ EOF
                 if ($maxLogLines-- === 0) {
                     throw new \RuntimeException('Unable to find start of log flush in 100 lines?');
                 }
+                return null;
             });
 
             if (empty($reversed)) {
@@ -211,6 +247,10 @@ EOF
         return $sessionLog;
     }
 
+    /**
+     * @param LogStreamHelper $sessionLogStream
+     * @return bool|string
+     */
     protected function getSpRequestFromSessionLog(LogStreamHelper $sessionLogStream)
     {
         // Starting at the beginning.
@@ -235,6 +275,10 @@ EOF
         throw new \RuntimeException('No received request found.');
     }
 
+    /**
+     * @param LogStreamHelper $sessionLogStream
+     * @return bool|string
+     */
     protected function getEbRequestFromSessionLog(LogStreamHelper $sessionLogStream)
     {
         $message = $this->getEbRequestViaRedirect($sessionLogStream);
@@ -251,13 +295,17 @@ EOF
         throw new \RuntimeException('No EB Request found?');
     }
 
+    /**
+     * @param LogStreamHelper $sessionLogStream
+     * @return bool
+     */
     protected function getEbRequestViaRedirect(LogStreamHelper $sessionLogStream)
     {
         // Starting at the beginning.
         $sessionLogStream->rewind();
 
         $found = false;
-        $sessionLogStream->foreachLine(function($line) use (&$found) {
+        $sessionLogStream->foreachLine(function ($line) use (&$found) {
             if (strstr($line, '[Message INFO] Redirecting to') && strstr($line, 'SAMLRequest=')) {
                 $found = $line;
                 return LogStreamHelper::STOP;
@@ -323,25 +371,36 @@ EOF
         );
     }
 
+    /**
+     * @param LogStreamHelper $sessionLogStream
+     * @param $needle
+     * @return bool
+     */
     protected function findLineWith(LogStreamHelper $sessionLogStream, $needle)
     {
         $sessionLogStream->rewind();
 
         // Loop through all the lines until you find the "Received message" line.
         $result = false;
-        $sessionLogStream->foreachLine(function($line) use ($needle, &$result) {
+        $sessionLogStream->foreachLine(function ($line) use ($needle, &$result) {
             if (strpos($line, $needle) !== false) {
                 $result = $line;
                 return LogStreamHelper::STOP;
             }
+            return null;
         });
         return $result;
     }
 
+    /**
+     * @param LogStreamHelper $sessionLogStream
+     * @param $postfixMessage
+     * @return bool|string
+     */
     protected function findFirstChunkedDumpPostfixedWith(LogStreamHelper $sessionLogStream, $postfixMessage)
     {
         // Loop through all the lines until you find the "Received message" line.
-        $sessionLogStream->foreachLine(function($line) use ($postfixMessage) {
+        $sessionLogStream->foreachLine(function ($line) use ($postfixMessage) {
             if (strpos($line, $postfixMessage)) {
                 return LogStreamHelper::STOP;
             }
@@ -354,35 +413,42 @@ EOF
         // Otherwise we start collecting the log chunk.
 
         // Find your way back to CHUNKSTART then stop.
-        $sessionLogStream->foreachLineReverse(function($line) {
+        $sessionLogStream->foreachLineReverse(function ($line) {
             if (strpos($line, '!CHUNKSTART>')) {
                 return LogStreamHelper::STOP;
             }
         });
-        $sessionLogStream->onEndOfFile(function() {
+        $sessionLogStream->onEndOfFile(function () {
             throw new \RuntimeException('No CHUNKSTART');
         });
 
         // Go forward again, collecting lines, until we find the "Received message" line.
         $logChunk = '';
-        $sessionLogStream->foreachLine(function($line) use (&$logChunk, $postfixMessage) {
+        $sessionLogStream->foreachLine(function ($line) use (&$logChunk, $postfixMessage) {
             $logChunk .= $line;
             if (strpos($line, $postfixMessage)) {
                 return LogStreamHelper::STOP;
             }
         });
-        $sessionLogStream->onEndOfFile(function() use ($postfixMessage) {
+        $sessionLogStream->onEndOfFile(function () use ($postfixMessage) {
             throw new \RuntimeException("Unable to find our way back to '$postfixMessage'");
         });
 
         return $logChunk;
     }
 
+    /**
+     * @param $path
+     */
     protected function createDirectory($path)
     {
         @mkdir($path, 0700);
     }
 
+    /**
+     * @param $path
+     * @param $log
+     */
     protected function writeFile($path, $log)
     {
         file_put_contents($path, $log);

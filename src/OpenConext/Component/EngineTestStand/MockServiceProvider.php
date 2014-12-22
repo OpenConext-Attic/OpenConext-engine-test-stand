@@ -4,6 +4,11 @@ namespace OpenConext\Component\EngineTestStand;
 
 use OpenConext\Component\EngineTestStand\Saml2\AuthnRequest;
 
+/**
+ * Class MockServiceProvider
+ * @package OpenConext\Component\EngineTestStand
+ * @SuppressWarnings("PMD")
+ */
 class MockServiceProvider extends AbstractMockEntityRole
 {
     public function loginUrl()

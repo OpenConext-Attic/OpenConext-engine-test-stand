@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 /**
  * Class MockIdpContext
  * @package OpenConext\Component\EngineTestStand\Features\Context
+ * @SuppressWarnings("PMD")
  */
 class MockIdpContext extends AbstractSubContext
 {

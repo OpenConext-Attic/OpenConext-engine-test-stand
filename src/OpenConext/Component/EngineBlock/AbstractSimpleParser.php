@@ -61,7 +61,7 @@ abstract class AbstractSimpleParser
 
         // Strip the consumed bit off the beginning.
         $this->content = substr($this->content, strlen($match));
-        $this->debug('  consumed: "' . str_replace("\n",'\n', $match) . '"');
+        $this->debug('  consumed: "' . str_replace("\n", '\n', $match) . '"');
 
         return $match;
     }

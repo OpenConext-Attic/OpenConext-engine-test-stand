@@ -15,6 +15,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class ServiceProviderController
+ * @package OpenConext\Bundle\MockEntitiesBundle\Controllers
+ * @SuppressWarnings("PMD")
+ */
 class ServiceProviderController extends Controller
 {
     /**
@@ -96,13 +101,11 @@ class ServiceProviderController extends Controller
         try {
             $httpPostBinding = new \SAML2_HTTPPost();
             $message = $httpPostBinding->receive();
-        }
-        catch (\Exception $e1) {
+        } catch (\Exception $e1) {
             try {
                 $httpRedirectBinding = new \SAML2_HTTPRedirect();
                 $message = $httpRedirectBinding->receive();
-            }
-            catch (\Exception $e2) {
+            } catch (\Exception $e2) {
                 throw new \RuntimeException(
                     'Unable to retrieve SAML message?',
                     1,

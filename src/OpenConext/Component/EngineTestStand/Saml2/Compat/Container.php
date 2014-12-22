@@ -151,9 +151,9 @@ HTML
     private function formatXml($xml)
     {
         $dom = new \DOMDocument;
-        $dom->preserveWhiteSpace = FALSE;
+        $dom->preserveWhiteSpace = false;
         $dom->loadXML($xml);
-        $dom->formatOutput = TRUE;
+        $dom->formatOutput = true;
         $xml = $dom->saveXml();
         return $xml;
     }

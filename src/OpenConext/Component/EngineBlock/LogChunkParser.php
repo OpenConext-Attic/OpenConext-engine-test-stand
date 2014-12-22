@@ -7,6 +7,10 @@ use OpenConext\Component\EngineBlock\Corto\XmlToArray;
 use OpenConext\Component\EngineTestStand\Saml2\AuthnRequest;
 use OpenConext\Component\EngineTestStand\Saml2\Response;
 
+/**
+ * Class LogChunkParser
+ * @package OpenConext\Component\EngineBlock
+ */
 class LogChunkParser
 {
     const MESSAGE_TYPE_RESPONSE         = 'Response';
@@ -20,6 +24,9 @@ class LogChunkParser
 
     protected $logFile;
 
+    /**
+     * @param $logFile
+     */
     public function __construct($logFile)
     {
         $this->logFile = $logFile;
@@ -64,6 +71,9 @@ class LogChunkParser
         return $matches['entityId'];
     }
 
+    /**
+     * @return array|bool
+     */
     public function detectUnsolicitedRequest()
     {
         $lines = explode("\n", $this->load());
@@ -184,7 +194,7 @@ class LogChunkParser
             throw new \RuntimeException('Matching for CHUNKSTART and CHUNKEND gave an error');
         }
 
-        if (!$matchedChunkStartLines XOR !$matchedChunkEndLines) {
+        if (!$matchedChunkStartLines xor !$matchedChunkEndLines) {
             throw new \RuntimeException('CHUNKSTART found without CHUNKEND or vice versa');
         }
 
@@ -207,6 +217,10 @@ class LogChunkParser
         return $content;
     }
 
+    /**
+     * @param $messageType
+     * @return string
+     */
     protected function getTagNameForMessageType($messageType)
     {
         if ($messageType === static::MESSAGE_TYPE_AUTHN_REQUEST) {
@@ -215,6 +229,11 @@ class LogChunkParser
         return static::RESPONSE_TAGNAME;
     }
 
+    /**
+     * @param $messageType
+     * @param $content
+     * @return AuthnRequest|Response
+     */
     protected function createObjectFromPrintR($messageType, $content)
     {
         $parser = new PrintRParser($content);
@@ -222,8 +241,7 @@ class LogChunkParser
 
         if (isset($messageArray['__']['Raw'])) {
             $xml = $messageArray['__']['Raw'];
-        }
-        else {
+        } else {
             $xml = XmlToArray::array2xml($messageArray, 'samlp:' . $this->getTagNameForMessageType($messageType));
         }
 

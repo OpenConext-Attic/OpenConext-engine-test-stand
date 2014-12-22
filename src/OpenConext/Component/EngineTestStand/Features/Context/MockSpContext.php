@@ -16,6 +16,7 @@ use OpenConext\Component\EngineBlockFixtures\ServiceRegistryFixture;
 /**
  * Class MockSpContext
  * @package OpenConext\Component\EngineTestStand\Features\Context
+ * @SuppressWarnings("PMD")
  */
 class MockSpContext extends AbstractSubContext
 {
@@ -76,11 +77,9 @@ class MockSpContext extends AbstractSubContext
 
         if ($mockSp->mustUseUnsolicited()) {
             $ssoStartLocation = $this->engineBlock->unsolicitedLocation($mockSp->entityId());
-        }
-        else if ($mockSp->mustUsePost()) {
+        } elseif ($mockSp->mustUsePost()) {
             $ssoStartLocation = $mockSp->loginUrlPost();
-        }
-        else {
+        } else {
             $ssoStartLocation = $mockSp->loginUrlRedirect();
         }
 

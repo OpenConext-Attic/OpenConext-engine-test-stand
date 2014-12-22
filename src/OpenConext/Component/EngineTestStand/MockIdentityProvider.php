@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenConext\Component\EngineTestStand;
+
 use DOMElement;
 use OpenConext\Component\EngineTestStand\Saml2\Response;
 

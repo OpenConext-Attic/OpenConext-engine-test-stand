@@ -14,8 +14,7 @@ abstract class AbstractMockEntityRole
     public function __construct(
         $name,
         \SAML2_XML_md_EntityDescriptor $descriptor
-    )
-    {
+    ) {
         $this->name = $name;
         $this->descriptor = $descriptor;
     }

@@ -73,9 +73,9 @@ class ReplayContext extends AbstractSubContext
     protected function formatXml($xml)
     {
         $dom = new \DOMDocument;
-        $dom->preserveWhiteSpace = FALSE;
+        $dom->preserveWhiteSpace = false;
         $dom->loadXML($xml);
-        $dom->formatOutput = TRUE;
+        $dom->formatOutput = true;
         return $dom->saveXml();
     }
 }

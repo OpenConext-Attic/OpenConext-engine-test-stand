@@ -10,6 +10,7 @@ use OpenConext\Component\EngineBlockFixtures\TimeFixture;
 /**
  * Class EngineBlock
  * @package OpenConext\Component\EngineTestStand\Service
+ * @SuppressWarnings("PMD")
  */
 class EngineBlock
 {

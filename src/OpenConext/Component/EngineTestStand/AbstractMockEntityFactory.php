@@ -4,6 +4,9 @@ namespace OpenConext\Component\EngineTestStand;
 
 abstract class AbstractMockEntityFactory
 {
+    /**
+     * @return \SAML2_XML_md_KeyDescriptor
+     */
     protected function generateDefaultSigningKeyPair()
     {
         $signingKey = new \SAML2_XML_md_KeyDescriptor();

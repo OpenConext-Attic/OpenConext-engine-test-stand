@@ -47,12 +47,10 @@ class IdentityProviderController extends Controller
         if ($request->isMethod('GET')) {
             $redirectBinding = new \SAML2_HTTPRedirect();
             $message = $redirectBinding->receive();
-        }
-        else if ($request->isMethod('POST')) {
+        } elseif ($request->isMethod('POST')) {
             $postBinding = new \SAML2_HTTPPost();
             $message = $postBinding->receive();
-        }
-        else {
+        } else {
             throw new \RuntimeException('Unsupported HTTP method');
         }
 

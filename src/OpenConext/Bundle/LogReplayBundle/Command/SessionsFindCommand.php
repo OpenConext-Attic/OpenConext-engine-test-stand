@@ -23,15 +23,12 @@ class SessionsFindCommand extends Command
             ->setName('replay:sessions:find')
             ->setDescription('Find all sessions from log output on STDIN or for a given file')
             ->addArgument('file', InputArgument::OPTIONAL, 'File to get sessions from.')
-            ->setHelp(<<<EOF
-The <info>%command.name%</info> command finds session identifiers in log output:
-
-<info>grep "something" engineblock.log | php %command.full_name%</info>
-
-The optional argument specifies to read from a file (by default it reads from the standard input):
-
-<info>php %command.full_name%</info> engineblock.log
-EOF
+            ->setHelp(
+                'The <info>%command.name%</info> command finds session identifiers in log output:' . PHP_EOL . PHP_EOL
+                . '<info>grep "something" engineblock.log | php %command.full_name%</info>' . PHP_EOL . PHP_EOL
+                . 'The optional argument specifies to read from a file (by default it reads from'
+                . ' the standard input):' . PHP_EOL . PHP_EOL
+                . '<info>php %command.full_name%</info> engineblock.log'
             );
     }
 
@@ -44,7 +41,7 @@ EOF
 
         $sessions = array();
         try {
-            $logStream->mapLines(function($line) use (&$sessions, $output) {
+            $logStream->mapLines(function ($line) use (&$sessions, $output) {
                 $matches = array();
                 if (!preg_match('/EB\[([\w\d]+)\]\[[\w\d]+\]/', $line, $matches)) {
                     return;
@@ -59,7 +56,7 @@ EOF
                 $output->writeln($sessionId);
                 $sessions[] = $sessionId;
             });
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
             return 64;
         }

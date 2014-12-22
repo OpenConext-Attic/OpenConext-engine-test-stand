@@ -6,9 +6,15 @@
  * Note that this format is deprecated so there it little risk of missing an update
  * and in the future it should be possible to remove this fork.
  */
+// @codingStandardsIgnoreStart
 
 namespace OpenConext\Component\EngineBlock\Corto;
 
+/**
+ * Class XmlToArray
+ * @package OpenConext\Component\EngineBlock\Corto
+ * @SuppressWarnings("PMD")
+ */
 class XmlToArray
 {
     const PRIVATE_PFX           = '__';
@@ -465,3 +471,4 @@ class XmlToArray
         return $result;
     }
 }
+// @codingStandardsIgnoreEnd

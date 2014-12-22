@@ -2,6 +2,11 @@
 
 namespace OpenConext\Component\EngineTestStand\Helper;
 
+/**
+ * Class LogStreamHelper
+ * @package OpenConext\Component\EngineTestStand\Helper
+ * @SuppressWarnings("PMD")
+ */
 class LogStreamHelper
 {
     const LINE_LENGTH = 2048;

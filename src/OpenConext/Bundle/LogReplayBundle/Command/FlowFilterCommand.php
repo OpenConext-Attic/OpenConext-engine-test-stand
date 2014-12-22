@@ -12,6 +12,7 @@ use OpenConext\Component\EngineTestStand\Helper\FileOrStdInHelper;
 /**
  * For a given list of session identifiers, filter out those without a login flow.
  * @package OpenConext\Bundle\LogReplayBundle\Command
+ * @SuppressWarnings("PMD")
  */
 class FlowFilterCommand extends Command
 {
@@ -29,15 +30,13 @@ class FlowFilterCommand extends Command
             ->addArgument('sessionFile', InputArgument::OPTIONAL, 'File to get sessions from.')
             ->addOption('debug', 'd', InputOption::VALUE_NONE, 'Turn on debugging information')
 
-            ->setHelp(<<<EOF
-The <info>%command.name%</info> filters out the sessions with incomplete flows:
-
-<info>grep "something" engineblock.log | app/console functional-testing:sessions:find | %command.full_name% engineblock.log</info>
-
-The optional argument specifies to read from a file (by default it reads from the standard input):
-
-<info>php %command.full_name% engineblock.log engineblock.log</info>
-EOF
+            ->setHelp(
+                'The <info>%command.name%</info> filters out the sessions with incomplete flows:' . PHP_EOL . PHP_EOL
+                . '<info>grep "something" engineblock.log | app/console functional-testing:sessions:find |'
+                . ' %command.full_name% engineblock.log</info>' . PHP_EOL . PHP_EOL
+                . 'The optional argument specifies to read from a file (by default it reads from '
+                . 'the standard input):' . PHP_EOL . PHP_EOL
+                . '<info>php %command.full_name% engineblock.log engineblock.log</info>'
             );
     }
 
@@ -65,7 +64,7 @@ EOF
 
         // Loop through every line for the session file / input
         $that = $this;
-        $sessionsStream->mapLines(function($line) use ($logStream, $output, $that, $debug) {
+        $sessionsStream->mapLines(function ($line) use ($logStream, $output, $that, $debug) {
             $sessionId = trim($line);
             if (!$sessionId) {
                 return;
@@ -87,6 +86,11 @@ EOF
         return 0;
     }
 
+    /**
+     * @param $sessionId
+     * @param $logStream
+     * @param OutputInterface $output
+     */
     public function filterForSession($sessionId, $logStream, OutputInterface $output)
     {
         // The four horsemen^H^H^H^H^H^H^H^H^H messages we need to reconstruct a flow.
@@ -125,7 +129,8 @@ EOF
                 $hasSpRequest = true;
             }
 
-            if (strpos($logLine, '[Message INFO] Redirecting to ') !== false && strpos($logLine, 'SAMLRequest') !== false) {
+            if (strpos($logLine, '[Message INFO] Redirecting to ') !== false &&
+                strpos($logLine, 'SAMLRequest') !== false) {
                 $hasEbRequest = true;
             }
 
@@ -139,8 +144,7 @@ EOF
 
                 if ($hasAttributeValue) {
                     $hasEbResponse = true;
-                }
-                else {
+                } else {
                     $hasEbRequest = true;
                 }
             }
