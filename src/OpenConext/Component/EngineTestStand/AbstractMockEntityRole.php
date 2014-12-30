@@ -60,7 +60,7 @@ abstract class AbstractMockEntityRole
         $certData = str_replace(
             array("-----BEGIN CERTIFICATE-----", "-----END CERTIFICATE-----", "\n"),
             '',
-            $this->getFileContents($certificateFile)
+            $this->readFile($certificateFile)
         );
 
         $role = $this->getSsoRole();
@@ -95,7 +95,7 @@ abstract class AbstractMockEntityRole
                 continue;
             }
 
-            $info->xml->nodeValue = $this->getFileContents($privateKeyFile);
+            $info->xml->nodeValue = $this->readFile($privateKeyFile);
             return;
         }
 
@@ -137,16 +137,21 @@ abstract class AbstractMockEntityRole
 
     abstract protected function getRoleClass();
 
-    protected function getFileContents($filePath)
+    protected function readFile($filePath)
+    {
+        return file_get_contents($this->findFile($filePath));
+    }
+
+    protected function findFile($filePath)
     {
         if (file_exists($filePath)) {
-            return file_get_contents($filePath);
+            return $filePath;
         }
 
         $componentPath = __DIR__ . '/../../../../';
         $fullFilePath = realpath($componentPath . $filePath);
         if (file_exists($fullFilePath)) {
-            return file_get_contents($fullFilePath);
+            return $fullFilePath;
         }
 
         throw new \RuntimeException('Unable to find file: ' . $filePath . " ($fullFilePath)");

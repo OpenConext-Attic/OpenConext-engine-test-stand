@@ -5,6 +5,7 @@ namespace OpenConext\Component\EngineTestStand\Saml2;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\MockIdentityProvider;
 use OpenConext\Component\EngineTestStand\MockServiceProvider;
+use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use XMLSecurityKey;
 
 class ResponseFactory
@@ -23,6 +24,8 @@ class ResponseFactory
         $this->setResponseSignatureKey($mockIdp, $response);
 
         $this->setResponseIssuer($mockIdp, $response);
+
+        $this->encryptAssertions($mockIdp, $response);
 
         return $response;
     }
@@ -77,5 +80,22 @@ class ResponseFactory
     private function setResponseIssuer(MockIdentityProvider $mockIdp, Response $response)
     {
         $response->setIssuer($mockIdp->entityId());
+    }
+
+    private function encryptAssertions(MockIdentityProvider $mockIdp, Response $response)
+    {
+        $encryptionKey = $mockIdp->getEncryptionKey();
+        if (!$encryptionKey) {
+            return;
+        }
+
+        $encryptedAssertions = array();
+        $assertions = $response->getAssertions();
+        foreach ($assertions as $assertion) {
+            $encryptedAssertion = new \SAML2_EncryptedAssertion();
+            $encryptedAssertion->setAssertion($assertion, $encryptionKey);
+            $encryptedAssertions[] = $encryptedAssertion;
+        }
+        $response->setAssertions($encryptedAssertions);
     }
 }

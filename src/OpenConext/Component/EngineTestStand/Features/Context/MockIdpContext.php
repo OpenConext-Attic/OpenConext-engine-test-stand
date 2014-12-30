@@ -7,10 +7,12 @@ use OpenConext\Component\EngineBlock\LogChunkParser;
 use OpenConext\Component\EngineTestStand\EntityRegistry;
 use OpenConext\Component\EngineTestStand\MockIdentityProvider;
 use OpenConext\Component\EngineTestStand\MockServiceProvider;
+use OpenConext\Component\EngineTestStand\Saml2\EncryptedAssertion;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use OpenConext\Component\EngineBlockFixtures\ServiceRegistryFixture;
 use OpenConext\Component\EngineTestStand\MockIdentityProviderFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use XMLSecurityKey;
 
 /**
  * Class MockIdpContext
@@ -206,7 +208,9 @@ class MockIdpContext extends AbstractSubContext
     {
         /** @var MockIdentityProvider $idp */
         $idp = $this->mockIdpRegistry->getOnly();
+
         $idp->setEntityId($entityId);
+
         $this->mockIdpRegistry->save();
     }
 
@@ -232,6 +236,32 @@ class MockIdpContext extends AbstractSubContext
         $idp = $this->mockIdpRegistry->getOnly();
 
         $idp->removeAttribute($attributeName);
+
+        $this->mockIdpRegistry->save();
+    }
+
+    /**
+     * @Given /^the IdP encrypts it\'s assertions with the public key in "([^"]*)"$/
+     */
+    public function theIdpEncryptsItSAssertionsWithThePublicKeyIn($certFilePath)
+    {
+        /** @var MockIdentityProvider $idp */
+        $idp = $this->mockIdpRegistry->getOnly();
+
+        $idp->useEncryptionCert($certFilePath);
+
+        $this->mockIdpRegistry->save();
+    }
+
+    /**
+     * @Given /^the IdP encrypts it\'s assertions with the shared key "([^"]*)"$/
+     */
+    public function theIdpEncryptsItSAssertionsWithTheSharedKey($sharedKey)
+    {
+        /** @var MockIdentityProvider $idp */
+        $idp = $this->mockIdpRegistry->getOnly();
+
+        $idp->useEncryptionSharedKey($sharedKey);
 
         $this->mockIdpRegistry->save();
     }

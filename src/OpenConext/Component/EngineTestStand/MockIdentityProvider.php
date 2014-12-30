@@ -4,6 +4,7 @@ namespace OpenConext\Component\EngineTestStand;
 
 use DOMElement;
 use OpenConext\Component\EngineTestStand\Saml2\Response;
+use XMLSecurityKey;
 
 /**
  * Class MockIdentityProvider
@@ -124,6 +125,60 @@ class MockIdentityProvider extends AbstractMockEntityRole
     {
         $this->descriptor->Extensions['UseRedirect'] = true;
         return $this;
+    }
+
+    public function useEncryptionCert($certFilePath)
+    {
+        $this->descriptor->Extensions['EncryptionCert'] = $certFilePath;
+        return $this;
+    }
+
+    public function useEncryptionSharedKey($sharedKey)
+    {
+        $this->descriptor->Extensions['EncryptionSharedKey'] = $sharedKey;
+        return $this;
+    }
+
+    /**
+     * @return XMLSecurityKey
+     */
+    public function getEncryptionKey()
+    {
+        $encryptionKey = $this->getRsaEncryptionKey();
+        if ($encryptionKey) {
+            return $encryptionKey;
+        }
+
+        $encryptionKey = $this->getSharedEncryptionKey();
+        if ($encryptionKey) {
+            return $encryptionKey;
+        }
+
+        return null;
+    }
+
+    protected function getRsaEncryptionKey()
+    {
+        if (!isset($this->descriptor->Extensions['EncryptionCert'])) {
+            return null;
+        }
+
+        $key = new XMLSecurityKey(XMLSecurityKey::RSA_1_5, array('type' => 'public'));
+        $key->loadKey($this->findFile($this->descriptor->Extensions['EncryptionCert']), true, true);
+
+        return $key;
+    }
+
+    protected function getSharedEncryptionKey()
+    {
+        if (!isset($this->descriptor->Extensions['EncryptionSharedKey'])) {
+            return null;
+        }
+
+        $key = new XMLSecurityKey(XMLSecurityKey::AES128_CBC);
+        $key->loadKey($this->descriptor->Extensions['EncryptionSharedKey']);
+
+        return $key;
     }
 
     public function mustUseHttpRedirect()

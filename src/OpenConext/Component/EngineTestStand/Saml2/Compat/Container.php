@@ -66,6 +66,9 @@ class Container extends \SAML2_Compat_AbstractContainer
      */
     public function debugMessage($message, $type)
     {
+        if ($message instanceof \DOMElement) {
+            $message = $message->ownerDocument->saveXML();
+        }
         $this->lastDebugMessage[$type] = $message;
         $this->getLogger()->debug($type . ': ' . $message);
     }
