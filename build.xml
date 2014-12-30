@@ -131,7 +131,7 @@
         <!-- Running Behat on jenkins -->
     <target name="behat-ci">
         <exec executable="php" failonerror="true">
-            <arg line="bin/behat --config ./behat.yml --profile ci ${basedir}/features --tags=~skip" />
+            <arg line="bin/behat --config ./tools/behat/behat.yml @FunctionalTestingBundle" />
         </exec>
     </target>
 
