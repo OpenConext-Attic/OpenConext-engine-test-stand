@@ -74,7 +74,17 @@ class ResponseFactory
     {
         $key = new XMLSecurityKey(XMLSecurityKey::RSA_SHA256, array('type' => 'private'));
         $key->loadKey($mockIdp->getPrivateKeyPem());
-        $response->setSignatureKey($key);
+
+        if ($mockIdp->mustSignResponses()) {
+            $response->setSignatureKey($key);
+        }
+
+        if ($mockIdp->mustSignAssertions()) {
+            $assertions = $response->getAssertions();
+            foreach ($assertions as $assertion) {
+                $assertion->setSignatureKey($key);
+            }
+        }
     }
 
     private function setResponseIssuer(MockIdentityProvider $mockIdp, Response $response)

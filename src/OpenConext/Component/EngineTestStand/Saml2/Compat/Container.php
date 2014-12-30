@@ -103,7 +103,7 @@ class Container extends \SAML2_Compat_AbstractContainer
         if (isset($data['SAMLRequest'])) {
             $requestXml = base64_decode($data['SAMLRequest']);
 
-            $requestXml = $this->formatXml($requestXml);
+            $requestXml = self::formatXml($requestXml);
 
             $data['authnRequestXml'] = $requestXml;
         }
@@ -115,7 +115,7 @@ class Container extends \SAML2_Compat_AbstractContainer
         if (isset($data['SAMLResponse'])) {
             $responseXml = base64_decode($data['SAMLResponse']);
 
-            $responseXml = $this->formatXml($responseXml);
+            $responseXml = self::formatXml($responseXml);
 
             $responseDebug = '<pre id="responseDebug">' . htmlentities($responseXml, ENT_QUOTES, 'utf-8')  . '</pre>';
         }
@@ -151,7 +151,7 @@ HTML
      * @param $xml
      * @return string
      */
-    private function formatXml($xml)
+    public static function formatXml($xml)
     {
         $dom = new \DOMDocument;
         $dom->preserveWhiteSpace = false;

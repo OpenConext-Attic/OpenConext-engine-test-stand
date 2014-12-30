@@ -28,6 +28,7 @@ class MockIdentityProviderFactory extends AbstractMockEntityFactory
     public function createNew($idpName)
     {
         $mockIdp = new MockIdentityProvider($idpName, $this->generateDefaultEntityMetadata($idpName));
+        $mockIdp->signAssertions();
         $mockIdp->setResponse($this->generateDefaultResponse($mockIdp));
         return $mockIdp;
     }

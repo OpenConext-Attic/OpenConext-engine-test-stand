@@ -208,6 +208,33 @@ class MockIdentityProvider extends AbstractMockEntityRole
         $assertions[0]->setAttributes($newAttributes);
     }
 
+    public function useResponseSigning()
+    {
+        $this->descriptor->Extensions['SignResponses'] = true;
+        return $this;
+    }
+
+    public function mustSignResponses()
+    {
+        return isset($this->descriptor->Extensions['SignResponses']);
+    }
+
+    public function doNotUseAssertionSigning()
+    {
+        unset($this->descriptor->Extensions['SignAssertions']);
+        return $this;
+    }
+
+    public function signAssertions()
+    {
+        return $this->descriptor->Extensions['SignAssertions'] = true;
+    }
+
+    public function mustSignAssertions()
+    {
+        return isset($this->descriptor->Extensions['SignAssertions']);
+    }
+
     protected function getRoleClass()
     {
         return '\SAML2_XML_md_IDPSSODescriptor';
