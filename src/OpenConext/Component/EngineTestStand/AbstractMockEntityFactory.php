@@ -2,6 +2,10 @@
 
 namespace OpenConext\Component\EngineTestStand;
 
+/**
+ * Class AbstractMockEntityFactory
+ * @package OpenConext\Component\EngineTestStand
+ */
 abstract class AbstractMockEntityFactory
 {
     /**

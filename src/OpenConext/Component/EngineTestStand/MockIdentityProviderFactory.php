@@ -4,7 +4,6 @@ namespace OpenConext\Component\EngineTestStand;
 
 use OpenConext\Component\EngineTestStand\Saml2\Response;
 use Symfony\Component\Routing\RouterInterface;
-use XMLSecurityKey;
 
 /**
  * Class MockIdentityProviderFactory

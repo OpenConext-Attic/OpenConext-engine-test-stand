@@ -83,12 +83,13 @@ class IdentityProviderController extends Controller
         /** @var Container $container */
         $container = \SAML2_Utils::getContainer();
         $authnRequestXml = $container->getLastDebugMessageOfType(Container::DEBUG_TYPE_IN);
+        $responseXml = $response->toXml();
 
         $container->postRedirect(
             $destination,
             array(
                 'authnRequestXml'=> htmlentities($authnRequestXml),
-                'SAMLResponse' => base64_encode($response->toXml()),
+                'SAMLResponse' => base64_encode($responseXml),
             )
         );
         return $container->getPostResponse();

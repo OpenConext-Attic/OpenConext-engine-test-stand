@@ -1,5 +1,5 @@
 Feature:
-  In order to realize a named business value
+  In order to perform Single Sign On
   As an IdP or SP
   I want to send SAML Requests  / Responses in a variety of ways
 

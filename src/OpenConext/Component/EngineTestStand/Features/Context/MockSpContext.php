@@ -224,7 +224,7 @@ class MockSpContext extends AbstractSubContext
     {
         /** @var MockServiceProvider $sp */
         $sp = $this->mockSpRegistry->getOnly();
-        $this->_spSignsItsRequests($sp);
+        $this->doSpSignsItsRequests($sp);
     }
 
     /**
@@ -234,10 +234,10 @@ class MockSpContext extends AbstractSubContext
     {
         /** @var MockServiceProvider $sp */
         $sp = $this->mockSpRegistry->get($spName);
-        $this->_spSignsItsRequests($sp);
+        $this->doSpSignsItsRequests($sp);
     }
 
-    private function _spSignsItsRequests(MockServiceProvider $sp)
+    private function doSpSignsItsRequests(MockServiceProvider $sp)
     {
         $sp->signAuthnRequests();
 
