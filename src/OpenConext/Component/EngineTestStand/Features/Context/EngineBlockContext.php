@@ -2,9 +2,12 @@
 
 namespace OpenConext\Component\EngineTestStand\Features\Context;
 
+use Behat\Behat\Exception\PendingException;
 use OpenConext\Component\EngineBlockFixtures\IdFixture;
 use OpenConext\Component\EngineBlockFixtures\IdFrame;
 use OpenConext\Component\EngineBlock\LogChunkParser;
+use OpenConext\Component\EngineTestStand\EntityRegistry;
+use OpenConext\Component\EngineTestStand\MockIdentityProvider;
 use OpenConext\Component\EngineTestStand\Service\EngineBlock;
 use OpenConext\Component\EngineBlockFixtures\ServiceRegistryFixture;
 
@@ -25,16 +28,33 @@ class EngineBlockContext extends AbstractSubContext
     protected $spsConfigUrl;
 
     /**
+     * @var ServiceRegistryFixture
+     */
+    private $serviceRegistryFixture;
+
+    /**
+     * @var EngineBlock
+     */
+    private $engineBlock;
+
+    /**
+     * @var EntityRegistry
+     */
+    private $mockIdpRegistry;
+
+    /**
      *
      */
     public function __construct(
         ServiceRegistryFixture $serviceRegistry,
         EngineBlock $engineBlock,
+        EntityRegistry $mockIdpRegistry,
         $spsConfigUrl,
         $idpsConfigUrl
     ) {
         $this->serviceRegistryFixture = $serviceRegistry;
         $this->engineBlock = $engineBlock;
+        $this->mockIdpRegistry = $mockIdpRegistry;
         $this->spsConfigUrl = $spsConfigUrl;
         $this->idpsConfigUrl = $idpsConfigUrl;
     }
@@ -155,5 +175,32 @@ class EngineBlockContext extends AbstractSubContext
         if (strstr($mink->getSession()->getPage()->getHtml(), 'accept_terms_button')) {
             $mink->pressButton('accept_terms_button');
         }
+    }
+
+    /**
+     * @Given /^I select "([^"]*)" on the WAYF$/
+     */
+    public function iSelectOnTheWAYF($idpName)
+    {
+        /** @var MockIdentityProvider $mockIdp */
+        $mockIdp = $this->mockIdpRegistry->get($idpName);
+
+        if (!$mockIdp) {
+            throw new \RuntimeException(
+                "Unable to find idp with name '$idpName'"
+            );
+        }
+
+        $selector = 'input[type="submit"][data-entityid="' . $mockIdp->entityId() . '"]';
+
+        $mink = $this->getMainContext()->getMinkContext()->getSession()->getPage();
+        $button = $mink->find('css', $selector);
+
+        if (!$button) {
+            throw new \RuntimeException(
+                "Unable to find button with selector '$selector'"
+            );
+        }
+        $button->click();
     }
 }

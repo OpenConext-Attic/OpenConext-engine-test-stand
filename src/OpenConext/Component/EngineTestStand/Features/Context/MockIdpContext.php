@@ -73,7 +73,8 @@ class MockIdpContext extends AbstractSubContext
     public function anIdentityProviderNamed($name)
     {
         $mockIdp = $this->mockIdpFactory->createNew($name);
-        $this->mockIdpRegistry->set($name, $mockIdp)->save();
+        $this->mockIdpRegistry->set($name, $mockIdp);
+        $this->mockIdpRegistry->save();
         $this->serviceRegistryFixture->registerIdp(
             $name,
             $mockIdp->entityId(),

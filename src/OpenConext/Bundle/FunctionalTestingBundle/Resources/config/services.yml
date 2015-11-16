@@ -23,6 +23,7 @@ services:
         arguments:
             - '@openconext_functional_testing.fixture.service_registry'
             - '@openconext_functional_testing.service.engine_block'
+            - '@openconext_mock_entities.idp_registry'
             - '%sps_config_url%'
             - '%idps_config_url%'
 
