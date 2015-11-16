@@ -14,6 +14,7 @@ Feature:
       And a Service Provider named "Step Up"
       And a Service Provider named "Loa SP"
       And a Service Provider named "Far SP"
+      And a Service Provider named "Test SP"
       And IdP "AlwaysAuth" uses a blacklist for access control
       And IdP "StepUpOnlyAuth" uses a whitelist for access control
       And IdP "StepUpOnlyAuth" whitelists SP "Step Up"
@@ -31,6 +32,7 @@ Feature:
       And SP "Loa SP" whitelists IdP "LoaOnlyAuth"
       And SP "Loa SP" whitelists IdP "CombinedAuth"
       And SP "Far SP" uses a blacklist for access control
+      And SP "Test SP" is using workflow state "testaccepted"
 
   Scenario: User logs in to the SP without a proxy and wayf shows relevant Identity Providers
     When I log in at "Loa SP"
@@ -205,3 +207,13 @@ Feature:
       And I pass through EngineBlock
      Then the response should match xpath '/samlp:Response/saml:Assertion/saml:Subject/saml:NameID[@Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"]'
       And the response should match xpath '/samlp:Response/saml:Assertion/saml:AttributeStatement/saml:Attribute[@Name="urn:mace:dir:attribute-def:eduPersonTargetedID"]/saml:AttributeValue/saml:NameID[@Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"]'
+
+  Scenario: User logs in at test SP and via prod trusted proxy and is denied access
+    Given SP "Step Up" is authenticating for SP "Test SP"
+      And SP "Step Up" is a trusted proxy
+      And SP "Step Up" signs it's requests
+      And SP "Step Up" does not require consent
+      And SP "Step Up" uses the Unspecified NameID format
+     When I log in at "Step Up"
+      And print last response
+     Then I should see "Dissimilar workflow states"

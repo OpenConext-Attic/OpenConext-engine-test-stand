@@ -408,4 +408,17 @@ class MockSpContext extends AbstractSubContext
             ->setEntityNameIdFormatUnspecified($sp->entityId())
             ->save();
     }
+
+    /**
+     * @Given /^SP "([^"]*)" is using workflow state "([^"]*)"$/
+     */
+    public function spUsesStatus($spName, $workflowState)
+    {
+        /** @var MockServiceProvider $sp */
+        $sp = $this->mockSpRegistry->get($spName);
+
+        $this->serviceRegistryFixture
+            ->setWorkflowState($sp->entityId(), $workflowState)
+            ->save();
+    }
 }
