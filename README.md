@@ -63,7 +63,7 @@ What this does is trigger EngineBlock to use a different DI Container that allow
 
 Run the normal Functional Tests like so:
 ````bash
-./bin/behat
+./bin/behat -c tools/behat/behat.yml "@FunctionalTestingBundle"
 ````
 
 ### Usage Scenario: SAML Replaying ###
