@@ -22,7 +22,7 @@ Feature:
      When I log in at "Dummy SP"
       And I pass through EngineBlock
       And I pass through the IdP
-     Then I should see "Idp error"
+     Then I should see "Identity Provider error"
       And I should see "InvalidNameIDPolicy"
       And I should see "NameIdPolicy is invalid"
       And I should see "Timestamp:"
@@ -38,7 +38,7 @@ Feature:
      When I log in at "Dummy SP"
       And I pass through EngineBlock
       And I pass through the IdP
-     Then I should see "Idp error"
+     Then I should see "Identity Provider error"
       And I should see "RequestDenied"
       And I should see "Timestamp:"
       And I should see "Unique Request Id:"
@@ -53,7 +53,7 @@ Feature:
      When I log in at "Dummy SP"
       And I pass through EngineBlock
       And I pass through the IdP
-     Then I should see "Invalid signature on Idp response"
+     Then I should see "Invalid signature on Identity Provider response"
       And I should see "Timestamp:"
       And I should see "Unique Request Id:"
       And I should see "User Agent:"
@@ -73,12 +73,12 @@ Feature:
 
   Scenario: I want to log on but this Service Provider is not yet registered at OpenConext
     When I log in at "Unregistered SP"
-    Then I should see "Unknown application"
+    Then I should see "Unknown service"
      And I should see "Timestamp:"
      And I should see "Unique Request Id:"
      And I should see "User Agent:"
      And I should see "IP Address:"
-     And I should see "Service Provider:"
+     And I should see "EntityID:"
      And I should not see "Identity Provider:"
 
   Scenario: An Identity Provider misrepresents it's entityId and is thus not recognized by EB
@@ -86,7 +86,7 @@ Feature:
      When I log in at "Dummy SP"
       And I pass through EngineBlock
       And I pass through the IdP
-     Then I should see "Unknown application"
+     Then I should see "Unknown service"
       And I should see "Timestamp:"
       And I should see "Unique Request Id:"
       And I should see "User Agent:"
